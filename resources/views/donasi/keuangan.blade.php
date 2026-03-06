@@ -108,6 +108,68 @@
     .donasi-layout { grid-template-columns: 1fr; }
     .form-card { position: static; }
 }
+
+/* ── Modal QRIS ───────────────────────────── */
+.qris-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.qris-overlay.active { display: flex; }
+.qris-modal {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem 2rem 1.75rem;
+    max-width: 400px; width: 92%;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    animation: modalIn .25s ease;
+    position: relative;
+}
+@keyframes modalIn {
+    from { opacity:0; transform:scale(.92) translateY(16px); }
+    to   { opacity:1; transform:scale(1)  translateY(0); }
+}
+.qris-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+.qris-modal-header img { height: 32px; }
+.qris-close {
+    background: #F1F5F9; border: none; border-radius: 50%;
+    width: 32px; height: 32px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; color: #64748B; transition: background .2s;
+}
+.qris-close:hover { background: #E2E8F0; }
+.qris-nominal {
+    font-size: 1.55rem; font-weight: 800; color: #DC2626;
+    margin-bottom: 0.25rem;
+}
+.qris-name { font-size: 0.88rem; color: #64748B; margin-bottom: 1.25rem; }
+.qris-image-wrap {
+    background: #F8FAFC; border-radius: 16px;
+    padding: 1rem; margin-bottom: 1rem; display: inline-block;
+    border: 2px solid #E2E8F0;
+}
+.qris-image-wrap img {
+    width: 220px; height: 220px; display: block;
+    border-radius: 8px;
+}
+.qris-status {
+    font-size: 0.83rem; padding: 0.5rem 1rem;
+    border-radius: 50px; margin-bottom: 1rem;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-weight: 600;
+}
+.qris-status.waiting { background: #FEF9C3; color: #854D0E; }
+.qris-status.checking { background: #DBEAFE; color: #1E40AF; }
+.qris-status.success  { background: #DCFCE7; color: #166534; }
+.qris-expiry { font-size: 0.78rem; color: #94A3B8; margin-bottom: 0.5rem; }
+.qris-info   { font-size: 0.8rem; color: #94A3B8; margin-top: 0.75rem; line-height: 1.5; }
 </style>
 @endpush
 
@@ -160,7 +222,12 @@
         <h2 style="font-size:1.4rem; color:var(--biru-gelap); margin-bottom:0.4rem;">Form Donasi Keuangan</h2>
         <p style="color:#64748B; font-size:0.9rem; margin-bottom:2rem;">Isi data Anda untuk melanjutkan donasi</p>
 
-        <form action="{{ route('donasi.keuangan.store') }}" method="POST">
+        <div id="qris-badge" style="display:flex;align-items:center;gap:0.5rem;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:0.65rem 1rem;margin-bottom:1.5rem;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/QRIS_logo.svg" alt="QRIS" style="height:28px;">
+            <span style="font-size:0.82rem;color:#166534;font-weight:600;">Pembayaran via QRIS — scan &amp; bayar instan</span>
+        </div>
+
+        <form id="donasi-form">
             @csrf
             <div class="form-group">
                 <label>Pilih Nominal Cepat</label>
@@ -175,43 +242,213 @@
                 <input type="number" id="nominal" name="nominal" value="{{ old('nominal') }}"
                     min="1000" step="1000" required placeholder="Atau masukkan nominal lainnya..."
                     style="margin-top:0.5rem;">
-                @error('nominal')<span class="error-msg">{{ $message }}</span>@enderror
+                <span id="error-nominal" class="error-msg" style="display:none;"></span>
             </div>
             <div class="form-group">
                 <label>Nama Lengkap *</label>
-                <input type="text" name="nama" value="{{ old('nama') }}" required placeholder="Nama Anda">
-                @error('nama')<span class="error-msg">{{ $message }}</span>@enderror
+                <input type="text" id="nama" name="nama" value="{{ old('nama') }}" required placeholder="Nama Anda">
+                <span id="error-nama" class="error-msg" style="display:none;"></span>
             </div>
             <div class="form-group">
                 <label>Email *</label>
-                <input type="email" name="email" value="{{ old('email') }}" required placeholder="email@contoh.com">
-                @error('email')<span class="error-msg">{{ $message }}</span>@enderror
+                <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="email@contoh.com">
+                <span id="error-email" class="error-msg" style="display:none;"></span>
             </div>
             <div class="form-group">
                 <label>Nomor Telepon (opsional)</label>
-                <input type="text" name="telepon" value="{{ old('telepon') }}" placeholder="08xxxxxxxxxx">
+                <input type="text" id="telepon" name="telepon" value="{{ old('telepon') }}" placeholder="08xxxxxxxxxx">
             </div>
             <div class="form-group">
                 <label>Pesan / Doa untuk Anak-Anak (opsional)</label>
-                <textarea name="catatan" placeholder="Tuliskan pesan atau doa tulus Anda...">{{ old('catatan') }}</textarea>
+                <textarea id="catatan" name="catatan" placeholder="Tuliskan pesan atau doa tulus Anda...">{{ old('catatan') }}</textarea>
             </div>
-            <button type="submit" class="submit-btn">
-                <i class="fas fa-heart"></i> Kirim Donasi Keuangan
+            <button type="button" id="btn-donasi" class="submit-btn" onclick="bayarQRIS()">
+                <i class="fas fa-qrcode"></i> Bayar dengan QRIS
             </button>
         </form>
         <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:#94A3B8;">
-            <i class="fas fa-lock"></i> Data Anda aman &amp; terlindungi
+            <i class="fas fa-lock"></i> Pembayaran aman diproses oleh Midtrans
         </p>
     </div>
 </div>
+
+<!-- Modal QRIS -->
+<div class="qris-overlay" id="qris-overlay" onclick="tutupQRIS(event)">
+    <div class="qris-modal" id="qris-modal">
+        <div class="qris-modal-header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/QRIS_logo.svg" alt="QRIS">
+            <button class="qris-close" onclick="tutupModal()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div id="qris-loading" style="padding:2rem 0;">
+            <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#DC2626;"></i>
+            <p style="margin-top:0.75rem;color:#64748B;font-size:0.9rem;">Membuat kode QRIS...</p>
+        </div>
+
+        <div id="qris-content" style="display:none;">
+            <div class="qris-nominal" id="qris-nominal-text"></div>
+            <div class="qris-name" id="qris-nama-text"></div>
+            <div class="qris-image-wrap">
+                <img id="qris-img" src="" alt="QR Code QRIS">
+            </div>
+            <div class="qris-status waiting" id="qris-status-badge">
+                <i class="fas fa-clock"></i> Menunggu pembayaran...
+            </div>
+            <div class="qris-expiry" id="qris-expiry-text"></div>
+            <div class="qris-info">
+                Buka aplikasi e-wallet atau m-banking Anda<br>
+                pilih <strong>Scan QR / QRIS</strong> lalu scan kode di atas
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form redirect setelah bayar -->
+<form id="redirect-form" action="{{ route('donasi.keuangan.store') }}" method="POST" style="display:none;">
+    @csrf
+    <input type="hidden" id="redirect-order-id" name="order_id">
+</form>
 @endsection
 
 @push('scripts')
 <script>
+let pollInterval = null;
+let currentOrderId = null;
+
 function setAmount(val, btn) {
     document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     document.getElementById('nominal').value = val;
+}
+
+function formatRupiah(angka) {
+    return 'Rp ' + parseInt(angka).toLocaleString('id-ID');
+}
+
+function bayarQRIS() {
+    const btn     = document.getElementById('btn-donasi');
+    const nominal = document.getElementById('nominal').value;
+    const nama    = document.getElementById('nama').value.trim();
+    const email   = document.getElementById('email').value.trim();
+
+    ['nominal','nama','email'].forEach(f => {
+        document.getElementById('error-'+f).style.display = 'none';
+    });
+
+    let valid = true;
+    if (!nominal || nominal < 1000) {
+        document.getElementById('error-nominal').textContent = 'Nominal minimal Rp 1.000';
+        document.getElementById('error-nominal').style.display = 'block';
+        valid = false;
+    }
+    if (!nama) {
+        document.getElementById('error-nama').textContent = 'Nama lengkap wajib diisi';
+        document.getElementById('error-nama').style.display = 'block';
+        valid = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('error-email').textContent = 'Email tidak valid';
+        document.getElementById('error-email').style.display = 'block';
+        valid = false;
+    }
+    if (!valid) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+    document.getElementById('qris-loading').style.display = 'block';
+    document.getElementById('qris-content').style.display = 'none';
+    document.getElementById('qris-overlay').classList.add('active');
+
+    const csrfToken = document.querySelector('#donasi-form [name="_token"]').value;
+
+    fetch('{{ route("donasi.midtrans.token") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        body: JSON.stringify({
+            nama:    nama,
+            email:   email,
+            telepon: document.getElementById('telepon').value,
+            nominal: nominal,
+            catatan: document.getElementById('catatan').value,
+        }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-qrcode"></i> Bayar dengan QRIS';
+
+        if (data.error) {
+            tutupModal();
+            alert('Terjadi kesalahan: ' + data.error);
+            return;
+        }
+
+        currentOrderId = data.order_id;
+
+        document.getElementById('qris-nominal-text').textContent = formatRupiah(data.nominal);
+        document.getElementById('qris-nama-text').textContent = 'Donasi atas nama: ' + nama;
+        document.getElementById('qris-img').src = data.qr_url;
+
+        if (data.expiry_time) {
+            document.getElementById('qris-expiry-text').textContent = 'Berlaku hingga: ' + data.expiry_time;
+        }
+
+        document.getElementById('qris-loading').style.display = 'none';
+        document.getElementById('qris-content').style.display = 'block';
+
+        startPolling(data.order_id);
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-qrcode"></i> Bayar dengan QRIS';
+        tutupModal();
+        alert('Koneksi gagal. Silakan coba lagi.');
+    });
+}
+
+function startPolling(orderId) {
+    stopPolling();
+    pollInterval = setInterval(() => {
+        const badge = document.getElementById('qris-status-badge');
+        badge.className = 'qris-status checking';
+        badge.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memeriksa pembayaran...';
+
+        fetch('{{ url("donasi/midtrans/status") }}/' + orderId)
+        .then(r => r.json())
+        .then(res => {
+            if (res.paid) {
+                stopPolling();
+                badge.className = 'qris-status success';
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> Pembayaran berhasil! Mengalihkan...';
+                setTimeout(() => {
+                    document.getElementById('redirect-order-id').value = orderId;
+                    document.getElementById('redirect-form').submit();
+                }, 1500);
+            } else {
+                badge.className = 'qris-status waiting';
+                badge.innerHTML = '<i class="fas fa-clock"></i> Menunggu pembayaran...';
+            }
+        })
+        .catch(() => {
+            badge.className = 'qris-status waiting';
+            badge.innerHTML = '<i class="fas fa-clock"></i> Menunggu pembayaran...';
+        });
+    }, 3000);
+}
+
+function stopPolling() {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+}
+
+function tutupModal() {
+    stopPolling();
+    document.getElementById('qris-overlay').classList.remove('active');
+    currentOrderId = null;
+}
+
+function tutupQRIS(e) {
+    if (e.target === document.getElementById('qris-overlay')) tutupModal();
 }
 </script>
 @endpush

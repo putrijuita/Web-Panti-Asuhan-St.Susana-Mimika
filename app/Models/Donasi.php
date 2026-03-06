@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Donasi extends Model
 {
-    protected $fillable = ['nama', 'email', 'telepon', 'nominal', 'catatan', 'status'];
+    protected $fillable = ['order_id', 'nama', 'email', 'telepon', 'nominal', 'catatan', 'status', 'midtrans_snap_token', 'payment_type'];
 }
