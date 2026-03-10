@@ -187,16 +187,6 @@
                 </div>
             </div>
             <div class="kontak-item">
-                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #25D366, #128C7E);">
-                    <i class="fab fa-whatsapp"></i>
-                </div>
-                <div class="kontak-item-body">
-                    <h4>WhatsApp</h4>
-                    <p><a href="https://wa.me/6282198595245" target="_blank">0821-9859-5245</a></p>
-                    <p style="font-size:0.8rem; color:#94A3B8; margin-top:0.2rem;">Respon lebih cepat via WA</p>
-                </div>
-            </div>
-            <div class="kontak-item">
                 <div class="kontak-item-icon" style="background: linear-gradient(135deg, #1877F2, #3b5998);">
                     <i class="fab fa-facebook-f"></i>
                 </div>
@@ -212,8 +202,9 @@
                 </div>
                 <div class="kontak-item-body">
                     <h4>Alamat</h4>
-                    <p>Timika, Kabupaten Mimika</p>
-                    <p>Papua, Indonesia</p>
+                    <p>JL.POROS SP2-SP5 GANG PETRA</p>
+                    <p>KAMPUNG MINABUA, SP 2 TIMIKA, DISTRIK MIMIKA BARU</p>
+                    <p>KABUPATEN MIMIKA – PROVINSI PAPUA TENGAH</p>
                 </div>
             </div>
         </div>
@@ -222,11 +213,8 @@
         <div class="kontak-info-card">
             <h3><i class="fas fa-share-nodes" style="color:#8b5cf6;"></i> Terhubung Cepat</h3>
             <div class="sosmed-grid">
-                <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" class="sosmed-btn fb">
+                <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" class="sosmed-btn fb" style="grid-column: span 2;">
                     <i class="fab fa-facebook-f"></i> Facebook
-                </a>
-                <a href="https://wa.me/6282198595245" target="_blank" class="sosmed-btn wa">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
                 </a>
                 <a href="tel:082198595245" class="sosmed-btn phone" style="grid-column: span 2;">
                     <i class="fas fa-phone"></i> Telepon: 0821-9859-5245
@@ -321,9 +309,6 @@
             <div style="display: flex; gap: 0.75rem; justify-content: center;">
                 <a href="tel:082198595245" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
                     <i class="fas fa-phone"></i> Telepon
-                </a>
-                <a href="https://wa.me/6282198595245" target="_blank" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #25D366, #128C7E);">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
                 </a>
             </div>
         </div>

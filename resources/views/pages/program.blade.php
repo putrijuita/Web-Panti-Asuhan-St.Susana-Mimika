@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Program - Panti Asuhan Santa Susana Timika')
+@section('title', 'Kegiatan Rutin Kami - Panti Asuhan Santa Susana Timika')
 
 @push('styles')
 <style>
@@ -78,22 +78,287 @@
 
 .mini-program-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3.5rem;
 }
 .mini-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
-    transition: all 0.3s;
-    border-top: 4px solid var(--biru-tua);
+    position: relative;
+    background: #ffffff;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 20px 55px rgba(15,76,117,0.18);
+    transform-origin: center;
+    transition: transform 0.45s ease, box-shadow 0.45s ease;
 }
-.mini-card:hover { transform: translateY(-5px); }
-.mini-icon { font-size: 2rem; margin-bottom: 1rem; }
-.mini-card h4 { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.5rem; }
-.mini-card p  { color: #64748B; font-size: 0.9rem; line-height: 1.6; }
+.mini-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 0 0, rgba(59,130,246,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34,197,94,0.12), transparent 55%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+.mini-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 26px 70px rgba(15,76,117,0.28);
+}
+.mini-card:hover::before {
+    opacity: 1;
+}
+.mini-media {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+}
+.mini-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.03);
+    transition: transform 0.6s ease;
+}
+.mini-card:hover .mini-media img {
+    transform: scale(1.08);
+}
+.mini-media-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
+    color: #e0f2fe;
+    font-size: 3rem;
+}
+.mini-badge-strip {
+    position: absolute;
+    inset: auto 1.4rem 1.4rem 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+.mini-pill {
+    padding: 0.18rem 0.9rem;
+    border-radius: 999px;
+    backdrop-filter: blur(12px);
+    background: rgba(15,23,42,0.55);
+    color: #e2e8f0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+}
+.mini-index {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #e0f2fe;
+    box-shadow: 0 12px 25px rgba(15,23,42,0.55);
+}
+.mini-card:nth-child(3n+1) .mini-index {
+    background: #fee2e2;
+}
+.mini-card:nth-child(3n+2) .mini-index {
+    background: #dcfce7;
+}
+.mini-card:nth-child(3n) .mini-index {
+    background: #e0f2fe;
+}
+.mini-body {
+    padding: 1.7rem 1.7rem 1.8rem;
+}
+.mini-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.18rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(148,163,184,0.16);
+    color: #475569;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+.mini-eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--biru-tua);
+}
+.mini-card h4 {
+    font-weight: 800;
+    color: var(--biru-gelap);
+    margin-bottom: 0.4rem;
+    font-size: 1.08rem;
+}
+.mini-card p {
+    color: #64748B;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 0.6rem;
+}
+.mini-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.5rem;
+}
+.mini-chip {
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(148,163,184,0.18);
+    color: #475569;
+}
+.mini-chip.primary {
+    background: rgba(59,130,246,0.14);
+    color: #1d4ed8;
+}
+.mini-chip.success {
+    background: rgba(22,163,74,0.14);
+    color: #15803d;
+}
+
+.unggul-wrapper {
+    margin-bottom: 3rem;
+}
+.unggul-card {
+    background: white;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 18px 55px rgba(15,76,117,0.22);
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.unggul-media {
+    position: relative;
+    min-height: 230px;
+    overflow: hidden;
+}
+.unggul-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.03);
+    transition: transform 0.6s ease;
+}
+.unggul-card:hover .unggul-media img {
+    transform: scale(1.08);
+}
+.unggul-media-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
+    color: #e0f2fe;
+    font-size: 3.2rem;
+}
+.unggul-media-label {
+    position: absolute;
+    left: 1.2rem;
+    top: 1.2rem;
+    padding: 0.24rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.7);
+    color: #e2e8f0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+}
+.unggul-body {
+    padding: 2.2rem 2.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.unggul-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.22rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(59,130,246,0.10);
+    color: #1d4ed8;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+}
+.unggul-eyebrow span {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #1d4ed8;
+}
+.unggul-body h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--biru-gelap);
+    margin-bottom: 0.6rem;
+}
+.unggul-body p {
+    color: #475569;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+.unggul-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: 1.2rem;
+}
+.unggul-meta .mini-chip {
+    background: rgba(59,130,246,0.08);
+}
+.unggul-share-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    align-items: center;
+}
+.unggul-share-row small {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+.btn-share-kegiatan {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+.btn-share-kegiatan i {
+    font-size: 0.9rem;
+}
 
 .involvement-grid {
     display: grid;
@@ -123,121 +388,110 @@
     .program-card.reverse { direction: ltr; }
     .program-visual { min-height: 180px; padding: 2rem; }
     .program-content { padding: 1.75rem; }
+    .unggul-card {
+        grid-template-columns: 1fr;
+    }
+    .unggul-body {
+        padding: 1.8rem 1.6rem 2rem;
+    }
 }
 </style>
 @endpush
 
 @section('content')
 <div class="program-hero">
-    <h1>Program Kami</h1>
-    <p>Berbagai program yang kami jalankan untuk memastikan setiap anak tumbuh sehat, cerdas, berkarakter, dan mandiri</p>
+    <h1>Kegiatan Rutin Kami</h1>
+    <p>Berbagai kegiatan rutin yang kami jalankan untuk memastikan setiap anak tumbuh sehat, cerdas, berkarakter, dan mandiri.</p>
 </div>
 
-<!-- Program Utama -->
-<div style="margin-bottom: 1rem;">
-    <div class="section-label"><i class="fas fa-list-check"></i> Program Unggulan</div>
-    <h2 class="section-head">Program Utama Panti</h2>
-</div>
+@if($unggulKegiatan->isNotEmpty())
+    <div class="unggul-wrapper">
+        <div style="margin-bottom: 1rem;">
+            <div class="section-label"><i class="fas fa-star"></i> Program Unggulan</div>
+            <h2 class="section-head">Program Unggulan di Panti</h2>
+            <p class="section-sub">Program-program inti yang menjadi fokus pengembangan karakter, pendidikan, dan kemandirian anak-anak.</p>
+        </div>
 
-<div id="pendidikan" class="program-card">
-    <div class="program-visual" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
-        <div class="program-icon">📚</div>
-        <div class="program-tag">Pendidikan</div>
+        @foreach($unggulKegiatan as $item)
+            <article class="unggul-card">
+                <div class="unggul-media">
+                    @if($item->gambar)
+                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}">
+                    @else
+                        <div class="unggul-media-fallback">🌟</div>
+                    @endif
+                    <div class="unggul-media-label">Program Unggulan</div>
+                </div>
+                <div class="unggul-body">
+                    <div class="unggul-eyebrow">
+                        <span></span>
+                        <span>Fokus Pengembangan Anak</span>
+                    </div>
+                    <h3>{{ $item->nama }}</h3>
+                    <p>{{ $item->deskripsi ?: 'Belum ada keterangan terperinci, namun program ini menjadi salah satu fokus utama pembinaan anak di Panti.' }}</p>
+                    <div class="unggul-meta">
+                        <span class="mini-chip primary">Anak-anak Papua</span>
+                        <span class="mini-chip success">Program Unggulan</span>
+                    </div>
+                    @php
+                        $shareText = rawurlencode('Yuk dukung program unggulan "'.$item->nama.'" di Panti Asuhan Santa Susana Timika: '.route('program'));
+                    @endphp
+                    <div class="unggul-share-row">
+                        <a href="https://wa.me/?text={{ $shareText }}" target="_blank" rel="noopener" class="btn-share-kegiatan">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Bagikan Kegiatan</span>
+                        </a>
+                        <small>Bagikan ke keluarga & sahabat agar lebih banyak yang terlibat.</small>
+                    </div>
+                </div>
+            </article>
+        @endforeach
     </div>
-    <div class="program-content">
-        <h3>Beasiswa & Pendidikan Formal</h3>
-        <p>Kami memastikan setiap anak mendapatkan akses pendidikan formal dari tingkat SD hingga SMA. Bekerjasama dengan sekolah-sekolah di Timika untuk memberikan beasiswa penuh.</p>
-        <ul class="program-list">
-            <li><span class="dot"></span>Biaya sekolah, seragam, dan buku ditanggung</li>
-            <li><span class="dot"></span>Bimbingan belajar setiap hari oleh tutor sukarela</li>
-            <li><span class="dot"></span>Fasilitas perpustakaan mini dan komputer</li>
-            <li><span class="dot"></span>Dukungan untuk melanjutkan ke perguruan tinggi</li>
-        </ul>
-        <a href="{{ route('donasi.index') }}" class="btn btn-primary" style="align-self: flex-start;">Dukung Program Ini</a>
-    </div>
-</div>
+@endif
 
-<div id="kesehatan" class="program-card reverse">
-    <div class="program-visual" style="background: linear-gradient(135deg, #065f46, #10b981);">
-        <div class="program-icon">🏥</div>
-        <div class="program-tag">Kesehatan</div>
+@if($rutinKegiatan->isNotEmpty())
+    <div style="margin-bottom: 1rem;">
+        <div class="section-label"><i class="fas fa-list-check"></i> Kegiatan Rutin</div>
+        <h2 class="section-head">Kegiatan Rutin di Panti</h2>
+        <p class="section-sub">Berikut adalah kegiatan rutin yang saat ini berjalan di Panti Asuhan Santa Susana Timika.</p>
     </div>
-    <div class="program-content">
-        <h3>Kesehatan & Gizi Anak</h3>
-        <p>Memastikan setiap anak mendapatkan asupan gizi yang cukup dan layanan kesehatan yang baik. Bekerjasama dengan tenaga medis untuk pemeriksaan rutin berkala.</p>
-        <ul class="program-list">
-            <li><span class="dot"></span>3 kali makan bergizi setiap hari</li>
-            <li><span class="dot"></span>Pemeriksaan kesehatan rutin setiap bulan</li>
-            <li><span class="dot"></span>Imunisasi dan suplemen vitamin</li>
-            <li><span class="dot"></span>Konsultasi psikologi dan dukungan mental</li>
-        </ul>
-        <a href="{{ route('donasi.index') }}" class="btn btn-primary" style="align-self: flex-start;">Dukung Program Ini</a>
-    </div>
-</div>
 
-<div id="ketrampilan" class="program-card">
-    <div class="program-visual" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
-        <div class="program-icon">🛠️</div>
-        <div class="program-tag">Keterampilan</div>
-    </div>
-    <div class="program-content">
-        <h3>Pelatihan Keterampilan & Kemandirian</h3>
-        <p>Program keterampilan hidup untuk membekali remaja di panti agar mandiri ketika memasuki dunia kerja atau menjadi wirausaha.</p>
-        <ul class="program-list">
-            <li><span class="dot"></span>Keterampilan memasak dan tata boga</li>
-            <li><span class="dot"></span>Menjahit dan kerajinan tangan</li>
-            <li><span class="dot"></span>Pelatihan komputer dasar</li>
-            <li><span class="dot"></span>Literasi keuangan dan wirausaha</li>
-        </ul>
-        <a href="{{ route('donasi.index') }}" class="btn btn-primary" style="align-self: flex-start;">Dukung Program Ini</a>
-    </div>
-</div>
-
-<div id="rohani" class="program-card reverse" style="margin-bottom: 3rem;">
-    <div class="program-visual" style="background: linear-gradient(135deg, #92400e, #f59e0b);">
-        <div class="program-icon">🙏</div>
-        <div class="program-tag">Rohani</div>
-    </div>
-    <div class="program-content">
-        <h3>Pembinaan Rohani & Karakter</h3>
-        <p>Membangun pondasi iman dan karakter yang kuat pada setiap anak. Kegiatan rohani dan pembentukan moral dilakukan secara rutin dan menyenangkan.</p>
-        <ul class="program-list">
-            <li><span class="dot"></span>Ibadah dan doa bersama harian</li>
-            <li><span class="dot"></span>Pendalaman Alkitab mingguan</li>
-            <li><span class="dot"></span>Retret rohani tahunan</li>
-            <li><span class="dot"></span>Pelatihan kepemimpinan berbasis nilai</li>
-        </ul>
-        <a href="{{ route('donasi.index') }}" class="btn btn-primary" style="align-self: flex-start;">Dukung Program Ini</a>
-    </div>
-</div>
-
-<!-- Program Tambahan -->
-<div style="margin-bottom: 1rem;">
-    <div class="section-label"><i class="fas fa-plus-circle"></i> Program Tambahan</div>
-    <h2 class="section-head">Kegiatan Lainnya</h2>
     <div class="mini-program-grid">
-        <div class="mini-card">
-            <div class="mini-icon">⚽</div>
-            <h4>Olahraga & Seni</h4>
-            <p>Kegiatan olahraga dan seni budaya untuk mengembangkan bakat dan menjaga kesehatan jiwa raga anak.</p>
-        </div>
-        <div class="mini-card" style="border-color: #10b981;">
-            <div class="mini-icon">🌿</div>
-            <h4>Pertanian Mini</h4>
-            <p>Anak-anak belajar berkebun dan bertanam sayuran untuk kebutuhan pangan sehari-hari di panti.</p>
-        </div>
-        <div class="mini-card" style="border-color: #f59e0b;">
-            <div class="mini-icon">🎤</div>
-            <h4>Paduan Suara</h4>
-            <p>Kelompok paduan suara yang aktif tampil di berbagai acara gereja dan kegiatan sosial setempat.</p>
-        </div>
-        <div class="mini-card" style="border-color: #8b5cf6;">
-            <div class="mini-icon">📸</div>
-            <h4>Dokumentasi & Kreativitas</h4>
-            <p>Anak-anak dilatih mendokumentasikan aktivitas dan mengembangkan kreativitas digital.</p>
-        </div>
+        @foreach($rutinKegiatan as $index => $item)
+            <article class="mini-card">
+                <div class="mini-media">
+                    @if($item->gambar)
+                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}">
+                    @else
+                        <div class="mini-media-fallback">📌</div>
+                    @endif
+                    <div class="mini-badge-strip">
+                        <span class="mini-pill">Kegiatan Rutin</span>
+                        <span class="mini-index">{{ $index + 1 }}</span>
+                    </div>
+                </div>
+                <div class="mini-body">
+                    <div class="mini-eyebrow">
+                        <span class="mini-eyebrow-dot"></span>
+                        <span>Di Panti Santa Susana</span>
+                    </div>
+                    <h4>{{ $item->nama }}</h4>
+                    <p>{{ $item->deskripsi ?: 'Belum ada keterangan untuk kegiatan ini, namun kegiatan ini berjalan secara rutin di Panti.' }}</p>
+                    <div class="mini-meta">
+                        <span class="mini-chip primary">Anak-anak Papua</span>
+                        <span class="mini-chip success">Program Aktif</span>
+                    </div>
+                </div>
+            </article>
+        @endforeach
     </div>
-</div>
+@elseif($unggulKegiatan->isEmpty())
+    <div style="margin: 2rem 0 3rem;">
+        <div class="section-label"><i class="fas fa-list-check"></i> Kegiatan</div>
+        <h2 class="section-head">Belum Ada Kegiatan Terdaftar</h2>
+        <p class="section-sub">Saat ini belum ada data kegiatan rutin yang ditampilkan. Silakan kembali lagi nanti.</p>
+    </div>
+@endif
 
 <!-- Cara Terlibat -->
 <div style="margin-bottom: 3rem;">
@@ -254,7 +508,7 @@
 <!-- CTA -->
 <div style="background: linear-gradient(135deg, #0f4c75, var(--biru-tua)); border-radius: 24px; padding: 3rem 2rem; text-align: center; color: white;">
     <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Mulai Berkontribusi Hari Ini</h2>
-    <p style="opacity: 0.9; margin-bottom: 2rem;">Setiap kontribusi, sekecil apapun, sangat berarti bagi anak-anak kami</p>
+    <p style="opacity: 0.9; margin-bottom: 2rem;">Setiap kontribusi, sekecil apapun, sangat berarti bagi anak-anak kami.</p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
         <a href="{{ route('donasi.index') }}" class="btn btn-white">💝 Donasi Sekarang</a>
         <a href="{{ route('kunjungan.create') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">🏠 Ajukan Kunjungan</a>

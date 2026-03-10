@@ -191,17 +191,17 @@
         <div class="vm-card">
             <div class="vm-icon">🌟</div>
             <h3>Visi</h3>
-            <p>Menjadi lembaga pengasuhan anak terdepan di Papua yang melahirkan generasi berkarakter, berpendidikan, dan beriman kepada Tuhan Yang Maha Esa, sehingga mampu berkontribusi nyata bagi bangsa dan masyarakat.</p>
+            <p>Ada bersama mereka, mendampingi dan membimbing mereka serta membentuk karakter anak asuh agar menjadi pribadi yang menjunjung tinggi nilai-nilai moralitas secara Katolik, memiliki intelektual yang berkualitas dan disiplin yang tinggi serta menjadi pribadi yang takut akan Tuhan dan mengasihi sesama.</p>
         </div>
         <div class="vm-card">
             <div class="vm-icon">🎯</div>
             <h3>Misi</h3>
             <ul style="padding-left: 1.2rem; color: #64748B; line-height: 2;">
-                <li>Memberikan pengasuhan penuh kasih dan profesional</li>
-                <li>Menjamin akses pendidikan berkualitas bagi setiap anak</li>
-                <li>Membangun karakter spiritual dan moral yang kuat</li>
-                <li>Membekali keterampilan hidup untuk kemandirian</li>
-                <li>Membangun kemitraan dengan masyarakat dan donatur</li>
+                <li>Memberikan kenyamanan dan kedamaian bagi anak asuh.</li>
+                <li>Memberi kesempatan kepada anak asuh untuk mengembangkan bakat dan kemampuan secara jasmani maupun rohani.</li>
+                <li>Mendidik, membina, mengayomi, memotivasi dan mengarahkan agar menjadi pribadi yang mandiri, menghargai hidup dan menjadi berkat bagi bangsa serta memberikan pengaruh yang positif bagi sesama, hidup menghayati dan menghormati Allah Tritunggal Maha Kudus serta menghormati Bunda Maria sebagai Ibu Kehidupan.</li>
+                <li>Membentuk pola hidup kerohanian yang layak dan membentuk karakter hidup bersosial.</li>
+                <li>Membina dan menanamkan hidup beriman secara Katolik dan mengamalkannya dalam hidup sehari-hari.</li>
             </ul>
         </div>
     </div>
@@ -274,10 +274,23 @@
     <h2 class="section-head">Orang-Orang di Balik Pelayanan</h2>
     <p class="section-sub">Tim pengurus yang berdedikasi dan berkomitmen untuk anak-anak</p>
     <div class="team-grid">
-        <div class="team-card"><div class="team-avatar">👨‍💼</div><h4>Pengurus Yayasan</h4><span>Ketua Yayasan</span></div>
-        <div class="team-card"><div class="team-avatar">👩‍⚕️</div><h4>Tim Pengasuh</h4><span>Pengasuh Utama</span></div>
-        <div class="team-card"><div class="team-avatar">👨‍🏫</div><h4>Tim Pendidikan</h4><span>Koordinator Belajar</span></div>
-        <div class="team-card"><div class="team-avatar">👩‍🍳</div><h4>Tim Dapur</h4><span>Gizi & Konsumsi</span></div>
+        @forelse($pengurus as $p)
+            <div class="team-card">
+                <div class="team-avatar">
+                    @if($p->gambar_path)
+                        <img src="{{ asset('storage/'.$p->gambar_path) }}" alt="{{ $p->nama }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                    @else
+                        {{ mb_substr($p->nama, 0, 1) }}
+                    @endif
+                </div>
+                <h4>{{ $p->nama }}</h4>
+                <span>{{ $p->jabatan }}</span>
+            </div>
+        @empty
+            <div style="grid-column: 1/-1; text-align:center; color:#94a3b8; font-size:0.95rem;">
+                Data pengurus belum tersedia.
+            </div>
+        @endforelse
     </div>
 </div>
 

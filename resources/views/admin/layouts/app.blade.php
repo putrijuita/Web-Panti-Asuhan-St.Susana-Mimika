@@ -163,6 +163,10 @@
                 <span class="icon"><i class="fas fa-hand-holding-heart"></i></span>
                 Donasi Uang
             </a>
+            <a href="{{ route('admin.pengelolaan-donasi.index') }}" class="nav-link {{ request()->routeIs('admin.pengelolaan-donasi.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-receipt"></i></span>
+                Pengelolaan Donasi
+            </a>
             <a href="{{ route('admin.jasa.index') }}" class="nav-link {{ request()->routeIs('admin.jasa.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-hands-helping"></i></span>
                 Donasi Jasa
@@ -171,7 +175,32 @@
                 <span class="icon"><i class="fas fa-calendar-check"></i></span>
                 Kunjungan
             </a>
+            <a href="{{ route('admin.kegiatan.index') }}" class="nav-link {{ request()->routeIs('admin.kegiatan.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-list-check"></i></span>
+                Program
+            </a>
+            <a href="{{ route('admin.struktur.index') }}" class="nav-link {{ request()->routeIs('admin.struktur.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-sitemap"></i></span>
+                Struktur Organisasi
+            </a>
+            <a href="{{ route('admin.galeri.index') }}" class="nav-link {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-images"></i></span>
+                Galeri Foto
+            </a>
+            <a href="{{ route('admin.dokumentasi-video.index') }}" class="nav-link {{ request()->routeIs('admin.dokumentasi-video.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-video"></i></span>
+                Dokumentasi Video
+            </a>
         </div>
+        @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
+        <div class="nav-section">
+            <div class="nav-section-title">Pengaturan</div>
+            <a href="{{ route('admin.admins.index') }}" class="nav-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-users-cog"></i></span>
+                Manajemen Admin
+            </a>
+        </div>
+        @endif
         <div class="nav-section">
             <div class="nav-section-title">Link</div>
             <a href="{{ url('/') }}" target="_blank" class="nav-link">
@@ -184,8 +213,14 @@
         <div class="user-info">
             <div class="user-avatar"><i class="fas fa-user"></i></div>
             <div class="user-details">
-                <strong>{{ session('admin_email', config('admin.name', 'Administrator')) }}</strong>
-                <span>Administrator</span>
+                <strong>{{ Auth::guard('admin')->user()?->name ?? 'Administrator' }}</strong>
+                <span>
+                    @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
+                        <i class="fas fa-crown" style="font-size:10px;margin-right:2px;color:gold"></i>Super Admin
+                    @else
+                        Admin
+                    @endif
+                </span>
             </div>
         </div>
         <form method="POST" action="{{ route('admin.logout') }}">

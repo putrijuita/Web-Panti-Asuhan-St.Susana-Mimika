@@ -82,7 +82,7 @@
     font-size: 1.25rem; flex-shrink: 0;
 }
 .impact-item h4 { font-weight: 700; font-size: 0.88rem; color: var(--teks-gelap); margin-bottom: 0.15rem; }
-.impact-item p  { font-size: 0.8rem; color: #64748B; }
+.impact-item p  { font-size: 0.9rem; color: var(--teks-gelap); margin: 0; line-height: 1.4; }
 
 .trust-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
 .trust-badge {
@@ -187,22 +187,10 @@
     <div>
         <div class="info-card">
             <h3><i class="fas fa-heart" style="color:#DC2626;"></i> Dampak Nyata Donasi Anda</h3>
-            <div class="impact-item"><div class="impact-icon" style="background:#FEE2E2;">🍽️</div><div><h4>Rp 50.000</h4><p>Makan bergizi 1 anak selama 3 hari</p></div></div>
-            <div class="impact-item"><div class="impact-icon" style="background:#DBEAFE;">📚</div><div><h4>Rp 150.000</h4><p>Paket buku pelajaran 1 anak</p></div></div>
-            <div class="impact-item"><div class="impact-icon" style="background:#D1FAE5;">👕</div><div><h4>Rp 250.000</h4><p>Seragam sekolah lengkap 1 anak</p></div></div>
-            <div class="impact-item"><div class="impact-icon" style="background:#EDE9FE;">💊</div><div><h4>Rp 500.000</h4><p>Biaya kesehatan 1 anak selama sebulan</p></div></div>
-            <div class="impact-item"><div class="impact-icon" style="background:#FEF3C7;">🎒</div><div><h4>Rp 1.000.000</h4><p>Biaya sekolah + perlengkapan 1 semester</p></div></div>
-        </div>
-        <div class="info-card">
-            <h3><i class="fas fa-shield-halved" style="color:var(--biru-tua);"></i> Jaminan Transparansi</h3>
-            <div class="trust-badges">
-                <span class="trust-badge"><i class="fas fa-check"></i> Dana Terkelola</span>
-                <span class="trust-badge"><i class="fas fa-check"></i> Laporan Berkala</span>
-                <span class="trust-badge"><i class="fas fa-check"></i> Terpercaya</span>
-            </div>
-            <p style="color: #64748B; font-size: 0.88rem; line-height: 1.6;">
-                Setiap donasi dicatat dan dikelola secara transparan. Laporan penggunaan dana tersedia dan kami siap memberikan konfirmasi kepada setiap donatur.
-            </p>
+            <div class="impact-item"><div class="impact-icon" style="background:#FEE2E2;">🍽️</div><div><p>Makan bergizi anak</p></div></div>
+            <div class="impact-item"><div class="impact-icon" style="background:#DBEAFE;">📚</div><div><p>Buku dan alat tulis</p></div></div>
+            <div class="impact-item"><div class="impact-icon" style="background:#D1FAE5;">👕</div><div><p>Pakaian sekolah</p></div></div>
+            <div class="impact-item"><div class="impact-icon" style="background:#EDE9FE;">💊</div><div><p>Biaya kesehatan anak</p></div></div>
         </div>
         <div class="info-card" style="background: linear-gradient(135deg, #FFF7ED, #FFEDD5); border: 1px solid #FED7AA;">
             <h3><i class="fas fa-quote-left" style="color:#f97316;"></i> Pesan dari Panti</h3>
@@ -210,10 +198,6 @@
                 "Donasi Anda bukan sekadar angka — ia adalah senyum di pagi hari, buku yang dibuka dengan semangat, dan mimpi yang berani diperjuangkan."
             </p>
             <p style="color: #B45309; font-weight: 600; font-size: 0.85rem; margin-top: 0.75rem;">— Panti Asuhan Santa Susana</p>
-        </div>
-        <div class="info-card" style="text-align:center; background: #F8FAFC; border: 1px dashed #CBD5E1;">
-            <p style="font-size: 0.9rem; color:#64748B; margin-bottom: 0.75rem;">Ingin donasi dalam bentuk barang atau jasa?</p>
-            <a href="{{ route('donasi.jasa') }}" class="btn btn-outline">🤲 Lihat Donasi Jasa</a>
         </div>
     </div>
 

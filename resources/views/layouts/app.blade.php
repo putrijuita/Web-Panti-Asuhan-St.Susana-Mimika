@@ -412,7 +412,7 @@
             <div class="nav-links" id="navLinks">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
                 <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">Tentang</a>
-                <a href="{{ route('program') }}" class="{{ request()->routeIs('program') ? 'active' : '' }}">Program</a>
+                <a href="{{ route('program') }}" class="{{ request()->routeIs('program') ? 'active' : '' }}">Kegiatan</a>
                 <a href="{{ route('galeri') }}" class="{{ request()->routeIs('galeri') ? 'active' : '' }}">Galeri</a>
                 <a href="{{ route('donasi.index') }}" class="{{ request()->routeIs('donasi.*') ? 'active' : '' }} nav-cta">Donasi</a>
                 <a href="{{ route('kunjungan.create') }}" class="{{ request()->routeIs('kunjungan.*') ? 'active' : '' }}">Kunjungan</a>
@@ -450,7 +450,6 @@
                     </p>
                     <div class="footer-sosmed">
                         <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://wa.me/6282198595245" target="_blank" rel="noopener" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                         <a href="tel:082198595245" title="Telepon"><i class="fas fa-phone"></i></a>
                     </div>
                 </div>
@@ -459,7 +458,7 @@
                     <ul>
                         <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right fa-xs"></i> Beranda</a></li>
                         <li><a href="{{ route('tentang') }}"><i class="fas fa-chevron-right fa-xs"></i> Tentang Kami</a></li>
-                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> Program</a></li>
+                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> Kegiatan</a></li>
                         <li><a href="{{ route('galeri') }}"><i class="fas fa-chevron-right fa-xs"></i> Galeri</a></li>
                         <li><a href="{{ route('donasi.index') }}"><i class="fas fa-chevron-right fa-xs"></i> Donasi</a></li>
                         <li><a href="{{ route('kunjungan.create') }}"><i class="fas fa-chevron-right fa-xs"></i> Kunjungan</a></li>
@@ -467,12 +466,11 @@
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Program</h4>
+                    <h4>Kegiatan</h4>
                     <ul>
-                        <li><a href="{{ route('program') }}#pendidikan"><i class="fas fa-chevron-right fa-xs"></i> Beasiswa Pendidikan</a></li>
-                        <li><a href="{{ route('program') }}#kesehatan"><i class="fas fa-chevron-right fa-xs"></i> Kesehatan Anak</a></li>
-                        <li><a href="{{ route('program') }}#ketrampilan"><i class="fas fa-chevron-right fa-xs"></i> Pelatihan Keterampilan</a></li>
-                        <li><a href="{{ route('program') }}#rohani"><i class="fas fa-chevron-right fa-xs"></i> Pembinaan Rohani</a></li>
+                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> Kegiatan Rutin Kami</a></li>
+                        <li><a href="{{ route('program.unggulan') }}"><i class="fas fa-chevron-right fa-xs"></i> Program Unggulan</a></li>
+                        <li><a href="{{ route('program.lainnya') }}"><i class="fas fa-chevron-right fa-xs"></i> Program Lainnya</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -481,12 +479,6 @@
                         <div class="footer-contact-icon"><i class="fas fa-phone fa-sm"></i></div>
                         <div class="footer-contact-text">
                             <a href="tel:082198595245">0821-9859-5245</a>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fab fa-whatsapp fa-sm"></i></div>
-                        <div class="footer-contact-text">
-                            <a href="https://wa.me/6282198595245" target="_blank">Chat WhatsApp</a>
                         </div>
                     </div>
                     <div class="footer-contact-item">

@@ -73,10 +73,29 @@
                 <div style="text-align:center;margin-bottom:20px;">
                     <span class="badge {{ $kClass }}" style="font-size:14px;padding:6px 16px;">{{ ucfirst($kunjungan->status) }}</span>
                 </div>
-                <form method="POST" action="{{ route('admin.kunjungan.status', $kunjungan) }}">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="form-label" style="margin-bottom:8px;">Aksi Cepat</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <form method="POST" action="{{ route('admin.kunjungan.status', $kunjungan) }}" style="flex:1;min-width:100px;">
+                            @csrf
+                            <input type="hidden" name="status" value="approved">
+                            <button type="submit" class="btn btn-success" style="width:100%;">
+                                <i class="fas fa-check"></i> Terima
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.kunjungan.status', $kunjungan) }}" style="flex:1;min-width:100px;">
+                            @csrf
+                            <input type="hidden" name="status" value="rejected">
+                            <button type="submit" class="btn btn-danger" style="width:100%;">
+                                <i class="fas fa-times"></i> Tolak
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('admin.kunjungan.status', $kunjungan) }}" style="margin-bottom:14px;">
                     @csrf
                     <div class="form-group">
-                        <label class="form-label">Ubah Status</label>
+                        <label class="form-label">Ubah Status Manual</label>
                         <select name="status" class="form-control">
                             <option value="pending" {{ $kunjungan->status=='pending'?'selected':'' }}>Pending</option>
                             <option value="approved" {{ $kunjungan->status=='approved'?'selected':'' }}>Disetujui</option>
@@ -88,7 +107,13 @@
                         <i class="fas fa-save"></i> Simpan Status
                     </button>
                 </form>
-                <hr style="border:none;border-top:1px solid #f1f5f9;margin:16px 0;">
+                <form method="POST" action="{{ route('admin.kunjungan.email', $kunjungan) }}" style="margin-bottom:14px;" onsubmit="return confirm('Kirim email informasi kunjungan ke pemohon?');">
+                    @csrf
+                    <button type="submit" class="btn btn-secondary" style="width:100%;">
+                        <i class="fas fa-envelope"></i> Kirim Email ke Pemohon
+                    </button>
+                </form>
+                <hr style="border:none;border-top:1px solid #f1f5f9;margin:12px 0 16px;">
                 <form method="POST" action="{{ route('admin.kunjungan.destroy', $kunjungan) }}" onsubmit="return confirm('Hapus data ini secara permanen?')">
                     @csrf
                     @method('DELETE')

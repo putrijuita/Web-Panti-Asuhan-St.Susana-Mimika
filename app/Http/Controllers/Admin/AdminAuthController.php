@@ -4,15 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AdminAuthController extends Controller
 {
     public function showLoginForm()
     {
-        if (session()->has('admin_authenticated')) {
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
+
         return view('admin.auth.login');
     }
 
@@ -23,32 +25,23 @@ class AdminAuthController extends Controller
             'password' => 'required',
         ]);
 
-        $email = config('admin.email');
-        $password = config('admin.password');
-
-        if ($request->email !== $email || $request->password !== $password) {
+        if (! Auth::guard('admin')->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => ['Email atau password salah.'],
             ]);
         }
 
-        session([
-            'admin_authenticated' => true,
-            'admin_email' => $email,
-        ]);
-
-        if ($request->boolean('remember')) {
-            session()->put('admin_remember', true);
-        }
+        $request->session()->regenerate();
 
         return redirect()->intended(route('admin.dashboard'));
     }
 
     public function logout(Request $request)
     {
-        session()->forget(['admin_authenticated', 'admin_email', 'admin_remember']);
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('admin.login');
     }
 }

@@ -217,10 +217,78 @@
 .compare-table .yes { color: #059669; font-size: 1.1rem; }
 .compare-table .no  { color: #DC2626; font-size: 1.1rem; }
 
+/* ── Transparansi Donasi ── */
+.transparansi-section { margin-bottom: 3rem; }
+.transparansi-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 30px rgba(46,134,171,0.08);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.transparansi-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--biru-gelap);
+    padding: 1.25rem 1.5rem;
+    margin: 0;
+    border-bottom: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.transparansi-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.transparansi-table th {
+    text-align: left;
+    padding: 0.85rem 1.5rem;
+    background: #F8FAFC;
+    color: #64748B;
+    font-weight: 700;
+}
+.transparansi-table td {
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid #F1F5F9;
+    color: #475569;
+}
+.transparansi-table tr:last-child td { border-bottom: none; }
+.transparansi-table .nominal { font-weight: 700; color: #DC2626; }
+.download-card {
+    background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+    border: 1px solid #BBF7D0;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.download-card p { margin: 0; color: #166534; font-weight: 600; font-size: 1rem; }
+.download-card a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: #059669;
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.download-card a:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(5,150,105,0.35); color: white; }
+
 @media (max-width: 700px) {
     .split-grid { grid-template-columns: 1fr; }
     .split-card-top { min-height: 200px; padding: 2.5rem 2rem 2rem; }
     .compare-table { display: none; }
+    .transparansi-table { font-size: 0.8rem; }
+    .transparansi-table th, .transparansi-table td { padding: 0.6rem 0.75rem; }
 }
 </style>
 @endpush
@@ -310,81 +378,45 @@
     </a>
 </div>
 
-<!-- Info Strip -->
-<div class="info-strip">
-    <div class="info-strip-item" style="border-top-color: #DC2626;">
-        <div class="icon">🍽️</div>
-        <h4>Rp 50.000</h4>
-        <p>Makan 1 anak selama 3 hari</p>
+<!-- Transparansi Donasi -->
+<section class="transparansi-section">
+    <div class="transparansi-card">
+        <h3><i class="fas fa-list-alt" style="color:#DC2626;"></i> Transparansi Donasi</h3>
+        <div style="overflow-x: auto;">
+            <table class="transparansi-table">
+                <thead>
+                    <tr>
+                        <th>Nama Donatur</th>
+                        <th>Email</th>
+                        <th>Nominal Donasi</th>
+                        <th>Tanggal / Waktu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($donasiList as $d)
+                    <tr>
+                        <td>{{ $d->nama }}</td>
+                        <td>{{ $d->email }}</td>
+                        <td class="nominal">Rp {{ number_format($d->nominal, 0, ',', '.') }}</td>
+                        <td>{{ $d->updated_at->format('d/m/Y H:i') }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: #94A3B8;">Belum ada data donasi yang tercatat.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="info-strip-item" style="border-top-color: #3B82F6;">
-        <div class="icon">📚</div>
-        <h4>Rp 150.000</h4>
-        <p>Paket buku pelajaran 1 anak</p>
+    <div class="download-card">
+        <p><i class="fas fa-file-pdf"></i> Unduh laporan donasi keuangan (data selesai dibayar)</p>
+        <a href="{{ route('donasi.laporan') }}"><i class="fas fa-download"></i> Download Laporan Donasi (PDF)</a>
     </div>
-    <div class="info-strip-item" style="border-top-color: #8B5CF6;">
-        <div class="icon">👩‍🏫</div>
-        <h4>1 Hari Mengajar</h4>
-        <p>Ilmu yang dibagi = bekal seumur hidup</p>
+    <div class="download-card" style="margin-top:1rem;">
+        <p><i class="fas fa-file-pdf"></i> Unduh laporan pengeluaran donasi (pengelolaan donasi)</p>
+        <a href="{{ route('donasi.laporan-pengeluaran') }}"><i class="fas fa-download"></i> Download Laporan Pengeluaran Donasi (PDF)</a>
     </div>
-    <div class="info-strip-item" style="border-top-color: #F59E0B;">
-        <div class="icon">🏥</div>
-        <h4>1 Kali Periksa</h4>
-        <p>Layanan medis gratis untuk 5–10 anak</p>
-    </div>
-</div>
+</section>
 
-<div class="divider-or">Perbandingan Kedua Jenis Donasi</div>
-
-<!-- Comparison Table -->
-<div style="overflow-x: auto; margin-bottom: 3rem;">
-    <table class="compare-table">
-        <thead>
-            <tr>
-                <th>Aspek</th>
-                <th>💰 Donasi Keuangan</th>
-                <th>🤲 Donasi Jasa</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Apa yang Anda berikan</td>
-                <td>Dana / uang</td>
-                <td>Waktu &amp; keahlian</td>
-            </tr>
-            <tr>
-                <td>Cara berdonasi</td>
-                <td>Transfer / tunai</td>
-                <td>Datang langsung / online</td>
-            </tr>
-            <tr>
-                <td>Waktu fleksibel</td>
-                <td><span class="yes">✔</span></td>
-                <td><span class="yes">✔</span></td>
-            </tr>
-            <tr>
-                <td>Dampak langsung</td>
-                <td><span class="yes">✔</span></td>
-                <td><span class="yes">✔</span></td>
-            </tr>
-            <tr>
-                <td>Perlu keahlian khusus</td>
-                <td><span class="no">✗</span> Tidak perlu</td>
-                <td><span class="yes">✔</span> Sesuai bidang</td>
-            </tr>
-            <tr>
-                <td>Laporan / feedback</td>
-                <td><span class="yes">✔</span></td>
-                <td><span class="yes">✔</span></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- CTA Bottom -->
-<div style="text-align: center; background: linear-gradient(135deg, var(--biru-gelap), var(--biru-tua)); border-radius: 24px; padding: 3rem 2rem; color: white;">
-    <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Tidak Yakin Pilih yang Mana?</h2>
-    <p style="opacity: 0.9; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">Hubungi kami — tim kami siap membantu Anda menemukan cara terbaik untuk berkontribusi.</p>
-    <a href="{{ route('kontak') }}" class="btn btn-white">📞 Hubungi Kami</a>
-</div>
 @endsection

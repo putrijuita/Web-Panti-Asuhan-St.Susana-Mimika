@@ -72,16 +72,39 @@
 }
 .gallery-thumb .overlay {
     position: absolute; inset: 0;
-    background: rgba(0,0,0,0);
-    transition: background 0.3s;
-    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(15,23,42,0.2), transparent);
+    transition: opacity 0.25s;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
     color: white;
-    font-size: 1.5rem;
     opacity: 0;
+    padding: 1.2rem;
 }
 .gallery-item:hover .overlay {
-    background: rgba(0,0,0,0.35);
     opacity: 1;
+}
+.gallery-overlay-content {
+    max-width: 100%;
+}
+.gallery-overlay-tag {
+    display: inline-block;
+    padding: 0.15rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(59,130,246,0.95);
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+.gallery-overlay-title {
+    font-weight: 700;
+    font-size: 0.98rem;
+    margin: 0 0 0.1rem;
+}
+.gallery-overlay-desc {
+    font-size: 0.78rem;
+    opacity: 0.9;
+    margin: 0;
 }
 .gallery-info { padding: 1.25rem 1.5rem; }
 .gallery-info h4 { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.3rem; }
@@ -192,156 +215,95 @@
 <!-- Filter -->
 <div class="filter-bar">
     <button class="filter-btn active" onclick="filterGallery('semua', this)">Semua</button>
-    <button class="filter-btn" onclick="filterGallery('kegiatan', this)">Kegiatan Harian</button>
-    <button class="filter-btn" onclick="filterGallery('pendidikan', this)">Pendidikan</button>
-    <button class="filter-btn" onclick="filterGallery('rohani', this)">Rohani</button>
-    <button class="filter-btn" onclick="filterGallery('sosial', this)">Sosial</button>
-    <button class="filter-btn" onclick="filterGallery('seni', this)">Seni & Budaya</button>
+    @if(isset($categories) && $categories->count())
+        @foreach($categories as $category)
+            <button
+                class="filter-btn"
+                onclick="filterGallery('cat-{{ $category->id }}', this)"
+            >
+                {{ $category->nama }}
+            </button>
+        @endforeach
+    @endif
 </div>
 
-<!-- Mosaic Gallery -->
-<div style="margin-bottom: 1rem;">
-    <div class="section-label"><i class="fas fa-images"></i> Pilihan Foto</div>
-    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Momen Berharga Bersama</h2>
-</div>
+@if($items->isNotEmpty())
+    <!-- Grid Gallery dari database -->
+    <div style="margin-bottom: 1rem;">
+        <div class="section-label"><i class="fas fa-th"></i> Album Kegiatan</div>
+        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Foto Kegiatan di Panti</h2>
+    </div>
 
-<div class="gallery-mosaic" id="galleryContainer">
-    <div class="mosaic-item wide" data-cat="kegiatan">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #dbeafe, #93c5fd); min-height: 220px;">🏃</div>
-        <div class="mosaic-label">Olahraga Pagi Bersama</div>
+    <div class="gallery-grid" id="albumContainer">
+        @foreach($items as $foto)
+            <div
+                class="gallery-item"
+                data-cat="{{ $foto->kategori ? 'cat-'.$foto->kategori->id : 'semua' }}"
+            >
+                <div class="gallery-thumb">
+                    @if($foto->gambar)
+                        <img src="{{ asset('storage/'.$foto->gambar) }}" alt="{{ $foto->nama }}" style="width:100%;height:100%;object-fit:cover;">
+                    @else
+                        📸
+                    @endif
+                    <div class="overlay">
+                        <div class="gallery-overlay-content">
+                            <span class="gallery-overlay-tag">Kegiatan</span>
+                            <h4 class="gallery-overlay-title">{{ $foto->nama }}</h4>
+                            <p class="gallery-overlay-desc">
+                                {{ $foto->keterangan ?: 'Dokumentasi kegiatan di Panti Asuhan Santa Susana.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
     </div>
-    <div class="mosaic-item tall" data-cat="pendidikan">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #d1fae5, #6ee7b7);">📖</div>
-        <div class="mosaic-label">Waktu Belajar Mandiri</div>
+@else
+    <div style="margin-bottom: 3rem;">
+        <div class="section-label"><i class="fas fa-th"></i> Album Kegiatan</div>
+        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.75rem;">Belum Ada Foto Galeri</h2>
+        <p style="color:#64748B;font-size:0.95rem;">Tim kami akan segera menambahkan foto-foto kegiatan anak-anak di panti.</p>
     </div>
-    <div class="mosaic-item" data-cat="rohani">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #fef3c7, #fcd34d);">🙏</div>
-        <div class="mosaic-label">Ibadah & Doa Bersama</div>
-    </div>
-    <div class="mosaic-item" data-cat="seni">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #ede9fe, #c4b5fd);">🎵</div>
-        <div class="mosaic-label">Latihan Paduan Suara</div>
-    </div>
-    <div class="mosaic-item" data-cat="sosial">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #fee2e2, #fca5a5);">🤝</div>
-        <div class="mosaic-label">Kunjungan Donatur</div>
-    </div>
-    <div class="mosaic-item wide" data-cat="kegiatan">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #e0f2fe, #7dd3fc); min-height: 200px;">🍽️</div>
-        <div class="mosaic-label">Makan Bersama yang Penuh Kasih</div>
-    </div>
-    <div class="mosaic-item" data-cat="pendidikan">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #dcfce7, #86efac);">💻</div>
-        <div class="mosaic-label">Pelatihan Komputer</div>
-    </div>
-    <div class="mosaic-item" data-cat="seni">
-        <div class="mosaic-thumb" style="background: linear-gradient(135deg, #fdf2f8, #f0abfc);">🎨</div>
-        <div class="mosaic-label">Workshop Seni & Kreasi</div>
-    </div>
-</div>
-
-<!-- Grid Gallery -->
-<div style="margin-bottom: 1rem;">
-    <div class="section-label"><i class="fas fa-th"></i> Album Kegiatan</div>
-    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Kegiatan Rutin Kami</h2>
-</div>
-
-<div class="gallery-grid" id="albumContainer">
-    <div class="gallery-item" data-cat="kegiatan">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #EFF6FF, #BFDBFE);">
-            🌅<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#DBEAFE; color:#1D4ED8;">Kegiatan</span>
-            <h4>Aktivitas Pagi</h4>
-            <p>Rutinitas pagi yang menyehatkan dan penuh semangat</p>
-        </div>
-    </div>
-    <div class="gallery-item" data-cat="pendidikan">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #F0FDF4, #BBF7D0);">
-            🎒<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#DCFCE7; color:#166534;">Pendidikan</span>
-            <h4>Berangkat Sekolah</h4>
-            <p>Anak-anak berangkat sekolah penuh semangat</p>
-        </div>
-    </div>
-    <div class="gallery-item" data-cat="rohani">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #FFFBEB, #FDE68A);">
-            ✝️<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#FEF3C7; color:#92400E;">Rohani</span>
-            <h4>Misa & Doa Bersama</h4>
-            <p>Kegiatan rohani yang membangun iman anak-anak</p>
-        </div>
-    </div>
-    <div class="gallery-item" data-cat="sosial">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #FFF1F2, #FECDD3);">
-            🎁<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#FEE2E2; color:#991B1B;">Sosial</span>
-            <h4>Penerimaan Donasi</h4>
-            <p>Momen bahagia saat menerima bantuan dari donatur</p>
-        </div>
-    </div>
-    <div class="gallery-item" data-cat="seni">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #F5F3FF, #DDD6FE);">
-            🎭<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#EDE9FE; color:#5B21B6;">Seni</span>
-            <h4>Pentas Seni</h4>
-            <p>Anak-anak tampil berbakat di pentas seni tahunan</p>
-        </div>
-    </div>
-    <div class="gallery-item" data-cat="kegiatan">
-        <div class="gallery-thumb" style="background: linear-gradient(135deg, #E0F2FE, #BAE6FD);">
-            🧹<div class="overlay"><i class="fas fa-expand"></i></div>
-        </div>
-        <div class="gallery-info">
-            <span class="gallery-tag" style="background:#E0F2FE; color:#075985;">Kegiatan</span>
-            <h4>Kerja Bakti Panti</h4>
-            <p>Bersama menjaga kebersihan dan kerapian panti</p>
-        </div>
-    </div>
-</div>
+@endif
 
 <!-- Video Section -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-video"></i> Video</div>
-    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Dokumentasi Video</h2>
-    <div class="video-grid">
-        <div class="video-card">
-            <div class="video-thumb" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
-                🎬<div class="play-btn"><i class="fas fa-play"></i></div>
-            </div>
-            <div class="video-info">
-                <h4>Profil Panti Asuhan Santa Susana</h4>
-                <span><i class="fas fa-clock"></i> Dokumentasi Kegiatan</span>
-            </div>
+    <div class="section-label"><i class="fas fa-photo-film"></i> Dokumentasi</div>
+    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Dokumentasi Video & Foto</h2>
+    @if(isset($videos) && $videos->count())
+        <div class="video-grid">
+            @foreach($videos as $video)
+                @php
+                    $fileUrl = asset('storage/'.$video->file_path);
+                    $isVideo = \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4','.mov','.avi','.mkv','.webm']);
+                @endphp
+                <div class="video-card">
+                    @if($isVideo)
+                        <video src="{{ $fileUrl }}"
+                               style="width:100%;height:auto;display:block;"
+                               controls
+                               preload="metadata">
+                        </video>
+                    @else
+                        <img src="{{ $fileUrl }}"
+                             alt="{{ $video->nama }}"
+                             style="width:100%;height:auto;display:block;object-fit:cover;">
+                    @endif
+                    <div class="video-info">
+                        <h4>{{ $video->nama }}</h4>
+                        @if($video->keterangan)
+                            <span>{{ $video->keterangan }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
         </div>
-        <div class="video-card">
-            <div class="video-thumb" style="background: linear-gradient(135deg, #065f46, #10b981);">
-                📽️<div class="play-btn"><i class="fas fa-play"></i></div>
-            </div>
-            <div class="video-info">
-                <h4>Kisah Inspirasi Anak Panti</h4>
-                <span><i class="fas fa-clock"></i> Cerita & Kesaksian</span>
-            </div>
-        </div>
-        <div class="video-card">
-            <div class="video-thumb" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
-                🎥<div class="play-btn"><i class="fas fa-play"></i></div>
-            </div>
-            <div class="video-info">
-                <h4>Kegiatan Pentas Seni Tahunan</h4>
-                <span><i class="fas fa-clock"></i> Seni & Budaya</span>
-            </div>
-        </div>
-    </div>
+    @else
+        <p style="color:#64748B;font-size:0.95rem;">
+            Belum ada dokumentasi video yang ditambahkan. Nantikan update dokumentasi kegiatan terbaru kami.
+        </p>
+    @endif
 </div>
 
 <!-- CTA -->
@@ -362,7 +324,10 @@ function filterGallery(cat, btn) {
     btn.classList.add('active');
 
     ['galleryContainer', 'albumContainer'].forEach(id => {
-        document.getElementById(id).querySelectorAll('[data-cat]').forEach(item => {
+        const container = document.getElementById(id);
+        if (!container) return;
+
+        container.querySelectorAll('[data-cat]').forEach(item => {
             if (cat === 'semua' || item.dataset.cat === cat) {
                 item.style.display = '';
             } else {

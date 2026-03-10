@@ -2,23 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StrukturOrganisasi;
+use App\Models\Kegiatan;
+use App\Models\KegiatanCategory;
+use App\Models\VideoDokumentasi;
+use App\Models\Galeri;
+use App\Models\GaleriCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class PageController extends Controller
 {
     public function tentang()
     {
-        return view('pages.tentang');
+        $pengurus = StrukturOrganisasi::orderBy('urutan')
+            ->orderBy('created_at')
+            ->get();
+
+        return view('pages.tentang', compact('pengurus'));
     }
 
     public function program()
     {
-        return view('pages.program');
+        $all = Kegiatan::with('kategori')->latest()->get();
+
+        $unggulanCategory = KegiatanCategory::where('nama', 'Program Unggulan')->first();
+
+        $unggulKegiatan = $unggulanCategory
+            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->values()
+            : collect();
+
+        $rutinKegiatan = $unggulanCategory
+            ? $all->where('kegiatan_category_id', '!=', $unggulanCategory->id)
+                ->merge($all->whereNull('kegiatan_category_id'))
+                ->values()
+            : $all;
+
+        return view('pages.program', [
+            'rutinKegiatan' => $rutinKegiatan,
+            'unggulKegiatan' => $unggulKegiatan,
+        ]);
+    }
+
+    public function programUnggulan()
+    {
+        $category = KegiatanCategory::where('nama', 'Program Unggulan')->first();
+        $programs = $category ? $category->kegiatans()->latest()->get() : collect();
+
+        return view('pages.program-unggulan', compact('programs'));
+    }
+
+    public function programLainnya()
+    {
+        $category = KegiatanCategory::where('nama', 'Program Lainnya')->first();
+        $programs = $category ? $category->kegiatans()->latest()->get() : collect();
+
+        return view('pages.program-lainnya', compact('programs'));
     }
 
     public function galeri()
     {
-        return view('pages.galeri');
+        $items = Galeri::latest()->get();
+        $videos = VideoDokumentasi::latest()->get();
+        $categories = collect();
+        if (Schema::hasTable('galeri_categories')) {
+            $categories = GaleriCategory::orderBy('nama')->get();
+        }
+
+        return view('pages.galeri', compact('items', 'videos', 'categories'));
     }
 
     public function kontak()

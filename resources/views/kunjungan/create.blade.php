@@ -22,6 +22,44 @@
 .kunjungan-hero h1 { font-size: clamp(2rem,5vw,2.8rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
 .kunjungan-hero p  { font-size: 1.05rem; opacity: 0.9; max-width: 580px; margin: 0 auto; line-height: 1.7; position: relative; }
 
+/* Penjelasan tujuan halaman */
+.page-explanation {
+    background: #E0F2FE;
+    border: 1px solid #BAE6FD;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+}
+.page-explanation h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0369A1;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.page-explanation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.page-explanation li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    color: #0C4A6E;
+    line-height: 1.5;
+}
+.page-explanation li:last-child { margin-bottom: 0; }
+.page-explanation li i {
+    color: #0284C7;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
 .kunjungan-layout {
     display: grid;
     grid-template-columns: 1fr 400px;
@@ -128,6 +166,15 @@
     <p>Kunjungan Anda bukan hanya membawa kebahagiaan, tetapi juga menunjukkan kepada anak-anak bahwa mereka dicintai banyak orang</p>
 </div>
 
+<div class="page-explanation">
+    <h2><i class="fas fa-info-circle"></i> Apa itu Kunjungan?</h2>
+    <ul>
+        <li><i class="fas fa-check"></i> Kunjungan bersifat <strong>fleksibel</strong> dan menyesuaikan dengan <strong>waktu yang dipilih pengunjung</strong>.</li>
+        <li><i class="fas fa-check"></i> Pengunjung <strong>tidak terikat dengan kegiatan tertentu</strong>.</li>
+        <li><i class="fas fa-check"></i> Aktivitas yang dilakukan saat berkunjung <strong>dapat disesuaikan dengan keinginan pengunjung</strong>, selama tetap mengikuti aturan panti.</li>
+    </ul>
+</div>
+
 <div class="kunjungan-layout">
     <!-- Info Kiri -->
     <div>
@@ -165,18 +212,6 @@
             </ul>
         </div>
 
-        <div class="info-card" style="background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 1px solid #BBF7D0;">
-            <h3><i class="fas fa-phone" style="color:#059669;"></i> Perlu Bantuan?</h3>
-            <p style="color: #166534; margin-bottom: 1rem; font-size: 0.9rem;">Hubungi kami langsung untuk informasi lebih lanjut tentang kunjungan.</p>
-            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-                <a href="tel:082198595245" style="display: flex; align-items: center; gap: 0.6rem; color: #065f46; text-decoration: none; font-weight: 600;">
-                    <i class="fas fa-phone"></i> 0821-9859-5245
-                </a>
-                <a href="https://wa.me/6282198595245" target="_blank" style="display: flex; align-items: center; gap: 0.6rem; color: #065f46; text-decoration: none; font-weight: 600;">
-                    <i class="fab fa-whatsapp"></i> Chat WhatsApp
-                </a>
-            </div>
-        </div>
     </div>
 
     <!-- Form Kanan -->

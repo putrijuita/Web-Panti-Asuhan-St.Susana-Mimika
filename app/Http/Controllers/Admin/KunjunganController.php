@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\KunjunganStatusNotification;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class KunjunganController extends Controller
 {
@@ -44,5 +46,21 @@ class KunjunganController extends Controller
     {
         $kunjungan->delete();
         return redirect()->route('admin.kunjungan.index')->with('success', 'Data kunjungan dihapus.');
+    }
+
+    public function sendEmail(Kunjungan $kunjungan)
+    {
+        if (!$kunjungan->email) {
+            return redirect()->back()->with('error', 'Email tidak tersedia untuk permohonan kunjungan ini.');
+        }
+
+        try {
+            Mail::to($kunjungan->email)->send(new KunjunganStatusNotification($kunjungan));
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->back()->with('error', 'Gagal mengirim email ke pemohon. Silakan coba lagi.');
+        }
+
+        return redirect()->back()->with('success', 'Email informasi kunjungan berhasil dikirim ke pemohon.');
     }
 }

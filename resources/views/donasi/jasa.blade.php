@@ -28,6 +28,44 @@
 .jasa-hero h1 { font-size: clamp(1.8rem,4.5vw,2.8rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
 .jasa-hero p  { font-size: 1.05rem; opacity: 0.9; max-width: 560px; margin: 0 auto; line-height: 1.7; position: relative; }
 
+/* Penjelasan tujuan halaman */
+.page-explanation {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+}
+.page-explanation h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.page-explanation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.page-explanation li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    color: #166534;
+    line-height: 1.5;
+}
+.page-explanation li:last-child { margin-bottom: 0; }
+.page-explanation li i {
+    color: #059669;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
 .jasa-layout {
     display: grid;
     grid-template-columns: 1fr 420px;
@@ -137,6 +175,15 @@
     <p>Waktu dan keahlian Anda adalah harta yang sangat berharga. Bagikan keduanya untuk langsung mengubah kehidupan anak-anak kami.</p>
 </div>
 
+<div class="page-explanation">
+    <h2><i class="fas fa-info-circle"></i> Apa itu Donasi Jasa?</h2>
+    <ul>
+        <li><i class="fas fa-check"></i> Donasi jasa merupakan kegiatan kunjungan yang dilakukan secara <strong>rutin dan terjadwal</strong>.</li>
+        <li><i class="fas fa-check"></i> Kegiatan ini memiliki <strong>timeline atau jadwal kegiatan</strong> yang telah dipilih dan disusun oleh panti.</li>
+        <li><i class="fas fa-check"></i> Pengunjung atau relawan yang mendaftar pada halaman ini <strong>mengikuti rangkaian kegiatan</strong> yang telah disusun sebelumnya.</li>
+    </ul>
+</div>
+
 <div class="jasa-layout">
     <!-- Info Kiri -->
     <div>
@@ -183,11 +230,6 @@
                     <i class="fas fa-check-circle"></i> Jaringan relawan yang solid dan penuh inspirasi
                 </li>
             </ul>
-        </div>
-
-        <div class="info-card" style="text-align:center; background: #F8FAFC; border: 1px dashed #CBD5E1;">
-            <p style="font-size: 0.9rem; color:#64748B; margin-bottom: 0.75rem;">Ingin donasi dalam bentuk uang?</p>
-            <a href="{{ route('donasi.keuangan') }}" class="btn btn-outline" style="border-color:#DC2626; color:#DC2626;">💰 Donasi Keuangan</a>
         </div>
     </div>
 
