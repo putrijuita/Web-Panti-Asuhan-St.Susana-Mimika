@@ -123,7 +123,7 @@
 
     <div class="footer">
       <p><strong>🏠 Panti Asuhan Santa Susana Timika</strong></p>
-      <p>Yayasan Peduli Kasih Mimika · Timika, Kab. Mimika, Papua</p>
+      <p>Yayasan Peduli Kasih Mimika · Timika, Kab. Mimika, Papua Tengah</p>
       <p style="margin-top:8px;">
         <a href="https://pantisusana.web.id">pantisusana.web.id</a>
       </p>

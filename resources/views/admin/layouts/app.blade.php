@@ -167,10 +167,6 @@
                 <span class="icon"><i class="fas fa-receipt"></i></span>
                 Pengelolaan Donasi
             </a>
-            <a href="{{ route('admin.jasa.index') }}" class="nav-link {{ request()->routeIs('admin.jasa.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-hands-helping"></i></span>
-                Donasi Jasa
-            </a>
             <a href="{{ route('admin.kunjungan.index') }}" class="nav-link {{ request()->routeIs('admin.kunjungan.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-calendar-check"></i></span>
                 Kunjungan

@@ -179,7 +179,7 @@
 <!-- Hero -->
 <div class="about-hero">
     <h1>Tentang Panti Asuhan Santa Susana</h1>
-    <p>Mengenal lebih dekat perjalanan, visi, dan dedikasi kami dalam melayani anak-anak di Timika, Papua</p>
+    <p>Mengenal lebih dekat perjalanan, visi, dan dedikasi kami dalam melayani anak-anak di Timika, Papua Tengah</p>
 </div>
 
 <!-- Visi & Misi -->
@@ -232,7 +232,7 @@
                 <div class="timeline-dot"></div>
                 <div class="timeline-year">Awal Berdiri</div>
                 <div class="timeline-title">Pendirian Yayasan Peduli Kasih Mimika</div>
-                <div class="timeline-desc">Didirikan atas dasar kepedulian terhadap anak-anak kurang mampu di wilayah Mimika, Papua. Bermula dari sekelompok kecil yang bersatu hati.</div>
+                <div class="timeline-desc">Didirikan atas dasar kepedulian terhadap anak-anak kurang mampu di wilayah Mimika, Papua Tengah. Bermula dari sekelompok kecil yang bersatu hati.</div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-dot"></div>

@@ -307,11 +307,14 @@
     font-weight: 700;
     margin-bottom: 0.6rem;
 }
-.unggul-eyebrow span {
+/* Hanya bullet (span pertama) yang 8x8px; teks di span kedua tampil normal */
+.unggul-eyebrow span:first-child {
     width: 8px;
     height: 8px;
+    min-width: 8px;
     border-radius: 999px;
     background: #1d4ed8;
+    flex-shrink: 0;
 }
 .unggul-body h3 {
     font-size: 1.4rem;
@@ -430,7 +433,7 @@
                     <h3>{{ $item->nama }}</h3>
                     <p>{{ $item->deskripsi ?: 'Belum ada keterangan terperinci, namun program ini menjadi salah satu fokus utama pembinaan anak di Panti.' }}</p>
                     <div class="unggul-meta">
-                        <span class="mini-chip primary">Anak-anak Papua</span>
+                        <span class="mini-chip primary">Anak-anak Papua Tengah</span>
                         <span class="mini-chip success">Program Unggulan</span>
                     </div>
                     @php
@@ -478,7 +481,7 @@
                     <h4>{{ $item->nama }}</h4>
                     <p>{{ $item->deskripsi ?: 'Belum ada keterangan untuk kegiatan ini, namun kegiatan ini berjalan secara rutin di Panti.' }}</p>
                     <div class="mini-meta">
-                        <span class="mini-chip primary">Anak-anak Papua</span>
+                        <span class="mini-chip primary">Anak-anak Papua Tengah</span>
                         <span class="mini-chip success">Program Aktif</span>
                     </div>
                 </div>

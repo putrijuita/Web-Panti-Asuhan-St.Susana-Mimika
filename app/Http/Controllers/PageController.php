@@ -28,8 +28,9 @@ class PageController extends Controller
 
         $unggulanCategory = KegiatanCategory::where('nama', 'Program Unggulan')->first();
 
+        // Satu kartu per program (nama unik) agar tidak tampil duplikat
         $unggulKegiatan = $unggulanCategory
-            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->values()
+            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->unique('nama')->values()
             : collect();
 
         $rutinKegiatan = $unggulanCategory

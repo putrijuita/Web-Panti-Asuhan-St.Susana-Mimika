@@ -11,25 +11,15 @@ use Illuminate\Support\Facades\Storage;
 class KegiatanController extends Controller
 {
     /**
-     * Ambil atau buat kategori default untuk program:
-     * - Program Unggulan
-     * - Program Lainnya
+     * Pastikan kategori default ada: Program Unggulan dan Program Lainnya.
      */
-    protected function getProgramCategories()
+    protected function ensureDefaultCategoriesExist(): void
     {
         $defaultNames = ['Program Unggulan', 'Program Lainnya'];
 
-        $categories = KegiatanCategory::whereIn('nama', $defaultNames)
-            ->get()
-            ->keyBy('nama');
-
         foreach ($defaultNames as $name) {
-            if (! $categories->has($name)) {
-                $categories->put($name, KegiatanCategory::create(['nama' => $name]));
-            }
+            KegiatanCategory::firstOrCreate(['nama' => $name]);
         }
-
-        return $categories->values();
     }
 
     public function index()
@@ -41,7 +31,8 @@ class KegiatanController extends Controller
 
     public function create()
     {
-        $categories = $this->getProgramCategories();
+        $this->ensureDefaultCategoriesExist();
+        $categories = KegiatanCategory::orderBy('nama')->get();
         $kegiatan = Kegiatan::with('kategori')->latest()->paginate(10);
 
         return view('admin.kegiatan.create', [
@@ -56,7 +47,7 @@ class KegiatanController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'waktu_kegiatan' => 'nullable|date',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'deskripsi' => 'nullable|string',
             'kegiatan_category_id' => 'nullable|exists:kegiatan_categories,id',
         ]);
@@ -74,7 +65,8 @@ class KegiatanController extends Controller
 
     public function edit(Kegiatan $kegiatan)
     {
-        $categories = $this->getProgramCategories();
+        $this->ensureDefaultCategoriesExist();
+        $categories = KegiatanCategory::orderBy('nama')->get();
         $list = Kegiatan::with('kategori')->latest()->paginate(10);
 
         return view('admin.kegiatan.create', [
@@ -96,7 +88,7 @@ class KegiatanController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'waktu_kegiatan' => 'nullable|date',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'deskripsi' => 'nullable|string',
             'kegiatan_category_id' => 'nullable|exists:kegiatan_categories,id',
         ]);

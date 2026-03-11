@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DonasiJasa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class JasaController extends Controller
 {
@@ -38,6 +39,27 @@ class JasaController extends Controller
         $request->validate(['status' => 'required|in:pending,approved,rejected,completed']);
         $jasa->update(['status' => $request->status]);
         return redirect()->back()->with('success', 'Status donasi jasa diperbarui.');
+    }
+
+    public function sendResponse(Request $request, DonasiJasa $jasa)
+    {
+        $request->validate(['response' => 'required|string|max:10000']);
+
+        if (! $jasa->email) {
+            return redirect()->back()->with('error', 'Email tidak tersedia untuk donasi jasa ini.');
+        }
+
+        try {
+            Mail::raw($request->response, function ($message) use ($jasa) {
+                $message->to($jasa->email)
+                    ->subject('📬 Respons Donasi Jasa – Panti Asuhan Santa Susana Timika');
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->back()->with('error', 'Gagal mengirim respons ke email terdaftar. Silakan coba lagi.');
+        }
+
+        return redirect()->back()->with('success', 'Respons berhasil dikirim ke email terdaftar.');
     }
 
     public function destroy(DonasiJasa $jasa)
