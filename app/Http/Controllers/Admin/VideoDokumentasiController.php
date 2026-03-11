@@ -9,6 +9,65 @@ use Illuminate\Support\Facades\Storage;
 
 class VideoDokumentasiController extends Controller
 {
+    /**
+     * Stream video/file for playback (supports range requests for seeking).
+     */
+    public function stream(VideoDokumentasi $video)
+    {
+        $path = $video->file_path;
+        if (! $path || ! Storage::disk('public')->exists($path)) {
+            abort(404);
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $mimeMap = [
+            'mp4' => 'video/mp4',
+            'webm' => 'video/webm',
+            'mov' => 'video/quicktime',
+            'avi' => 'video/x-msvideo',
+            'mkv' => 'video/x-matroska',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+        ];
+        $mimeType = $mimeMap[$extension] ?? 'application/octet-stream';
+
+        $filesize = filesize($fullPath);
+        $stream = fopen($fullPath, 'rb');
+
+        $range = request()->header('Range');
+        if ($range) {
+            // Parse "bytes=start-end"
+            if (preg_match('/bytes=(\d+)-(\d*)/', $range, $m)) {
+                $start = (int) $m[1];
+                $end = isset($m[2]) && $m[2] !== '' ? (int) $m[2] : $filesize - 1;
+                $length = $end - $start + 1;
+                fseek($stream, $start);
+
+                return response()->stream(function () use ($stream, $length) {
+                    echo fread($stream, $length);
+                    fclose($stream);
+                }, 206, [
+                    'Content-Type' => $mimeType,
+                    'Content-Length' => $length,
+                    'Content-Range' => sprintf('bytes %d-%d/%d', $start, $end, $filesize),
+                    'Accept-Ranges' => 'bytes',
+                ]);
+            }
+        }
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            fclose($stream);
+        }, 200, [
+            'Content-Type' => $mimeType,
+            'Content-Length' => $filesize,
+            'Accept-Ranges' => 'bytes',
+        ]);
+    }
+
     public function index()
     {
         $videos = VideoDokumentasi::latest()->paginate(10);

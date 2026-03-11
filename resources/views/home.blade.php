@@ -117,7 +117,19 @@
         color: white;
         text-align: center;
     }
-    .about-visual .about-visual-caption h3 {
+    .about-visual .icon-wrap,
+    .about-visual .about-image {
+        margin-bottom: 1rem;
+    }
+    .about-visual .about-image {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .about-visual .about-visual-caption h3,
+    .about-visual h3 {
         font-size: 1.5rem;
         margin: 0 0 0.25rem 0;
         font-weight: 700;
@@ -303,17 +315,17 @@
     </div>
     <div class="card about-card">
         <div class="about-visual">
-            <img src="{{ asset('images/sekretariat-rumah-penuh-kasih.png') }}" alt="Sekretariat Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika" class="about-photo">
+            <img src="{{ asset('images/panti-gedung.png') }}" alt="Panti Asuhan Santa Susana Timika" class="about-image">
             <div class="about-visual-caption">
                 <h3>Rumah Penuh Kasih</h3>
-                <p>Timika, Papua</p>
+                <p>Timika, Papua Tengah</p>
             </div>
         </div>
         <div class="about-content">
             <p>
                 <strong>Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika</strong> adalah 
                 lembaga yang berkomitmen memberikan pendidikan, pengasuhan, dan kasih sayang kepada 
-                anak-anak yang membutuhkan di wilayah Mimika, Papua.
+                anak-anak yang membutuhkan di wilayah Mimika, Papua Tengah.
             </p>
             <p>
                 Kami percaya setiap anak berhak untuk bermimpi, belajar, dan tumbuh dalam lingkungan 
@@ -409,12 +421,21 @@
             </div>
         </div>
         <div style="display: flex; align-items: flex-start; gap: 1rem;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                <i class="fab fa-instagram"></i>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 0.25rem;">Instagram</h4>
+                <a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener" style="color: var(--biru-tua); text-decoration: none;">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a>
+            </div>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
             <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div>
                 <h4 style="margin-bottom: 0.25rem;">Alamat</h4>
-                <p style="margin: 0; color: #64748B;">Timika, Kabupaten Mimika, Papua</p>
+                <p style="margin: 0; color: #64748B;">Timika, Kabupaten Mimika, Papua Tengah</p>
             </div>
         </div>
     </div>

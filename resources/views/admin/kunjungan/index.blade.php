@@ -88,14 +88,23 @@
                         {{ $k->created_at->format('d M Y') }}
                     </td>
                     <td>
-                        <div style="display:flex;gap:6px;">
-                            <a href="{{ route('admin.kunjungan.show', $k) }}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-eye"></i>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <a href="{{ route('admin.kunjungan.show', $k) }}" class="btn btn-secondary btn-sm" title="Lihat">
+                                <i class="fas fa-eye"></i> Lihat
                             </a>
-                            <form method="POST" action="{{ route('admin.kunjungan.destroy', $k) }}" onsubmit="return confirm('Hapus data ini?')">
+                            <form method="POST" action="{{ route('admin.kunjungan.status', $k) }}" style="display:inline;">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn btn-success btn-sm" title="Terima (centang)">
+                                    <i class="fas fa-check"></i> Centang
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.kunjungan.status', $k) }}" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-danger btn-sm" title="Tolak (silang)">
+                                    <i class="fas fa-times"></i> Silang
+                                </button>
                             </form>
                         </div>
                     </td>

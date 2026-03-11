@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DonasiController as AdminDonasiController;
 use App\Http\Controllers\Admin\JasaController as AdminJasaController;
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
+use App\Http\Controllers\Admin\VideoDokumentasiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KunjunganController;
@@ -32,12 +33,14 @@ if ($adminDomain) {
             Route::get('kunjungan', [AdminKunjunganController::class, 'index'])->name('kunjungan.index');
             Route::get('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])->name('kunjungan.show');
             Route::post('kunjungan/{kunjungan}/status', [AdminKunjunganController::class, 'status'])->name('kunjungan.status');
+            Route::post('kunjungan/{kunjungan}/respon', [AdminKunjunganController::class, 'sendRespon'])->name('kunjungan.respon');
             Route::post('kunjungan/{kunjungan}/email', [AdminKunjunganController::class, 'sendEmail'])->name('kunjungan.email');
             Route::delete('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'destroy'])->name('kunjungan.destroy');
 
             Route::get('jasa', [AdminJasaController::class, 'index'])->name('jasa.index');
             Route::get('jasa/{jasa}', [AdminJasaController::class, 'show'])->name('jasa.show');
             Route::post('jasa/{jasa}/status', [AdminJasaController::class, 'status'])->name('jasa.status');
+            Route::post('jasa/{jasa}/send-response', [AdminJasaController::class, 'sendResponse'])->name('jasa.send-response');
             Route::delete('jasa/{jasa}', [AdminJasaController::class, 'destroy'])->name('jasa.destroy');
 
             // Manajemen Kegiatan
@@ -53,6 +56,15 @@ if ($adminDomain) {
             Route::get('kegiatan/kategori/{category}/edit', [AdminKegiatanController::class, 'categoryEdit'])->name('kegiatan.categories.edit');
             Route::put('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryUpdate'])->name('kegiatan.categories.update');
             Route::delete('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryDestroy'])->name('kegiatan.categories.destroy');
+
+            // Dokumentasi Video
+            Route::get('dokumentasi-video', [VideoDokumentasiController::class, 'index'])->name('dokumentasi-video.index');
+            Route::get('dokumentasi-video/{video}/stream', [VideoDokumentasiController::class, 'stream'])->name('dokumentasi-video.stream');
+            Route::get('dokumentasi-video/create', [VideoDokumentasiController::class, 'create'])->name('dokumentasi-video.create');
+            Route::post('dokumentasi-video', [VideoDokumentasiController::class, 'store'])->name('dokumentasi-video.store');
+            Route::get('dokumentasi-video/{video}/edit', [VideoDokumentasiController::class, 'edit'])->name('dokumentasi-video.edit');
+            Route::put('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'update'])->name('dokumentasi-video.update');
+            Route::delete('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'destroy'])->name('dokumentasi-video.destroy');
 
             // Manajemen Admin (hanya super_admin)
             Route::middleware('super_admin')->group(function () {
@@ -111,12 +123,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('kunjungan', [AdminKunjunganController::class, 'index'])->name('kunjungan.index');
         Route::get('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])->name('kunjungan.show');
         Route::post('kunjungan/{kunjungan}/status', [AdminKunjunganController::class, 'status'])->name('kunjungan.status');
+        Route::post('kunjungan/{kunjungan}/respon', [AdminKunjunganController::class, 'sendRespon'])->name('kunjungan.respon');
         Route::post('kunjungan/{kunjungan}/email', [AdminKunjunganController::class, 'sendEmail'])->name('kunjungan.email');
         Route::delete('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'destroy'])->name('kunjungan.destroy');
 
         Route::get('jasa', [AdminJasaController::class, 'index'])->name('jasa.index');
         Route::get('jasa/{jasa}', [AdminJasaController::class, 'show'])->name('jasa.show');
         Route::post('jasa/{jasa}/status', [AdminJasaController::class, 'status'])->name('jasa.status');
+        Route::post('jasa/{jasa}/send-response', [AdminJasaController::class, 'sendResponse'])->name('jasa.send-response');
         Route::delete('jasa/{jasa}', [AdminJasaController::class, 'destroy'])->name('jasa.destroy');
 
         // Manajemen Kegiatan
@@ -132,6 +146,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('kegiatan/kategori/{category}/edit', [AdminKegiatanController::class, 'categoryEdit'])->name('kegiatan.categories.edit');
         Route::put('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryUpdate'])->name('kegiatan.categories.update');
         Route::delete('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryDestroy'])->name('kegiatan.categories.destroy');
+
+        // Dokumentasi Video
+        Route::get('dokumentasi-video', [VideoDokumentasiController::class, 'index'])->name('dokumentasi-video.index');
+        Route::get('dokumentasi-video/{video}/stream', [VideoDokumentasiController::class, 'stream'])->name('dokumentasi-video.stream');
+        Route::get('dokumentasi-video/create', [VideoDokumentasiController::class, 'create'])->name('dokumentasi-video.create');
+        Route::post('dokumentasi-video', [VideoDokumentasiController::class, 'store'])->name('dokumentasi-video.store');
+        Route::get('dokumentasi-video/{video}/edit', [VideoDokumentasiController::class, 'edit'])->name('dokumentasi-video.edit');
+        Route::put('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'update'])->name('dokumentasi-video.update');
+        Route::delete('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'destroy'])->name('dokumentasi-video.destroy');
 
         // Manajemen Admin (hanya super_admin)
         Route::middleware('super_admin')->group(function () {

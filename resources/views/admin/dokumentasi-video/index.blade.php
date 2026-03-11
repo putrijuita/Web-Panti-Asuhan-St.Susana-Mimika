@@ -39,10 +39,17 @@
                         @endphp
                         <tr>
                             <td>
+                                @php
+                                    $ext = $isVideo ? strtolower(pathinfo($video->file_path, PATHINFO_EXTENSION)) : '';
+                                    $mimeMap = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime', 'avi' => 'video/x-msvideo', 'mkv' => 'video/x-matroska'];
+                                    $mimeType = $mimeMap[$ext] ?? 'video/mp4';
+                                    $videoUrl = route('admin.dokumentasi-video.stream', $video);
+                                @endphp
                                 @if($isVideo)
-                                    <video src="{{ $fileUrl }}"
-                                        style="max-width: 200px; border-radius: 8px; border:1px solid #e2e8f0;"
-                                        controls preload="metadata">
+                                    <video controls preload="metadata" playsinline
+                                        style="max-width: 200px; max-height: 160px; border-radius: 8px; border:1px solid #e2e8f0; background:#000;">
+                                        <source src="{{ $videoUrl }}" type="{{ $mimeType }}">
+                                        Browser Anda tidak mendukung pemutaran video.
                                     </video>
                                 @else
                                     <img src="{{ $fileUrl }}"

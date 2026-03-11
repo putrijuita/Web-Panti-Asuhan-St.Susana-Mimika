@@ -40,7 +40,7 @@
                 <label class="form-label">Gambar Program</label>
                 <input type="file" name="gambar" class="form-control" accept="image/*">
                 <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
-                    Unggah gambar untuk kartu program. Format: JPG, JPEG, PNG, WEBP. Maksimal 2MB.
+                    Unggah gambar untuk kartu program. Format: JPG, JPEG, PNG, WEBP. Tanpa batasan ukuran file.
                 </div>
                 @if(isset($editing) && $editing && $editing->gambar)
                     <div style="margin-top:8px;">

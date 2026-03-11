@@ -105,7 +105,7 @@
 }
 .sosmed-btn:hover { transform: translateY(-2px); }
 .sosmed-btn.fb { background: #1877F2; color: white; }
-.sosmed-btn.ig { background: linear-gradient(135deg, #833AB4, #FD1D1D, #F77737); color: white; }
+.sosmed-btn.ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
 .sosmed-btn.wa { background: #25D366; color: white; }
 .sosmed-btn.phone { background: var(--biru-tua); color: white; }
 
@@ -198,12 +198,12 @@
                 </div>
             </div>
             <div class="kontak-item">
-                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #833AB4, #FD1D1D, #F77737);">
+                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
                     <i class="fab fa-instagram"></i>
                 </div>
                 <div class="kontak-item-body">
                     <h4>Instagram</h4>
-                    <p><a href="https://www.instagram.com/yayasanpedulikasihmimika/" target="_blank" rel="noopener noreferrer">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a></p>
+                    <p><a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a></p>
                 </div>
             </div>
             <div class="kontak-item" style="margin-bottom: 0;">
@@ -226,7 +226,7 @@
                 <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener noreferrer" class="sosmed-btn fb" style="grid-column: span 2;">
                     <i class="fab fa-facebook-f"></i> Facebook
                 </a>
-                <a href="https://www.instagram.com/yayasanpedulikasihmimika/" target="_blank" rel="noopener noreferrer" class="sosmed-btn ig" style="grid-column: span 2;">
+                <a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener" class="sosmed-btn ig" style="grid-column: span 2;">
                     <i class="fab fa-instagram"></i> Instagram: Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika
                 </a>
                 <a href="tel:082198595245" class="sosmed-btn phone" style="grid-column: span 2;">

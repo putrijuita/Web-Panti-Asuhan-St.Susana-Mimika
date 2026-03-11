@@ -446,7 +446,7 @@
                     </div>
                     <p class="footer-brand-desc">
                         Yayasan Peduli Kasih Mimika – Panti Asuhan Santa Susana Timika.
-                        Merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih di Timika, Papua.
+                        Merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih di Timika, Papua Tengah.
                     </p>
                     <div class="footer-sosmed">
                         <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -495,14 +495,14 @@
                     </div>
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fas fa-location-dot fa-sm"></i></div>
-                        <div class="footer-contact-text">Timika, Kab. Mimika, Papua</div>
+                        <div class="footer-contact-text">Timika, Kab. Mimika, Papua Tengah</div>
                     </div>
                 </div>
             </div>
             <hr class="footer-divider">
             <div class="footer-bottom">
                 <span>&copy; {{ date('Y') }} Yayasan Peduli Kasih Mimika — Panti Asuhan Santa Susana Timika</span>
-                <span>Dibuat dengan ❤️ untuk anak-anak Papua</span>
+                <span>Dibuat dengan ❤️ untuk anak-anak Papua Tengah</span>
             </div>
         </div>
     </footer>

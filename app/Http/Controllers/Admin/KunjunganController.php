@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\KunjunganResponNotification;
 use App\Mail\KunjunganStatusNotification;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
@@ -62,5 +63,27 @@ class KunjunganController extends Controller
         }
 
         return redirect()->back()->with('success', 'Email informasi kunjungan berhasil dikirim ke pemohon.');
+    }
+
+    public function sendRespon(Request $request, Kunjungan $kunjungan)
+    {
+        $request->validate(['respon' => 'required|string|max:10000']);
+
+        if (!$kunjungan->email) {
+            return redirect()->back()->with('error', 'Email tidak tersedia untuk permohonan kunjungan ini.');
+        }
+
+        try {
+            Mail::to($kunjungan->email)->send(new KunjunganResponNotification($kunjungan, $request->respon));
+        } catch (\Throwable $e) {
+            report($e);
+            $message = 'Gagal mengirim respon ke pemohon. Silakan coba lagi.';
+            if (config('app.debug')) {
+                $message .= ' Detail: ' . $e->getMessage();
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        return redirect()->back()->with('success', 'Respon berhasil dikirim ke email terdaftar.');
     }
 }
