@@ -263,6 +263,12 @@
 .unggul-card:hover .unggul-media img {
     transform: scale(1.08);
 }
+.unggul-card-reverse {
+    direction: rtl;
+}
+.unggul-card-reverse > * {
+    direction: ltr;
+}
 .unggul-media-fallback {
     width: 100%;
     height: 100%;
@@ -297,7 +303,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.22rem 0.9rem;
+    padding: 0.35rem 0.9rem;
     border-radius: 999px;
     background: rgba(59,130,246,0.10);
     color: #1d4ed8;
@@ -305,11 +311,12 @@
     text-transform: uppercase;
     letter-spacing: 0.09em;
     font-weight: 700;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.85rem;
 }
-.unggul-eyebrow span {
+.unggul-eyebrow span:first-child {
     width: 8px;
     height: 8px;
+    flex-shrink: 0;
     border-radius: 999px;
     background: #1d4ed8;
 }
@@ -317,7 +324,8 @@
     font-size: 1.4rem;
     font-weight: 800;
     color: var(--biru-gelap);
-    margin-bottom: 0.6rem;
+    margin: 0 0 0.6rem 0;
+    line-height: 1.3;
 }
 .unggul-body p {
     color: #475569;
@@ -391,6 +399,9 @@
     .unggul-card {
         grid-template-columns: 1fr;
     }
+    .unggul-card-reverse {
+        direction: ltr;
+    }
     .unggul-body {
         padding: 1.8rem 1.6rem 2rem;
     }
@@ -412,8 +423,8 @@
             <p class="section-sub">Program-program inti yang menjadi fokus pengembangan karakter, pendidikan, dan kemandirian anak-anak.</p>
         </div>
 
-        @foreach($unggulKegiatan as $item)
-            <article class="unggul-card">
+        @foreach($unggulKegiatan as $index => $item)
+            <article class="unggul-card {{ $index % 2 === 1 ? 'unggul-card-reverse' : '' }}">
                 <div class="unggul-media">
                     @if($item->gambar)
                         <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}">
@@ -428,7 +439,7 @@
                         <span>Fokus Pengembangan Anak</span>
                     </div>
                     <h3>{{ $item->nama }}</h3>
-                    <p>{{ $item->deskripsi ?: 'Belum ada keterangan terperinci, namun program ini menjadi salah satu fokus utama pembinaan anak di Panti.' }}</p>
+                    <p>{{ $item->deskripsi ?: 'Program fokus pembinaan karakter, pendidikan, dan kemandirian anak di Panti.' }}</p>
                     <div class="unggul-meta">
                         <span class="mini-chip primary">Anak-anak Papua</span>
                         <span class="mini-chip success">Program Unggulan</span>

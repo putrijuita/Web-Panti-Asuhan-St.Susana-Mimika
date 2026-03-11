@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Donasi;
 use App\Models\DonasiJasa;
-use App\Models\DonasiPengeluaran;
 use Illuminate\Http\Request;
 use App\Mail\DonasiKonfirmasi;
 use App\Mail\DonasiNotifikasiAdmin;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\CoreApi;
 use Midtrans\Notification;
@@ -339,40 +338,35 @@ class DonasiController extends Controller
     }
 
     /**
-     * Download laporan donasi keuangan (PDF) — transparansi publik
+     * Download laporan donasi keuangan (CSV) — transparansi publik
      */
-    public function laporanDonasi()
+    public function laporanDonasi(): StreamedResponse
     {
         $donasi = Donasi::where('status', 'completed')
             ->orderByDesc('updated_at')
             ->get();
 
-        $pdf = Pdf::loadView('donasi.laporan-donasi', [
-            'donasi'      => $donasi,
-            'generatedAt' => now(),
-        ])->setPaper('A4', 'portrait');
+        $filename = 'laporan-donasi-' . now()->format('Y-m-d') . '.csv';
 
-        $filename = 'laporan-donasi-' . now()->format('Y-m-d') . '.pdf';
+        return new StreamedResponse(function () use ($donasi) {
+            $handle = fopen('php://output', 'w');
 
-        return $pdf->download($filename);
-    }
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+            fputcsv($handle, ['Nama Donatur', 'Email', 'Nominal Donasi', 'Tanggal / Waktu']);
 
-    /**
-     * Download laporan pengeluaran donasi (PDF) — transparansi pengelolaan donasi
-     */
-    public function laporanPengeluaranDonasi()
-    {
-        $pengeluaran = DonasiPengeluaran::orderByDesc('waktu_pengeluaran')
-            ->orderByDesc('created_at')
-            ->get();
+            foreach ($donasi as $d) {
+                fputcsv($handle, [
+                    $d->nama,
+                    $d->email,
+                    'Rp ' . number_format($d->nominal, 0, ',', '.'),
+                    $d->updated_at->format('d/m/Y H:i'),
+                ]);
+            }
 
-        $pdf = Pdf::loadView('donasi.laporan-pengeluaran', [
-            'pengeluaran' => $pengeluaran,
-            'generatedAt' => now(),
-        ])->setPaper('A4', 'portrait');
-
-        $filename = 'laporan-pengeluaran-donasi-' . now()->format('Y-m-d') . '.pdf';
-
-        return $pdf->download($filename);
+            fclose($handle);
+        }, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }

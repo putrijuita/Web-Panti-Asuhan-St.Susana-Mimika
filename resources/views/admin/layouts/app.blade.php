@@ -163,10 +163,6 @@
                 <span class="icon"><i class="fas fa-hand-holding-heart"></i></span>
                 Donasi Uang
             </a>
-            <a href="{{ route('admin.pengelolaan-donasi.index') }}" class="nav-link {{ request()->routeIs('admin.pengelolaan-donasi.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-receipt"></i></span>
-                Pengelolaan Donasi
-            </a>
             <a href="{{ route('admin.jasa.index') }}" class="nav-link {{ request()->routeIs('admin.jasa.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-hands-helping"></i></span>
                 Donasi Jasa
@@ -177,19 +173,7 @@
             </a>
             <a href="{{ route('admin.kegiatan.index') }}" class="nav-link {{ request()->routeIs('admin.kegiatan.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-list-check"></i></span>
-                Program
-            </a>
-            <a href="{{ route('admin.struktur.index') }}" class="nav-link {{ request()->routeIs('admin.struktur.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-sitemap"></i></span>
-                Struktur Organisasi
-            </a>
-            <a href="{{ route('admin.galeri.index') }}" class="nav-link {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-images"></i></span>
-                Galeri Foto
-            </a>
-            <a href="{{ route('admin.dokumentasi-video.index') }}" class="nav-link {{ request()->routeIs('admin.dokumentasi-video.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-video"></i></span>
-                Dokumentasi Video
+                Manajemen Kegiatan
             </a>
         </div>
         @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())

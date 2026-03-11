@@ -96,18 +96,36 @@
     .about-visual {
         background: linear-gradient(135deg, var(--biru-muda) 0%, var(--biru-tua) 100%);
         border-radius: 24px;
-        padding: 3rem;
-        text-align: center;
+        overflow: hidden;
+        position: relative;
+        min-height: 280px;
+    }
+    .about-visual .about-photo {
+        width: 100%;
+        height: 100%;
+        min-height: 280px;
+        object-fit: cover;
+        display: block;
+    }
+    .about-visual .about-visual-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem 1.5rem 1.25rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
         color: white;
+        text-align: center;
     }
-    .about-visual .icon-wrap {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        opacity: 0.9;
-    }
-    .about-visual h3 {
+    .about-visual .about-visual-caption h3 {
         font-size: 1.5rem;
-        margin-bottom: 0.5rem;
+        margin: 0 0 0.25rem 0;
+        font-weight: 700;
+    }
+    .about-visual .about-visual-caption p {
+        margin: 0;
+        font-size: 0.95rem;
+        opacity: 0.95;
     }
     .about-content p {
         color: #64748B;
@@ -285,9 +303,11 @@
     </div>
     <div class="card about-card">
         <div class="about-visual">
-            <div class="icon-wrap">🏠</div>
-            <h3>Rumah Penuh Kasih</h3>
-            <p>Timika, Papua</p>
+            <img src="{{ asset('images/sekretariat-rumah-penuh-kasih.png') }}" alt="Sekretariat Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika" class="about-photo">
+            <div class="about-visual-caption">
+                <h3>Rumah Penuh Kasih</h3>
+                <p>Timika, Papua</p>
+            </div>
         </div>
         <div class="about-content">
             <p>

@@ -410,12 +410,8 @@
         </div>
     </div>
     <div class="download-card">
-        <p><i class="fas fa-file-pdf"></i> Unduh laporan donasi keuangan (data selesai dibayar)</p>
-        <a href="{{ route('donasi.laporan') }}"><i class="fas fa-download"></i> Download Laporan Donasi (PDF)</a>
-    </div>
-    <div class="download-card" style="margin-top:1rem;">
-        <p><i class="fas fa-file-pdf"></i> Unduh laporan pengeluaran donasi (pengelolaan donasi)</p>
-        <a href="{{ route('donasi.laporan-pengeluaran') }}"><i class="fas fa-download"></i> Download Laporan Pengeluaran Donasi (PDF)</a>
+        <p><i class="fas fa-file-download"></i> Unduh laporan donasi keuangan (data selesai dibayar)</p>
+        <a href="{{ route('donasi.laporan') }}"><i class="fas fa-download"></i> Download Laporan Donasi</a>
     </div>
 </section>
 

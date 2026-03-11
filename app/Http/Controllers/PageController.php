@@ -29,7 +29,7 @@ class PageController extends Controller
         $unggulanCategory = KegiatanCategory::where('nama', 'Program Unggulan')->first();
 
         $unggulKegiatan = $unggulanCategory
-            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->values()
+            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->unique('nama')->values()
             : collect();
 
         $rutinKegiatan = $unggulanCategory

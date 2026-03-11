@@ -33,30 +33,33 @@
                     </thead>
                     <tbody>
                         @foreach($videos as $video)
+                        @php
+                            $fileUrl = asset('storage/' . $video->file_path);
+                            $isVideo = \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4','.mov','.avi','.mkv','.webm']);
+                        @endphp
                         <tr>
                             <td>
-                                @php
-                                    $isVideo = \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4','.mov','.avi','.mkv','.webm']);
-                                @endphp
                                 @if($isVideo)
-                                    <video src="{{ Storage::disk('public')->url($video->file_path) }}"
+                                    <video src="{{ $fileUrl }}"
                                         style="max-width: 200px; border-radius: 8px; border:1px solid #e2e8f0;"
-                                        controls>
+                                        controls preload="metadata">
                                     </video>
                                 @else
-                                    <img src="{{ Storage::disk('public')->url($video->file_path) }}"
+                                    <img src="{{ $fileUrl }}"
                                          alt="{{ $video->nama }}"
-                                         style="max-width: 200px; border-radius: 8px; border:1px solid #e2e8f0;object-fit:cover;">
+                                         style="max-width: 200px; max-height: 120px; border-radius: 8px; border:1px solid #e2e8f0;object-fit:cover;">
                                 @endif
                             </td>
                             <td>{{ $video->nama }}</td>
                             <td style="max-width: 320px;">{{ $video->keterangan }}</td>
                             <td>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                    <a href="{{ Storage::disk('public')->url($video->file_path) }}"
-                                       class="btn btn-secondary btn-sm" target="_blank">
+                                    <button type="button" class="btn btn-secondary btn-sm btn-lihat-dokumentasi"
+                                            data-url="{{ $fileUrl }}"
+                                            data-nama="{{ $video->nama }}"
+                                            data-is-video="{{ $isVideo ? '1' : '0' }}">
                                         <i class="fas fa-eye"></i> Lihat
-                                    </a>
+                                    </button>
                                     <a href="{{ route('admin.dokumentasi-video.edit', $video) }}"
                                        class="btn btn-primary btn-sm">
                                         <i class="fas fa-pen"></i>
@@ -86,5 +89,75 @@
         @endif
     </div>
 </div>
+
+{{-- Modal Lihat Video/Foto --}}
+<div id="modalLihatDokumentasi" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.85); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#1e293b; border-radius:12px; max-width:90vw; max-height:90vh; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,.5);">
+        <div style="padding:12px 16px; border-bottom:1px solid #334155; display:flex; align-items:center; justify-content:space-between;">
+            <strong id="modalLihatJudul" style="color:#f1f5f9; font-size:15px;"></strong>
+            <button type="button" id="modalLihatTutup" style="background:none; border:none; color:#94a3b8; font-size:22px; cursor:pointer; padding:4px; line-height:1;">&times;</button>
+        </div>
+        <div style="padding:16px; max-height:calc(90vh - 56px); overflow:auto; display:flex; align-items:center; justify-content:center;">
+            <div id="modalLihatKonten"></div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+(function() {
+    var modal = document.getElementById('modalLihatDokumentasi');
+    var judul = document.getElementById('modalLihatJudul');
+    var konten = document.getElementById('modalLihatKonten');
+    var btnTutup = document.getElementById('modalLihatTutup');
+
+    function openModal(url, nama, isVideo) {
+        judul.textContent = nama || 'Dokumentasi';
+        konten.innerHTML = '';
+        if (isVideo === '1') {
+            var video = document.createElement('video');
+            video.src = url;
+            video.controls = true;
+            video.autoplay = true;
+            video.style.maxWidth = '100%';
+            video.style.maxHeight = '75vh';
+            video.style.display = 'block';
+            konten.appendChild(video);
+        } else {
+            var img = document.createElement('img');
+            img.src = url;
+            img.alt = nama;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '75vh';
+            img.style.display = 'block';
+            konten.appendChild(img);
+        }
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        var v = konten.querySelector('video');
+        if (v) { v.pause(); v.src = ''; }
+        konten.innerHTML = '';
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.btn-lihat-dokumentasi').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openModal(this.getAttribute('data-url'), this.getAttribute('data-nama'), this.getAttribute('data-is-video'));
+        });
+    });
+    btnTutup.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+})();
+</script>
+@endpush
 @endsection
 

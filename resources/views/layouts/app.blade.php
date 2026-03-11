@@ -484,7 +484,13 @@
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fab fa-facebook-f fa-sm"></i></div>
                         <div class="footer-contact-text">
-                            Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika
+                            <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener noreferrer">Yayasan Peduli Kasih Mimika</a>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="fab fa-instagram fa-sm"></i></div>
+                        <div class="footer-contact-text">
+                            <a href="https://www.instagram.com/yayasanpedulikasihmimika/" target="_blank" rel="noopener noreferrer">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a>
                         </div>
                     </div>
                     <div class="footer-contact-item">
