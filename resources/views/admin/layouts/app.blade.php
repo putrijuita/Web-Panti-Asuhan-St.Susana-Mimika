@@ -163,6 +163,10 @@
                 <span class="icon"><i class="fas fa-hand-holding-heart"></i></span>
                 Donasi Uang
             </a>
+            <a href="{{ route('admin.pengelolaan-donasi.index') }}" class="nav-link {{ request()->routeIs('admin.pengelolaan-donasi.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-wallet"></i></span>
+                Pengelolaan Donasi
+            </a>
             <a href="{{ route('admin.jasa.index') }}" class="nav-link {{ request()->routeIs('admin.jasa.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-hands-helping"></i></span>
                 Donasi Jasa
@@ -174,6 +178,14 @@
             <a href="{{ route('admin.kegiatan.index') }}" class="nav-link {{ request()->routeIs('admin.kegiatan.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-list-check"></i></span>
                 Manajemen Kegiatan
+            </a>
+            <a href="{{ route('admin.struktur.index') }}" class="nav-link {{ request()->routeIs('admin.struktur.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-sitemap"></i></span>
+                Struktur Organisasi
+            </a>
+            <a href="{{ route('admin.galeri.index') }}" class="nav-link {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-images"></i></span>
+                Galeri
             </a>
         </div>
         @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())

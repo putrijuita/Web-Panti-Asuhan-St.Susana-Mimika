@@ -7,7 +7,10 @@ use App\Http\Controllers\Admin\DonasiController as AdminDonasiController;
 use App\Http\Controllers\Admin\JasaController as AdminJasaController;
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
+use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\VideoDokumentasiController;
+use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\PengelolaanDonasiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KunjunganController;
@@ -46,6 +49,7 @@ if ($adminDomain) {
             // Manajemen Kegiatan
             Route::get('kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
             Route::get('kegiatan/create', [AdminKegiatanController::class, 'create'])->name('kegiatan.create');
+            Route::get('kegiatan/{kegiatan}', [AdminKegiatanController::class, 'show'])->name('kegiatan.show');
             Route::post('kegiatan', [AdminKegiatanController::class, 'store'])->name('kegiatan.store');
             Route::get('kegiatan/{kegiatan}/edit', [AdminKegiatanController::class, 'edit'])->name('kegiatan.edit');
             Route::put('kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
@@ -65,6 +69,33 @@ if ($adminDomain) {
             Route::get('dokumentasi-video/{video}/edit', [VideoDokumentasiController::class, 'edit'])->name('dokumentasi-video.edit');
             Route::put('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'update'])->name('dokumentasi-video.update');
             Route::delete('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'destroy'])->name('dokumentasi-video.destroy');
+
+            // Struktur Organisasi
+            Route::get('struktur', [StrukturOrganisasiController::class, 'index'])->name('struktur.index');
+            Route::get('struktur/create', [StrukturOrganisasiController::class, 'create'])->name('struktur.create');
+            Route::post('struktur', [StrukturOrganisasiController::class, 'store'])->name('struktur.store');
+            Route::get('struktur/{struktur}', [StrukturOrganisasiController::class, 'show'])->name('struktur.show');
+            Route::get('struktur/{struktur}/edit', [StrukturOrganisasiController::class, 'edit'])->name('struktur.edit');
+            Route::put('struktur/{struktur}', [StrukturOrganisasiController::class, 'update'])->name('struktur.update');
+            Route::delete('struktur/{struktur}', [StrukturOrganisasiController::class, 'destroy'])->name('struktur.destroy');
+
+            // Galeri Foto
+            Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
+            Route::get('galeri/create', [GaleriController::class, 'create'])->name('galeri.create');
+            Route::post('galeri', [GaleriController::class, 'store'])->name('galeri.store');
+            Route::get('galeri/{galeri}/edit', [GaleriController::class, 'edit'])->name('galeri.edit');
+            Route::put('galeri/{galeri}', [GaleriController::class, 'update'])->name('galeri.update');
+            Route::delete('galeri/{galeri}', [GaleriController::class, 'destroy'])->name('galeri.destroy');
+            Route::get('galeri/kategori/create', [GaleriController::class, 'categoryCreate'])->name('galeri.categories.create');
+            Route::post('galeri/kategori', [GaleriController::class, 'categoryStore'])->name('galeri.categories.store');
+
+            // Pengelolaan Donasi
+            Route::get('pengelolaan-donasi', [PengelolaanDonasiController::class, 'index'])->name('pengelolaan-donasi.index');
+            Route::get('pengelolaan-donasi/create', [PengelolaanDonasiController::class, 'create'])->name('pengelolaan-donasi.create');
+            Route::post('pengelolaan-donasi', [PengelolaanDonasiController::class, 'store'])->name('pengelolaan-donasi.store');
+            Route::get('pengelolaan-donasi/{pengelolaanDonasi}/edit', [PengelolaanDonasiController::class, 'edit'])->name('pengelolaan-donasi.edit');
+            Route::put('pengelolaan-donasi/{pengelolaanDonasi}', [PengelolaanDonasiController::class, 'update'])->name('pengelolaan-donasi.update');
+            Route::delete('pengelolaan-donasi/{pengelolaanDonasi}', [PengelolaanDonasiController::class, 'destroy'])->name('pengelolaan-donasi.destroy');
 
             // Manajemen Admin (hanya super_admin)
             Route::middleware('super_admin')->group(function () {
@@ -86,11 +117,13 @@ Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/program/unggulan', [PageController::class, 'programUnggulan'])->name('program.unggulan');
 Route::get('/program/lainnya', [PageController::class, 'programLainnya'])->name('program.lainnya');
 Route::get('/galeri', [PageController::class, 'galeri'])->name('galeri');
+Route::get('/dokumentasi-video/stream/{video}', [PageController::class, 'streamVideo'])->name('dokumentasi-video.stream');
 Route::get('/kontak', [PageController::class, 'kontak'])->name('kontak');
 Route::post('/kontak', [PageController::class, 'kontakStore'])->name('kontak.store');
 
 Route::get('/donasi', [DonasiController::class, 'index'])->name('donasi.index');
 Route::get('/donasi/laporan', [DonasiController::class, 'laporanDonasi'])->name('donasi.laporan');
+Route::get('/donasi/laporan-pengelolaan', [DonasiController::class, 'laporanPengelolaanDonasi'])->name('donasi.laporan-pengelolaan');
 Route::get('/donasi/qr-image/{transactionId}', [DonasiController::class, 'qrImage'])->name('donasi.qr-image');
 Route::get('/donasi/create', [DonasiController::class, 'create'])->name('donasi.create');
 Route::get('/donasi/keuangan', [DonasiController::class, 'keuangan'])->name('donasi.keuangan');
@@ -136,6 +169,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Manajemen Kegiatan
         Route::get('kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
         Route::get('kegiatan/create', [AdminKegiatanController::class, 'create'])->name('kegiatan.create');
+        Route::get('kegiatan/{kegiatan}', [AdminKegiatanController::class, 'show'])->name('kegiatan.show');
         Route::post('kegiatan', [AdminKegiatanController::class, 'store'])->name('kegiatan.store');
         Route::get('kegiatan/{kegiatan}/edit', [AdminKegiatanController::class, 'edit'])->name('kegiatan.edit');
         Route::put('kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
@@ -155,6 +189,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dokumentasi-video/{video}/edit', [VideoDokumentasiController::class, 'edit'])->name('dokumentasi-video.edit');
         Route::put('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'update'])->name('dokumentasi-video.update');
         Route::delete('dokumentasi-video/{video}', [VideoDokumentasiController::class, 'destroy'])->name('dokumentasi-video.destroy');
+
+        // Struktur Organisasi
+        Route::get('struktur', [StrukturOrganisasiController::class, 'index'])->name('struktur.index');
+        Route::get('struktur/create', [StrukturOrganisasiController::class, 'create'])->name('struktur.create');
+        Route::post('struktur', [StrukturOrganisasiController::class, 'store'])->name('struktur.store');
+        Route::get('struktur/{struktur}', [StrukturOrganisasiController::class, 'show'])->name('struktur.show');
+        Route::get('struktur/{struktur}/edit', [StrukturOrganisasiController::class, 'edit'])->name('struktur.edit');
+        Route::put('struktur/{struktur}', [StrukturOrganisasiController::class, 'update'])->name('struktur.update');
+        Route::delete('struktur/{struktur}', [StrukturOrganisasiController::class, 'destroy'])->name('struktur.destroy');
+
+        // Galeri Foto
+        Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
+        Route::get('galeri/create', [GaleriController::class, 'create'])->name('galeri.create');
+        Route::post('galeri', [GaleriController::class, 'store'])->name('galeri.store');
+        Route::get('galeri/{galeri}/edit', [GaleriController::class, 'edit'])->name('galeri.edit');
+        Route::put('galeri/{galeri}', [GaleriController::class, 'update'])->name('galeri.update');
+        Route::delete('galeri/{galeri}', [GaleriController::class, 'destroy'])->name('galeri.destroy');
+        Route::get('galeri/kategori/create', [GaleriController::class, 'categoryCreate'])->name('galeri.categories.create');
+        Route::post('galeri/kategori', [GaleriController::class, 'categoryStore'])->name('galeri.categories.store');
+
+        // Pengelolaan Donasi
+        Route::get('pengelolaan-donasi', [PengelolaanDonasiController::class, 'index'])->name('pengelolaan-donasi.index');
+        Route::get('pengelolaan-donasi/create', [PengelolaanDonasiController::class, 'create'])->name('pengelolaan-donasi.create');
+        Route::post('pengelolaan-donasi', [PengelolaanDonasiController::class, 'store'])->name('pengelolaan-donasi.store');
+        Route::get('pengelolaan-donasi/{pengelolaanDonasi}/edit', [PengelolaanDonasiController::class, 'edit'])->name('pengelolaan-donasi.edit');
+        Route::put('pengelolaan-donasi/{pengelolaanDonasi}', [PengelolaanDonasiController::class, 'update'])->name('pengelolaan-donasi.update');
+        Route::delete('pengelolaan-donasi/{pengelolaanDonasi}', [PengelolaanDonasiController::class, 'destroy'])->name('pengelolaan-donasi.destroy');
 
         // Manajemen Admin (hanya super_admin)
         Route::middleware('super_admin')->group(function () {

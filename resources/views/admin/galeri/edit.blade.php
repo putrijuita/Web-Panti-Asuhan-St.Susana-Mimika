@@ -19,8 +19,9 @@
             @method('PUT')
 
             <div class="form-group">
-                <label class="form-label">Kategori</label>
-                <select name="galeri_category_id" class="form-control" required>
+                <label class="form-label">Kategori (opsional)</label>
+                <select name="galeri_category_id" class="form-control">
+                    <option value="">-- Tanpa kategori --</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" @selected(old('galeri_category_id', $item->galeri_category_id) == $category->id)>
                             {{ $category->nama }}

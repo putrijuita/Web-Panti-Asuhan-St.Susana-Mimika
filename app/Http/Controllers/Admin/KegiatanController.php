@@ -26,18 +26,26 @@ class KegiatanController extends Controller
     {
         $kegiatan = Kegiatan::with('kategori')->latest()->paginate(10);
 
-        return view('admin.kegiatan.index', compact('kegiatan'));
+        $unggulanCategory = KegiatanCategory::where('nama', 'Program Unggulan')->first();
+        $lainnyaCategory = KegiatanCategory::where('nama', 'Program Lainnya')->first();
+
+        $programUnggulan = $unggulanCategory
+            ? $unggulanCategory->kegiatans()->latest()->get()
+            : collect();
+        $programLainnya = $lainnyaCategory
+            ? $lainnyaCategory->kegiatans()->latest()->get()
+            : collect();
+
+        return view('admin.kegiatan.index', compact('kegiatan', 'programUnggulan', 'programLainnya'));
     }
 
     public function create()
     {
         $this->ensureDefaultCategoriesExist();
         $categories = KegiatanCategory::orderBy('nama')->get();
-        $kegiatan = Kegiatan::with('kategori')->latest()->paginate(10);
 
         return view('admin.kegiatan.create', [
             'categories' => $categories,
-            'kegiatan' => $kegiatan,
             'editing' => null,
         ]);
     }
@@ -49,7 +57,7 @@ class KegiatanController extends Controller
             'waktu_kegiatan' => 'nullable|date',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'deskripsi' => 'nullable|string',
-            'kegiatan_category_id' => 'nullable|exists:kegiatan_categories,id',
+            'kegiatan_category_id' => 'required|exists:kegiatan_categories,id',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -59,19 +67,17 @@ class KegiatanController extends Controller
 
         Kegiatan::create($data);
 
-        return redirect()->route('admin.kegiatan.create')
-            ->with('success', 'Kegiatan berhasil disimpan.');
+        return redirect()->route('admin.kegiatan.index')
+            ->with('success', 'Program berhasil disimpan.');
     }
 
     public function edit(Kegiatan $kegiatan)
     {
         $this->ensureDefaultCategoriesExist();
         $categories = KegiatanCategory::orderBy('nama')->get();
-        $list = Kegiatan::with('kategori')->latest()->paginate(10);
 
         return view('admin.kegiatan.create', [
             'categories' => $categories,
-            'kegiatan' => $list,
             'editing' => $kegiatan,
         ]);
     }
@@ -90,7 +96,7 @@ class KegiatanController extends Controller
             'waktu_kegiatan' => 'nullable|date',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'deskripsi' => 'nullable|string',
-            'kegiatan_category_id' => 'nullable|exists:kegiatan_categories,id',
+            'kegiatan_category_id' => 'required|exists:kegiatan_categories,id',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -104,8 +110,8 @@ class KegiatanController extends Controller
 
         $kegiatan->update($data);
 
-        return redirect()->route('admin.kegiatan.create')
-            ->with('success', 'Kegiatan berhasil diperbarui.');
+        return redirect()->route('admin.kegiatan.index')
+            ->with('success', 'Program berhasil diperbarui.');
     }
 
     public function destroy(Kegiatan $kegiatan)
@@ -116,8 +122,8 @@ class KegiatanController extends Controller
 
         $kegiatan->delete();
 
-        return redirect()->route('admin.kegiatan.create')
-            ->with('success', 'Kegiatan berhasil dihapus.');
+        return redirect()->route('admin.kegiatan.index')
+            ->with('success', 'Program berhasil dihapus.');
     }
 
     public function categories(KegiatanCategory $category = null)

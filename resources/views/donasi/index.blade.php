@@ -289,7 +289,22 @@
     .compare-table { display: none; }
     .transparansi-table { font-size: 0.8rem; }
     .transparansi-table th, .transparansi-table td { padding: 0.6rem 0.75rem; }
+    .grafik-donasi-cards { grid-template-columns: 1fr; }
 }
+.grafik-donasi-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.grafik-donasi-card {
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
+}
+.grafik-donasi-card h4 { font-size: 0.8rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+.grafik-donasi-card .nilai { font-size: 1.1rem; font-weight: 800; }
 </style>
 @endpush
 
@@ -380,6 +395,28 @@
 
 <!-- Transparansi Donasi -->
 <section class="transparansi-section">
+    {{-- Grafik Pemasukan, Pengeluaran & Sisa Saldo --}}
+    <div class="transparansi-card">
+        <h3><i class="fas fa-chart-line" style="color:#059669;"></i> Pemasukan, Pengeluaran & Sisa Saldo Donasi (6 Bulan Terakhir)</h3>
+        <div style="padding: 1rem 1.5rem;">
+            <div class="grafik-donasi-cards">
+                <div class="grafik-donasi-card" style="background: linear-gradient(135deg,#d1fae5 0%,#a7f3d0 100%);">
+                    <h4 style="color:#065f46;">Total Pemasukan</h4>
+                    <div class="nilai" style="color:#047857;">Rp {{ number_format($total_pemasukan, 0, ',', '.') }}</div>
+                </div>
+                <div class="grafik-donasi-card" style="background: linear-gradient(135deg,#fee2e2 0%,#fecaca 100%);">
+                    <h4 style="color:#991b1b;">Total Pengeluaran</h4>
+                    <div class="nilai" style="color:#b91c1c;">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</div>
+                </div>
+                <div class="grafik-donasi-card" style="background: linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%);">
+                    <h4 style="color:#1e40af;">Sisa Saldo Donasi</h4>
+                    <div class="nilai" style="color:#1d4ed8;">Rp {{ number_format($sisa_saldo, 0, ',', '.') }}</div>
+                </div>
+            </div>
+            <canvas id="grafikPemasukanPengeluaranSaldo" height="120" style="max-height: 280px;"></canvas>
+        </div>
+    </div>
+
     <div class="transparansi-card">
         <h3><i class="fas fa-list-alt" style="color:#DC2626;"></i> Transparansi Donasi</h3>
         <div style="overflow-x: auto;">
@@ -410,9 +447,97 @@
         </div>
     </div>
     <div class="download-card">
-        <p><i class="fas fa-file-download"></i> Unduh laporan donasi keuangan (data selesai dibayar)</p>
+        <p><i class="fas fa-file-download"></i> Unduh laporan donasi keuangan dalam bentuk PDF (data selesai dibayar)</p>
         <a href="{{ route('donasi.laporan') }}"><i class="fas fa-download"></i> Download Laporan Donasi</a>
     </div>
+    <div class="download-card" style="margin-top: 1rem;">
+        <p><i class="fas fa-file-pdf"></i> Unduh laporan pengelolaan donasi (pengeluaran & bukti) dalam bentuk PDF</p>
+        <a href="{{ route('donasi.laporan-pengelolaan') }}"><i class="fas fa-download"></i> Download Laporan Pengelolaan Donasi</a>
+    </div>
 </section>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+    const grafikDonasi = @json($grafik_donasi);
+    const labelBulan = grafikDonasi.map(d => {
+        const [y, m] = d.bulan.split('-');
+        const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return months[parseInt(m) - 1] + ' ' + y;
+    });
+    const ctx = document.getElementById('grafikPemasukanPengeluaranSaldo');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labelBulan,
+            datasets: [
+                {
+                    label: 'Pemasukan',
+                    data: grafikDonasi.map(d => d.pemasukan),
+                    backgroundColor: 'rgba(16,185,129,.85)',
+                    borderRadius: 6,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Pengeluaran',
+                    data: grafikDonasi.map(d => d.pengeluaran),
+                    backgroundColor: 'rgba(239,68,68,.85)',
+                    borderRadius: 6,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Sisa Saldo',
+                    data: grafikDonasi.map(d => d.sisa_saldo),
+                    type: 'line',
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    yAxisID: 'y1',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            return ctx.dataset.label + ': Rp ' + ctx.raw.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        callback: v => 'Rp ' + (v >= 1e6 ? (v/1e6).toFixed(1) + 'jt' : (v/1e3).toFixed(0) + 'rb'),
+                        font: { size: 10 }
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        callback: v => 'Rp ' + (v >= 1e6 ? (v/1e6).toFixed(1) + 'jt' : (v/1e3).toFixed(0) + 'rb'),
+                        font: { size: 10 }
+                    }
+                },
+                x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+})();
+</script>
+@endpush
 
 @endsection

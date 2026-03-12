@@ -11,7 +11,7 @@
             <i class="fas fa-plus-circle" style="margin-right:8px;color:#16a34a;"></i>
             Form Tambah Dokumentasi Video
         </span>
-        <a href="{{ route('admin.dokumentasi-video.index') }}" class="btn btn-secondary btn-sm">
+        <a href="{{ route('admin.galeri.index') }}?tab=video" class="btn btn-secondary btn-sm">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
@@ -20,10 +20,10 @@
             @csrf
 
             <div class="form-group">
-                <label for="video" class="form-label">File Dokumentasi <span style="color:#ef4444;">*</span></label>
-                <input type="file" name="video" id="video" class="form-control" required>
+                <label for="video" class="form-label">File Video <span style="color:#ef4444;">*</span></label>
+                <input type="file" name="video" id="video" class="form-control" required accept="video/*,image/*">
                 <small style="font-size:12px;color:#64748b;display:block;margin-top:4px;">
-                    Bisa mengunggah semua jenis file video tanpa batasan durasi. Ukuran file tetap dibatasi oleh konfigurasi server/PHP.
+                    Unggah file video (MP4, WebM, MOV, dll). Ukuran mengikuti batas konfigurasi server.
                 </small>
                 @error('video')
                     <div style="color:#b91c1c;font-size:12px;margin-top:4px;">{{ $message }}</div>
@@ -67,7 +67,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Simpan
+                <i class="fas fa-save"></i> Simpan Dokumentasi Video
             </button>
         </form>
     </div>
@@ -131,7 +131,7 @@
                 // Anggap berhasil untuk semua status sukses/redirect (200–399),
                 // karena Laravel biasanya merespons dengan redirect 302 setelah menyimpan.
                 if (xhr.status >= 200 && xhr.status < 400) {
-                    window.location.href = "{{ route('admin.dokumentasi-video.index') }}";
+                    window.location.href = "{{ route('admin.galeri.index') }}?tab=video";
                 } else {
                     if (submitButton) {
                         submitButton.disabled = false;

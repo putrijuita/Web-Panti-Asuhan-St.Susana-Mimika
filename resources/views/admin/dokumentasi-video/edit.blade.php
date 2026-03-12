@@ -11,7 +11,7 @@
             <i class="fas fa-pen" style="margin-right:8px;color:#0ea5e9;"></i>
             Form Edit Dokumentasi Video
         </span>
-        <a href="{{ route('admin.dokumentasi-video.index') }}" class="btn btn-secondary btn-sm">
+        <a href="{{ route('admin.galeri.index') }}?tab=video" class="btn btn-secondary btn-sm">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>

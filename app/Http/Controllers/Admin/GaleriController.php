@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Galeri;
 use App\Models\GaleriCategory;
+use App\Models\VideoDokumentasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,8 +14,9 @@ class GaleriController extends Controller
     public function index()
     {
         $items = Galeri::latest()->paginate(12);
+        $videos = VideoDokumentasi::latest()->paginate(10);
 
-        return view('admin.galeri.index', compact('items'));
+        return view('admin.galeri.index', compact('items', 'videos'));
     }
 
     public function create()
@@ -27,7 +29,7 @@ class GaleriController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'galeri_category_id' => ['required', 'exists:galeri_categories,id'],
+            'galeri_category_id' => ['nullable', 'exists:galeri_categories,id'],
             'nama' => ['required', 'string', 'max:255'],
             'gambar' => ['required', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             'keterangan' => ['nullable', 'string'],
@@ -42,7 +44,7 @@ class GaleriController extends Controller
         $path = $request->file('gambar')->store('galeri', 'public');
 
         Galeri::create([
-            'galeri_category_id' => $validated['galeri_category_id'],
+            'galeri_category_id' => $validated['galeri_category_id'] ?? null,
             'nama' => $validated['nama'],
             'gambar' => $path,
             'keterangan' => $validated['keterangan'] ?? null,
@@ -66,14 +68,14 @@ class GaleriController extends Controller
     public function update(Request $request, Galeri $galeri)
     {
         $validated = $request->validate([
-            'galeri_category_id' => ['required', 'exists:galeri_categories,id'],
+            'galeri_category_id' => ['nullable', 'exists:galeri_categories,id'],
             'nama' => ['required', 'string', 'max:255'],
             'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'keterangan' => ['nullable', 'string'],
         ]);
 
         $data = [
-            'galeri_category_id' => $validated['galeri_category_id'],
+            'galeri_category_id' => $validated['galeri_category_id'] ?? null,
             'nama' => $validated['nama'],
             'keterangan' => $validated['keterangan'] ?? null,
         ];

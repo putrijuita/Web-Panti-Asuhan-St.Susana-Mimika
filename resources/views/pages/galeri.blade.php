@@ -203,6 +203,70 @@
     .gallery-mosaic { grid-template-columns: 1fr; }
     .mosaic-item.wide { grid-column: span 1; }
 }
+
+/* Lightbox galeri */
+.gallery-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.gallery-lightbox.show { display: flex; }
+.gallery-lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    cursor: pointer;
+}
+.gallery-lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+.gallery-lightbox-content img {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.gallery-lightbox-caption {
+    margin-top: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    max-width: 500px;
+}
+.gallery-lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 28px;
+    line-height: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.gallery-lightbox-close:hover {
+    background: rgba(255,255,255,0.25);
+}
 </style>
 @endpush
 
@@ -237,8 +301,10 @@
     <div class="gallery-grid" id="albumContainer">
         @foreach($items as $foto)
             <div
-                class="gallery-item"
+                class="gallery-item js-gallery-lightbox-trigger"
                 data-cat="{{ $foto->kategori ? 'cat-'.$foto->kategori->id : 'semua' }}"
+                data-lightbox-src="{{ $foto->gambar ? asset('storage/'.$foto->gambar) : '' }}"
+                data-lightbox-caption="{{ $foto->nama }}"
             >
                 <div class="gallery-thumb">
                     @if($foto->gambar)
@@ -270,25 +336,32 @@
 <!-- Video Section -->
 <div style="margin-bottom: 3rem;">
     <div class="section-label"><i class="fas fa-photo-film"></i> Dokumentasi</div>
-    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Dokumentasi Video & Foto</h2>
+    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.5rem;">Dokumentasi Video</h2>
+    <p style="font-size: 0.95rem; color: #64748B; margin-bottom: 2rem;">
+        Video dokumentasi kegiatan di Panti Asuhan Santa Susana Timika.
+    </p>
     @if(isset($videos) && $videos->count())
         <div class="video-grid">
             @foreach($videos as $video)
                 @php
-                    $fileUrl = asset('storage/'.$video->file_path);
                     $isVideo = \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4','.mov','.avi','.mkv','.webm']);
+                    $streamUrl = route('dokumentasi-video.stream', $video);
+                    $ext = $isVideo ? strtolower(pathinfo($video->file_path, PATHINFO_EXTENSION)) : '';
+                    $mimeMap = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime', 'avi' => 'video/x-msvideo', 'mkv' => 'video/x-matroska'];
+                    $mimeType = $mimeMap[$ext] ?? 'video/mp4';
                 @endphp
                 <div class="video-card">
                     @if($isVideo)
-                        <video src="{{ $fileUrl }}"
-                               style="width:100%;height:auto;display:block;"
-                               controls
-                               preload="metadata">
-                        </video>
+                        <div class="video-thumb">
+                            <video controls preload="metadata" playsinline style="width:100%;height:100%;object-fit:contain;">
+                                <source src="{{ $streamUrl }}" type="{{ $mimeType }}">
+                                Browser Anda tidak mendukung pemutaran video.
+                            </video>
+                        </div>
                     @else
-                        <img src="{{ $fileUrl }}"
-                             alt="{{ $video->nama }}"
-                             style="width:100%;height:auto;display:block;object-fit:cover;">
+                        <div class="video-thumb">
+                            <img src="{{ asset('storage/'.$video->file_path) }}" alt="{{ $video->nama }}" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
                     @endif
                     <div class="video-info">
                         <h4>{{ $video->nama }}</h4>
@@ -315,6 +388,16 @@
         <a href="{{ route('donasi.index') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">💝 Donasi</a>
     </div>
 </div>
+
+<!-- Lightbox untuk preview gambar -->
+<div id="galleryLightbox" class="gallery-lightbox" aria-hidden="true">
+    <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox()" aria-label="Tutup">&times;</button>
+    <div class="gallery-lightbox-backdrop" onclick="closeGalleryLightbox()"></div>
+    <div class="gallery-lightbox-content">
+        <img id="galleryLightboxImg" src="" alt="">
+        <p id="galleryLightboxCaption" class="gallery-lightbox-caption"></p>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -336,5 +419,39 @@ function filterGallery(cat, btn) {
         });
     });
 }
+
+function openGalleryLightbox(src, caption) {
+    var lb = document.getElementById('galleryLightbox');
+    var img = document.getElementById('galleryLightboxImg');
+    var cap = document.getElementById('galleryLightboxCaption');
+    if (lb && img && src) {
+        img.src = src;
+        img.alt = caption || '';
+        if (cap) cap.textContent = caption || '';
+        lb.classList.add('show');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeGalleryLightbox() {
+    var lb = document.getElementById('galleryLightbox');
+    if (lb) {
+        lb.classList.remove('show');
+        lb.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-gallery-lightbox-trigger').forEach(function(el) {
+        el.addEventListener('click', function() {
+            var src = this.getAttribute('data-lightbox-src');
+            var caption = this.getAttribute('data-lightbox-caption') || '';
+            if (src) openGalleryLightbox(src, caption);
+        });
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeGalleryLightbox();
+    });
+});
 </script>
 @endpush

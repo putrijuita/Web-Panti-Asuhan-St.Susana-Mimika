@@ -67,10 +67,66 @@ class PageController extends Controller
         $videos = VideoDokumentasi::latest()->get();
         $categories = collect();
         if (Schema::hasTable('galeri_categories')) {
-            $categories = GaleriCategory::orderBy('nama')->get();
+            $categories = GaleriCategory::orderBy('nama')->where('nama', '!=', 'Masak')->get();
         }
 
         return view('pages.galeri', compact('items', 'videos', 'categories'));
+    }
+
+    /**
+     * Stream video untuk pemutaran di halaman galeri (mendukung range/seek).
+     */
+    public function streamVideo(VideoDokumentasi $video)
+    {
+        $path = $video->file_path;
+        if (! $path || ! \Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            abort(404);
+        }
+
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $mimeMap = [
+            'mp4' => 'video/mp4',
+            'webm' => 'video/webm',
+            'mov' => 'video/quicktime',
+            'avi' => 'video/x-msvideo',
+            'mkv' => 'video/x-matroska',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+        ];
+        $mimeType = $mimeMap[$extension] ?? 'application/octet-stream';
+
+        $filesize = filesize($fullPath);
+        $stream = fopen($fullPath, 'rb');
+
+        $range = request()->header('Range');
+        if ($range && preg_match('/bytes=(\d+)-(\d*)/', $range, $m)) {
+            $start = (int) $m[1];
+            $end = isset($m[2]) && $m[2] !== '' ? (int) $m[2] : $filesize - 1;
+            $length = $end - $start + 1;
+            fseek($stream, $start);
+
+            return response()->stream(function () use ($stream, $length) {
+                echo fread($stream, $length);
+                fclose($stream);
+            }, 206, [
+                'Content-Type' => $mimeType,
+                'Content-Length' => $length,
+                'Content-Range' => sprintf('bytes %d-%d/%d', $start, $end, $filesize),
+                'Accept-Ranges' => 'bytes',
+            ]);
+        }
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            fclose($stream);
+        }, 200, [
+            'Content-Type' => $mimeType,
+            'Content-Length' => $filesize,
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     public function kontak()

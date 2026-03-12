@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Donasi;
 use App\Models\DonasiJasa;
+use App\Models\PengelolaanDonasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Mail\DonasiKonfirmasi;
 use App\Mail\DonasiNotifikasiAdmin;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\CoreApi;
 use Midtrans\Notification;
@@ -35,7 +37,61 @@ class DonasiController extends Controller
             ->limit(100)
             ->get();
 
-        return view('donasi.index', compact('donasiList'));
+        // Data grafik pemasukan, pengeluaran & sisa saldo (6 bulan terakhir)
+        $total_pemasukan = (float) Donasi::whereIn('status', ['settlement', 'completed'])->sum('nominal');
+        $total_pengeluaran = (float) PengelolaanDonasi::sum('jumlah');
+        $sisa_saldo = $total_pemasukan - $total_pengeluaran;
+
+        $bulan_6 = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $bulan_6->push(now()->subMonths($i)->format('Y-m'));
+        }
+
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'mysql') {
+            $donasi_per_bulan = Donasi::whereIn('status', ['settlement', 'completed'])
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"), DB::raw('SUM(nominal) as total'))
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get()
+                ->map(fn ($r) => ['bulan' => $r->bulan, 'total' => (float) $r->total]);
+            $pengeluaran_per_bulan = PengelolaanDonasi::query()
+                ->select(DB::raw("DATE_FORMAT(tanggal_waktu, '%Y-%m') as bulan"), DB::raw('SUM(jumlah) as total'))
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get()
+                ->keyBy('bulan');
+        } else {
+            $donasi_per_bulan = Donasi::whereIn('status', ['settlement', 'completed'])
+                ->select(DB::raw("strftime('%Y-%m', created_at) as bulan"), DB::raw('SUM(nominal) as total'))
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get()
+                ->map(fn ($r) => ['bulan' => $r->bulan, 'total' => (float) $r->total]);
+            $pengeluaran_per_bulan = PengelolaanDonasi::query()
+                ->select(DB::raw("strftime('%Y-%m', tanggal_waktu) as bulan"), DB::raw('SUM(jumlah) as total'))
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get()
+                ->keyBy('bulan');
+        }
+
+        $donasi_per_bulan_keyed = $donasi_per_bulan->keyBy('bulan');
+        $grafik_donasi = [];
+        foreach ($bulan_6 as $b) {
+            $pemasukan = $donasi_per_bulan_keyed->has($b) ? (float) $donasi_per_bulan_keyed->get($b)['total'] : 0;
+            $pengeluaran = $pengeluaran_per_bulan->has($b) ? (float) $pengeluaran_per_bulan->get($b)->total : 0;
+            $cum_pemasukan = $donasi_per_bulan->filter(fn ($r) => $r['bulan'] <= $b)->sum('total');
+            $cum_pengeluaran = $pengeluaran_per_bulan->filter(fn ($r) => $r->bulan <= $b)->sum('total');
+            $grafik_donasi[] = [
+                'bulan' => $b,
+                'pemasukan' => $pemasukan,
+                'pengeluaran' => $pengeluaran,
+                'sisa_saldo' => $cum_pemasukan - $cum_pengeluaran,
+            ];
+        }
+
+        return view('donasi.index', compact('donasiList', 'total_pemasukan', 'total_pengeluaran', 'sisa_saldo', 'grafik_donasi'));
     }
 
     public function create()
@@ -338,35 +394,33 @@ class DonasiController extends Controller
     }
 
     /**
-     * Download laporan donasi keuangan (CSV) — transparansi publik
+     * Download laporan donasi keuangan (PDF) — transparansi publik
      */
-    public function laporanDonasi(): StreamedResponse
+    public function laporanDonasi()
     {
         $donasi = Donasi::where('status', 'completed')
             ->orderByDesc('updated_at')
             ->get();
 
-        $filename = 'laporan-donasi-' . now()->format('Y-m-d') . '.csv';
+        $generatedAt = now();
+        $filename = 'laporan-donasi-' . $generatedAt->format('Y-m-d') . '.pdf';
 
-        return new StreamedResponse(function () use ($donasi) {
-            $handle = fopen('php://output', 'w');
+        $pdf = Pdf::loadView('donasi.laporan-donasi', compact('donasi', 'generatedAt'));
 
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
-            fputcsv($handle, ['Nama Donatur', 'Email', 'Nominal Donasi', 'Tanggal / Waktu']);
+        return $pdf->download($filename);
+    }
 
-            foreach ($donasi as $d) {
-                fputcsv($handle, [
-                    $d->nama,
-                    $d->email,
-                    'Rp ' . number_format($d->nominal, 0, ',', '.'),
-                    $d->updated_at->format('d/m/Y H:i'),
-                ]);
-            }
+    /**
+     * Download laporan pengelolaan donasi (PDF) — transparansi penggunaan dana
+     */
+    public function laporanPengelolaanDonasi()
+    {
+        $items = PengelolaanDonasi::orderByDesc('tanggal_waktu')->get();
+        $generatedAt = now();
+        $filename = 'laporan-pengelolaan-donasi-' . $generatedAt->format('Y-m-d') . '.pdf';
 
-            fclose($handle);
-        }, 200, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
+        $pdf = Pdf::loadView('donasi.laporan-pengelolaan-donasi', compact('items', 'generatedAt'));
+
+        return $pdf->download($filename);
     }
 }

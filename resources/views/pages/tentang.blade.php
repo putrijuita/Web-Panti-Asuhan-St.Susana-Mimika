@@ -137,7 +137,14 @@
     padding: 2rem 1.5rem;
     text-align: center;
     box-shadow: 0 4px 24px rgba(46,134,171,0.08);
+    border: 1px solid rgba(46,134,171,0.12);
     transition: all 0.3s;
+    /* Kotak jelas per pengurus */
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 .team-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(46,134,171,0.15); }
 .team-avatar {
@@ -148,6 +155,7 @@
     font-size: 2rem;
     margin: 0 auto 1rem;
     box-shadow: 0 4px 16px rgba(46,134,171,0.25);
+    flex-shrink: 0;
 }
 .team-card h4   { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.25rem; }
 .team-card span { font-size: 0.85rem; color: var(--biru-tua); font-weight: 600; }
@@ -172,6 +180,58 @@
     .visi-misi-grid { grid-template-columns: 1fr; }
     .about-hero { padding: 2.5rem 1.5rem; }
 }
+/* Foto pengurus bisa diklik untuk memperbesar */
+.team-avatar-btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+    display: block;
+}
+.team-avatar-btn:hover { opacity: 0.9; }
+.team-avatar-btn img { display: block; }
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.85);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.image-modal.show { display: flex; flex-direction: column; }
+.image-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    color: #fff;
+    font-size: 36px;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 1;
+}
+.image-modal-close:hover { opacity: .9; }
+.image-modal-content {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.image-modal-caption {
+    color: #fff;
+    text-align: center;
+    padding: 12px 0 0;
+    font-size: 14px;
+}
 </style>
 @endpush
 
@@ -185,8 +245,6 @@
 <!-- Visi & Misi -->
 <div style="margin-bottom: 3rem;">
     <div class="section-label"><i class="fas fa-star"></i> Visi & Misi</div>
-    <h2 class="section-head">Landasan Kami Bergerak</h2>
-    <p class="section-sub">Dipandu oleh visi yang kuat dan misi yang jelas</p>
     <div class="visi-misi-grid">
         <div class="vm-card">
             <div class="vm-icon">🌟</div>
@@ -278,7 +336,10 @@
             <div class="team-card">
                 <div class="team-avatar">
                     @if($p->gambar_path)
-                        <img src="{{ asset('storage/'.$p->gambar_path) }}" alt="{{ $p->nama }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        @php $imgUrl = asset('storage/'.$p->gambar_path); @endphp
+                        <button type="button" class="team-avatar-btn" onclick="openImageModal('{{ $imgUrl }}', '{{ addslashes($p->nama) }} — {{ addslashes($p->jabatan) }}')" title="Klik untuk memperbesar">
+                            <img src="{{ $imgUrl }}" alt="{{ $p->nama }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        </button>
                     @else
                         {{ mb_substr($p->nama, 0, 1) }}
                     @endif
@@ -304,4 +365,38 @@
         <a href="{{ route('kontak') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">📞 Hubungi Kami</a>
     </div>
 </div>
+
+{{-- Modal foto pengurus timbul saat diklik --}}
+<div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
+    <span class="image-modal-close" onclick="closeImageModal(event)" title="Tutup">&times;</span>
+    <img id="imageModalImg" class="image-modal-content" src="" alt="" onclick="event.stopPropagation()">
+    <div id="imageModalCaption" class="image-modal-caption"></div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+function openImageModal(src, caption) {
+    var modal = document.getElementById('imageModal');
+    var img = document.getElementById('imageModalImg');
+    var cap = document.getElementById('imageModalCaption');
+    if (modal && img) {
+        img.src = src;
+        img.alt = caption || '';
+        cap.textContent = caption || '';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeImageModal(e) {
+    var modal = document.getElementById('imageModal');
+    if (!modal) return;
+    if (e && e.target !== modal && !e.target.classList.contains('image-modal-close')) return;
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeImageModal(e);
+});
+</script>
+@endpush

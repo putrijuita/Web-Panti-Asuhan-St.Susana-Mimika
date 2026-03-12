@@ -70,9 +70,7 @@ class VideoDokumentasiController extends Controller
 
     public function index()
     {
-        $videos = VideoDokumentasi::latest()->paginate(10);
-
-        return view('admin.dokumentasi-video.index', compact('videos'));
+        return redirect()->route('admin.galeri.index', ['tab' => 'video']);
     }
 
     public function create()
@@ -97,7 +95,7 @@ class VideoDokumentasiController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.dokumentasi-video.index')
+            ->route('admin.galeri.index', ['tab' => 'video'])
             ->with('success', 'Dokumentasi video berhasil ditambahkan.');
     }
 
@@ -128,7 +126,7 @@ class VideoDokumentasiController extends Controller
         $video->save();
 
         return redirect()
-            ->route('admin.dokumentasi-video.index')
+            ->route('admin.galeri.index', ['tab' => 'video'])
             ->with('success', 'Dokumentasi video berhasil diperbarui.');
     }
 
@@ -141,7 +139,7 @@ class VideoDokumentasiController extends Controller
         $video->delete();
 
         return redirect()
-            ->route('admin.dokumentasi-video.index')
+            ->route('admin.galeri.index', ['tab' => 'video'])
             ->with('success', 'Dokumentasi video berhasil dihapus.');
     }
 }

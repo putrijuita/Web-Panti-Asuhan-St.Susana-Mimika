@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Foto Galeri')
-@section('page-title', 'Tambah Foto Galeri')
+@section('title', 'Tambah Galeri')
+@section('page-title', 'Tambah Galeri')
 @section('page-subtitle', 'Tambahkan foto baru ke halaman galeri user')
 
 @section('content')
@@ -10,7 +10,7 @@
     <div class="card-header">
         <span class="card-title">
             <i class="fas fa-plus" style="color:#1e40af;margin-right:8px;"></i>
-            Form Tambah Foto Galeri
+            Form Tambah Galeri
         </span>
     </div>
     <div class="card-body">
@@ -28,9 +28,25 @@
             @csrf
 
             <div class="form-group">
-                <label class="form-label">Kategori</label>
-                <select name="galeri_category_id" class="form-control" required>
-                    <option value="">-- Pilih Kategori --</option>
+                <label class="form-label">Image (Gambar)</label>
+                <input type="file" name="gambar" class="form-control" accept="image/jpeg,image/png,image/webp" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Name (Nama)</label>
+                <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" placeholder="Nama / judul foto" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Keterangan</label>
+                <textarea name="keterangan" class="form-control" rows="3" placeholder="Deskripsi foto (opsional)">{{ old('keterangan') }}</textarea>
+            </div>
+
+            @if($categories->isNotEmpty())
+            <div class="form-group">
+                <label class="form-label">Kategori (opsional)</label>
+                <select name="galeri_category_id" class="form-control">
+                    <option value="">-- Tanpa kategori --</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" @selected(old('galeri_category_id') == $category->id)>
                             {{ $category->nama }}
@@ -38,25 +54,11 @@
                     @endforeach
                 </select>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Nama / Judul Foto</label>
-                <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Gambar</label>
-                <input type="file" name="gambar" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Keterangan (opsional)</label>
-                <textarea name="keterangan" class="form-control" rows="3">{{ old('keterangan') }}</textarea>
-            </div>
+            @endif
 
             <div style="display:flex;gap:10px;align-items:center;margin-top:8px;">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Simpan Foto
+                    <i class="fas fa-save"></i> Save (Simpan)
                 </button>
                 <a href="{{ route('admin.galeri.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali ke Dashboard Galeri

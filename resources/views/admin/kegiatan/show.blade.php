@@ -50,7 +50,7 @@
                 <a href="{{ route('admin.kegiatan.edit', $kegiatan) }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-pen"></i> Edit
                 </a>
-                <a href="{{ route('admin.kegiatan.create') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.kegiatan.index') }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-arrow-left"></i> Kembali ke Program
                 </a>
             </div>

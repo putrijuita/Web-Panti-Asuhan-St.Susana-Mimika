@@ -8,6 +8,8 @@
 <style>
     .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+    .grafik-donasi-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+    @media (max-width: 768px) { .grafik-donasi-cards { grid-template-columns: 1fr; } }
     .recent-item {
         display: flex;
         align-items: center;
@@ -80,6 +82,13 @@
             <div class="stat-label">Donasi Jasa</div>
         </div>
     </div>
+    <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-video"></i></div>
+        <div>
+            <div class="stat-value">{{ $stats['total_dokumentasi_video'] }}</div>
+            <div class="stat-label">Dokumentasi Video</div>
+        </div>
+    </div>
 </div>
 
 <!-- Charts & Recent -->
@@ -109,6 +118,30 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Grafik Pemasukan, Pengeluaran & Sisa Saldo Donasi -->
+<div class="card" style="margin-top:20px;">
+    <div class="card-header">
+        <span class="card-title"><i class="fas fa-chart-line" style="color:#059669;margin-right:8px;"></i>Pemasukan, Pengeluaran & Sisa Saldo Donasi (6 Bulan Terakhir)</span>
+    </div>
+    <div class="card-body">
+        <div class="grafik-donasi-cards">
+            <div style="background:linear-gradient(135deg,#d1fae5 0%,#a7f3d0 100%);border-radius:12px;padding:16px;text-align:center;">
+                <div style="font-size:12px;color:#065f46;font-weight:600;margin-bottom:4px;">Total Pemasukan</div>
+                <div style="font-size:20px;font-weight:700;color:#047857;">Rp {{ number_format($total_pemasukan, 0, ',', '.') }}</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#fee2e2 0%,#fecaca 100%);border-radius:12px;padding:16px;text-align:center;">
+                <div style="font-size:12px;color:#991b1b;font-weight:600;margin-bottom:4px;">Total Pengeluaran</div>
+                <div style="font-size:20px;font-weight:700;color:#b91c1c;">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%);border-radius:12px;padding:16px;text-align:center;">
+                <div style="font-size:12px;color:#1e40af;font-weight:600;margin-bottom:4px;">Sisa Saldo Donasi</div>
+                <div style="font-size:20px;font-weight:700;color:#1d4ed8;">Rp {{ number_format($sisa_saldo, 0, ',', '.') }}</div>
+            </div>
+        </div>
+        <canvas id="grafikPemasukanPengeluaranSaldo" height="120"></canvas>
     </div>
 </div>
 
@@ -179,6 +212,80 @@
             <p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">Belum ada kunjungan</p>
             @endforelse
         </div>
+    </div>
+</div>
+
+<!-- Dokumentasi Video (digabung di Galeri) -->
+<div class="card" style="margin-top: 20px;">
+    <div class="card-header">
+        <span class="card-title"><i class="fas fa-video" style="color:#7c3aed;margin-right:8px;"></i>Dokumentasi Video</span>
+        <div style="display:flex;gap:8px;">
+            <a href="{{ route('admin.galeri.index') }}?tab=video" class="btn btn-secondary btn-sm">Kelola di Galeri</a>
+            <a href="{{ route('admin.dokumentasi-video.create') }}" class="btn btn-primary btn-sm" style="background:#7c3aed;">
+                <i class="fas fa-plus"></i> Tambah Dokumentasi Video
+            </a>
+        </div>
+    </div>
+    <div class="card-body" style="padding:16px 20px;">
+        <p style="color:#64748b;font-size:13px;margin:0;">
+            Kelola video dokumentasi di halaman <strong>Galeri</strong> (tab Dokumentasi Video). Data ditampilkan di halaman Galeri website.
+        </p>
+    </div>
+</div>
+
+<!-- Pengelolaan Donasi -->
+<div class="card" style="margin-top: 20px;">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="card-title"><i class="fas fa-wallet" style="color:#059669;margin-right:8px;"></i>Pengelolaan Donasi</span>
+        <a href="{{ route('admin.pengelolaan-donasi.create') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Tambah Pengelolaan Donasi
+        </a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Jumlah</th>
+                    <th>Gambar</th>
+                    <th>Tanggal / Waktu</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($pengelolaan_donasi as $pd)
+                <tr>
+                    <td style="font-weight:600;">{{ $pd->nama }}</td>
+                    <td>Rp {{ number_format($pd->jumlah, 0, ',', '.') }}</td>
+                    <td>
+                        @if($pd->gambar)
+                            <img src="{{ asset('storage/'.$pd->gambar) }}" alt="" style="height:40px;width:auto;border-radius:6px;object-fit:cover;">
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td>{{ $pd->tanggal_waktu->format('d/m/Y H:i') }}</td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a href="{{ route('admin.pengelolaan-donasi.edit', $pd) }}" class="btn btn-secondary btn-sm"><i class="fas fa-pen"></i></a>
+                            <form method="POST" action="{{ route('admin.pengelolaan-donasi.destroy', $pd) }}" onsubmit="return confirm('Hapus data ini?')" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Belum ada data pengelolaan donasi.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body" style="padding:12px 20px;border-top:1px solid var(--gray-100);">
+        <a href="{{ route('admin.pengelolaan-donasi.index') }}" class="btn btn-secondary btn-sm">Lihat Semua Pengelolaan Donasi</a>
     </div>
 </div>
 
@@ -254,6 +361,88 @@ new Chart(document.getElementById('kunjunganChart'), {
             legend: {
                 position: 'bottom',
                 labels: { font: { size: 11 }, padding: 10 }
+            }
+        }
+    }
+});
+
+// Grafik Pemasukan, Pengeluaran & Sisa Saldo
+const grafikDonasi = @json($grafik_donasi);
+const labelBulan = grafikDonasi.map(d => {
+    const [y, m] = d.bulan.split('-');
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    return months[parseInt(m) - 1] + ' ' + y;
+});
+new Chart(document.getElementById('grafikPemasukanPengeluaranSaldo'), {
+    type: 'bar',
+    data: {
+        labels: labelBulan,
+        datasets: [
+            {
+                label: 'Pemasukan',
+                data: grafikDonasi.map(d => d.pemasukan),
+                backgroundColor: 'rgba(16,185,129,.85)',
+                borderRadius: 6,
+                yAxisID: 'y',
+            },
+            {
+                label: 'Pengeluaran',
+                data: grafikDonasi.map(d => d.pengeluaran),
+                backgroundColor: 'rgba(239,68,68,.85)',
+                borderRadius: 6,
+                yAxisID: 'y',
+            },
+            {
+                label: 'Sisa Saldo',
+                data: grafikDonasi.map(d => d.sisa_saldo),
+                type: 'line',
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                yAxisID: 'y1',
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: { font: { size: 11 }, padding: 12 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return ctx.dataset.label + ': Rp ' + ctx.raw.toLocaleString('id-ID');
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
+                grid: { color: '#f1f5f9' },
+                ticks: {
+                    callback: v => 'Rp ' + (v >= 1e6 ? (v/1e6).toFixed(1) + 'jt' : (v/1e3).toFixed(0) + 'rb'),
+                    font: { size: 10 }
+                }
+            },
+            y1: {
+                type: 'linear',
+                position: 'right',
+                grid: { drawOnChartArea: false },
+                ticks: {
+                    callback: v => 'Rp ' + (v >= 1e6 ? (v/1e6).toFixed(1) + 'jt' : (v/1e3).toFixed(0) + 'rb'),
+                    font: { size: 10 }
+                }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { font: { size: 11 } }
             }
         }
     }
