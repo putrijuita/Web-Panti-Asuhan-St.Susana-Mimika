@@ -279,20 +279,6 @@
     color: #e0f2fe;
     font-size: 3.2rem;
 }
-.unggul-media-label {
-    position: absolute;
-    left: 1.2rem;
-    top: 1.2rem;
-    padding: 0.24rem 0.9rem;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.7);
-    color: #e2e8f0;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-weight: 700;
-    backdrop-filter: blur(12px);
-}
 .unggul-body {
     padding: 2.2rem 2.3rem;
     display: flex;
@@ -432,28 +418,23 @@
                     @else
                         <div class="unggul-media-fallback">🌟</div>
                     @endif
-                    <div class="unggul-media-label">Program Unggulan</div>
                 </div>
                 <div class="unggul-body">
                     <div class="unggul-eyebrow">
                         <span></span>
-                        <span>Fokus Pengembangan Anak</span>
+                        <span>Program Unggulan</span>
                     </div>
                     <h3>{{ $item->nama }}</h3>
                     <p>{{ $item->deskripsi ?: 'Program fokus pembinaan karakter, pendidikan, dan kemandirian anak di Panti.' }}</p>
                     <div class="unggul-meta">
-                        <span class="mini-chip primary">Anak-anak Papua Tengah</span>
                         <span class="mini-chip success">Program Unggulan</span>
                     </div>
-                    @php
-                        $shareText = rawurlencode('Yuk dukung program unggulan "'.$item->nama.'" di Panti Asuhan Santa Susana Timika: '.route('program'));
-                    @endphp
                     <div class="unggul-share-row">
-                        <a href="https://wa.me/?text={{ $shareText }}" target="_blank" rel="noopener" class="btn-share-kegiatan">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>Bagikan Kegiatan</span>
+                        <a href="{{ route('donasi.index') }}" class="btn-share-kegiatan">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <span>Lakukan donasi pada program ini</span>
                         </a>
-                        <small>Bagikan ke keluarga & sahabat agar lebih banyak yang terlibat.</small>
+                        <small>Dukung program ini dengan donasi Anda.</small>
                     </div>
                 </div>
             </article>
@@ -490,8 +471,6 @@
                     <h4>{{ $item->nama }}</h4>
                     <p>{{ $item->deskripsi ?: 'Belum ada keterangan untuk kegiatan ini, namun kegiatan ini berjalan secara rutin di Panti.' }}</p>
                     <div class="mini-meta">
-                        <span class="mini-chip primary">Anak-anak Papua Tengah</span>
-                        <span class="mini-chip success">Program Aktif</span>
                     </div>
                 </div>
             </article>

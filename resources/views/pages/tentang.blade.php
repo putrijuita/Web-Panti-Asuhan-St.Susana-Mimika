@@ -140,7 +140,7 @@
     border: 1px solid rgba(46,134,171,0.12);
     transition: all 0.3s;
     /* Kotak jelas per pengurus */
-    min-height: 200px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -148,11 +148,11 @@
 }
 .team-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(46,134,171,0.15); }
 .team-avatar {
-    width: 80px; height: 80px;
+    width: 180px; height: 180px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua));
     display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
+    font-size: 3rem;
     margin: 0 auto 1rem;
     box-shadow: 0 4px 16px rgba(46,134,171,0.25);
     flex-shrink: 0;

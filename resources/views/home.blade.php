@@ -297,8 +297,7 @@
         <span class="hero-badge">💝 Yayasan Peduli Kasih Mimika</span>
         <h1>Berbagi Kasih untuk <span>Masa Depan</span> Mereka</h1>
         <p class="hero-desc">
-            Panti Asuhan Santa Susana Timika hadir untuk merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih. 
-            Setiap donasi dan kunjungan Anda membawa harapan bagi mereka.
+            Kami merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih. Donasi dan kunjungan Anda membawa harapan.
         </p>
         <div class="hero-btns">
             <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi Sekarang</a>
@@ -311,7 +310,7 @@
 <section class="section" id="tentang">
     <div class="section-title">
         <h2>Tentang Kami</h2>
-        <p>Mengenal Lebih Dekat Panti Asuhan Santa Susana</p>
+        <p>Mengenal Santa Susana</p>
     </div>
     <div class="card about-card">
         <div class="about-visual">
@@ -323,14 +322,12 @@
         </div>
         <div class="about-content">
             <p>
-                <strong>Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika</strong> adalah 
-                lembaga yang berkomitmen memberikan pendidikan, pengasuhan, dan kasih sayang kepada 
-                anak-anak yang membutuhkan di wilayah Mimika, Papua Tengah.
+                <strong>Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika</strong> berkomitmen 
+                mendidik, mengasuh, dan menyayangi anak-anak di Mimika, Papua Tengah.
             </p>
             <p>
-                Kami percaya setiap anak berhak untuk bermimpi, belajar, dan tumbuh dalam lingkungan 
-                yang penuh perhatian. Dengan dukungan dari donatur dan relawan, kami terus berupaya 
-                membuka pintu bagi masa depan yang lebih cerah.
+                Setiap anak berhak bermimpi dan tumbuh dalam lingkungan penuh perhatian. Dukungan Anda 
+                membuka masa depan yang cerah.
             </p>
         </div>
     </div>
@@ -340,7 +337,7 @@
 <section class="section">
     <div class="section-title">
         <h2>Dampak Kita Bersama</h2>
-        <p>Setiap kontribusi membawa perubahan nyata</p>
+        <p>Kontribusi Anda membawa perubahan nyata</p>
     </div>
     <div class="stats-grid">
         <div class="stat-item">
@@ -366,19 +363,19 @@
 <section class="section">
     <div class="section-title">
         <h2>Cara Berkontribusi</h2>
-        <p>Mari bantu kami wujudkan harapan mereka</p>
+        <p>Bantu wujudkan harapan mereka</p>
     </div>
     <div class="features-grid">
         <div class="feature-card">
             <div class="icon">💝</div>
             <h3>Donasi</h3>
-            <p>Bantu kebutuhan anak-anak dengan donasi. Setiap rupiah akan digunakan untuk pendidikan, makanan, dan kebutuhan sehari-hari.</p>
+            <p>Setiap donasi untuk pendidikan, makanan, dan kebutuhan sehari-hari anak-anak.</p>
             <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi Sekarang</a>
         </div>
         <div class="feature-card">
             <div class="icon">🏠</div>
             <h3>Kunjungan</h3>
-            <p>Kunjungi panti asuhan, berbagi waktu, atau ajak kegiatan bersama. Kunjungan Anda bisa membawa kebahagiaan bagi mereka.</p>
+            <p>Berbagi waktu dan kegiatan bersama. Kunjungan Anda membawa kebahagiaan bagi mereka.</p>
             <a href="{{ route('kunjungan.create') }}" class="btn btn-outline">Ajukan Kunjungan</a>
         </div>
     </div>
@@ -388,8 +385,7 @@
 <section class="quote-section">
     <div class="quote-icon">"</div>
     <blockquote>
-        "Satu tangan yang memberi lebih berharga daripada seribu tangan yang menerima. 
-        Bersama kita bisa membangun masa depan yang lebih baik bagi anak-anak."
+        "Tangan yang memberi lebih berharga dari seribu tangan yang menerima. Bersama kita wujudkan masa depan cerah bagi anak-anak."
     </blockquote>
     <cite>— Panti Asuhan Santa Susana Timika</cite>
 </section>
@@ -421,7 +417,7 @@
             </div>
         </div>
         <div style="display: flex; align-items: flex-start; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
                 <i class="fab fa-instagram"></i>
             </div>
             <div>
@@ -443,8 +439,8 @@
 
 <!-- CTA -->
 <section class="cta-section">
-    <h2>Sudah Siap untuk Berbagi?</h2>
-    <p>Pilih cara yang paling sesuai dengan Anda</p>
+    <h2>Siap Berbagi?</h2>
+    <p>Pilih cara yang sesuai dengan Anda</p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
         <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi</a>
         <a href="{{ route('kunjungan.create') }}" class="btn btn-outline">Kunjungan</a>

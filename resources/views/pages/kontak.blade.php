@@ -105,9 +105,10 @@
 }
 .sosmed-btn:hover { transform: translateY(-2px); }
 .sosmed-btn.fb { background: #1877F2; color: white; }
-.sosmed-btn.ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
+.sosmed-btn.ig { background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap)); color: white; }
 .sosmed-btn.wa { background: #25D366; color: white; }
 .sosmed-btn.phone { background: var(--biru-tua); color: white; }
+.sosmed-btn.sosmed-btn-biru { background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap)); color: white; }
 
 .jam-grid {
     display: grid;
@@ -188,7 +189,7 @@
                 </div>
             </div>
             <div class="kontak-item">
-                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #1877F2, #3b5998);">
+                <div class="kontak-item-icon" style="background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));">
                     <i class="fab fa-facebook-f"></i>
                 </div>
                 <div class="kontak-item-body">
@@ -198,7 +199,7 @@
                 </div>
             </div>
             <div class="kontak-item">
-                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+                <div class="kontak-item-icon" style="background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));">
                     <i class="fab fa-instagram"></i>
                 </div>
                 <div class="kontak-item-body">
@@ -207,7 +208,7 @@
                 </div>
             </div>
             <div class="kontak-item" style="margin-bottom: 0;">
-                <div class="kontak-item-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="kontak-item-icon" style="background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));">
                     <i class="fas fa-location-dot"></i>
                 </div>
                 <div class="kontak-item-body">
@@ -221,12 +222,12 @@
 
         <!-- Sosmed Quick Links -->
         <div class="kontak-info-card">
-            <h3><i class="fas fa-share-nodes" style="color:#8b5cf6;"></i> Terhubung Cepat</h3>
+            <h3><i class="fas fa-share-nodes" style="color:var(--biru-tua);"></i> Terhubung Cepat</h3>
             <div class="sosmed-grid">
-                <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener noreferrer" class="sosmed-btn fb" style="grid-column: span 2;">
+                <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener noreferrer" class="sosmed-btn sosmed-btn-biru" style="grid-column: span 2;">
                     <i class="fab fa-facebook-f"></i> Facebook
                 </a>
-                <a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener" class="sosmed-btn ig" style="grid-column: span 2;">
+                <a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener" class="sosmed-btn sosmed-btn-biru" style="grid-column: span 2;">
                     <i class="fab fa-instagram"></i> Instagram: Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika
                 </a>
                 <a href="tel:082198595245" class="sosmed-btn phone" style="grid-column: span 2;">
@@ -237,7 +238,7 @@
 
         <!-- Jam Operasional -->
         <div class="kontak-info-card">
-            <h3><i class="fas fa-clock" style="color:#f59e0b;"></i> Jam Operasional</h3>
+            <h3><i class="fas fa-clock" style="color:var(--biru-tua);"></i> Jam Operasional</h3>
             <div class="jam-grid">
                 <div class="jam-item"><div class="hari">Senin - Jumat</div><div class="waktu">08.00 - 17.00</div></div>
                 <div class="jam-item"><div class="hari">Sabtu</div><div class="waktu">08.00 - 14.00</div></div>
@@ -247,7 +248,7 @@
 
         <!-- FAQ -->
         <div class="kontak-info-card">
-            <h3><i class="fas fa-circle-question" style="color:#10b981;"></i> Pertanyaan Umum</h3>
+            <h3><i class="fas fa-circle-question" style="color:var(--biru-tua);"></i> Pertanyaan Umum</h3>
             <div class="faq-item">
                 <button class="faq-question" onclick="toggleFaq(this)">
                     Bagaimana cara berdonasi? <i class="fas fa-chevron-down"></i>
