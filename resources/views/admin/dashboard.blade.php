@@ -2,7 +2,7 @@
 
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
-@section('page-subtitle', 'Ringkasan data & aktivitas terkini')
+@section('page-subtitle', 'Ringkasan data dan aktivitas')
 
 @push('styles')
 <style>
@@ -10,6 +10,12 @@
     @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
     .grafik-donasi-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
     @media (max-width: 768px) { .grafik-donasi-cards { grid-template-columns: 1fr; } }
+    .dashboard-recent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    @media (max-width: 900px) { .dashboard-recent-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+        .recent-item { flex-wrap: wrap; row-gap: 8px; }
+        .recent-item > div:last-child { flex-basis: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+    }
     .recent-item {
         display: flex;
         align-items: center;
@@ -30,7 +36,7 @@
     .recent-info { flex: 1; overflow: hidden; }
     .recent-info strong { display: block; font-size: 13px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .recent-info span { font-size: 11.5px; color: #64748b; }
-    .recent-amount { font-size: 13px; font-weight: 600; color: #059669; white-space: nowrap; }
+    .recent-amount { font-size: 13px; font-weight: 700; color: #059669; text-align: right; white-space: nowrap; }
 </style>
 @endpush
 
@@ -53,7 +59,7 @@
         </div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon purple"><i class="fas fa-rupiah-sign"></i></div>
+        <div class="stat-icon accent"><i class="fas fa-rupiah-sign"></i></div>
         <div>
             <div class="stat-value" style="font-size:18px;">
                 Rp {{ number_format($stats['total_nominal'], 0, ',', '.') }}
@@ -83,7 +89,7 @@
         </div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon purple"><i class="fas fa-video"></i></div>
+        <div class="stat-icon accent"><i class="fas fa-video"></i></div>
         <div>
             <div class="stat-value">{{ $stats['total_dokumentasi_video'] }}</div>
             <div class="stat-label">Dokumentasi Video</div>
@@ -95,7 +101,7 @@
 <div class="grid-2">
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i class="fas fa-chart-bar" style="color:#3b82f6;margin-right:8px;"></i>Donasi Uang 6 Bulan Terakhir</span>
+            <span class="card-title"><i class="fas fa-chart-bar" style="color:var(--primary);margin-right:8px;"></i>Donasi Uang 6 Bulan Terakhir</span>
         </div>
         <div class="card-body">
             <canvas id="donasiChart" height="90"></canvas>
@@ -103,11 +109,11 @@
     </div>
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i class="fas fa-chart-pie" style="color:#8b5cf6;margin-right:8px;"></i>Status Kunjungan</span>
+            <span class="card-title"><i class="fas fa-chart-pie" style="color:var(--primary);margin-right:8px;"></i>Status Kunjungan</span>
         </div>
         <div class="card-body">
             <canvas id="kunjunganChart" height="140"></canvas>
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="admin-grid-2" style="margin-top:16px;">
                 <div style="background:#fef3c7;border-radius:8px;padding:10px;text-align:center;">
                     <div style="font-size:22px;font-weight:700;color:#b45309;">{{ $stats['kunjungan_pending'] }}</div>
                     <div style="font-size:11px;color:#92400e;">Pending</div>
@@ -136,9 +142,9 @@
                 <div style="font-size:12px;color:#991b1b;font-weight:600;margin-bottom:4px;">Total Pengeluaran</div>
                 <div style="font-size:20px;font-weight:700;color:#b91c1c;">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</div>
             </div>
-            <div style="background:linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%);border-radius:12px;padding:16px;text-align:center;">
-                <div style="font-size:12px;color:#1e40af;font-weight:600;margin-bottom:4px;">Sisa Saldo Donasi</div>
-                <div style="font-size:20px;font-weight:700;color:#1d4ed8;">Rp {{ number_format($sisa_saldo, 0, ',', '.') }}</div>
+            <div style="background:linear-gradient(135deg,#ede5dc 0%,#e0d5c8 100%);border-radius:12px;padding:16px;text-align:center;">
+                <div style="font-size:12px;color:var(--primary-dark);font-weight:600;margin-bottom:4px;">Sisa Saldo Donasi</div>
+                <div style="font-size:20px;font-weight:700;color:var(--primary-dark);">Rp {{ number_format($sisa_saldo, 0, ',', '.') }}</div>
             </div>
         </div>
         <canvas id="grafikPemasukanPengeluaranSaldo" height="120"></canvas>
@@ -146,16 +152,16 @@
 </div>
 
 <!-- Recent Tables -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+<div class="dashboard-recent-grid">
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i class="fas fa-hand-holding-heart" style="color:#3b82f6;margin-right:8px;"></i>Donasi Terbaru</span>
+            <span class="card-title"><i class="fas fa-hand-holding-heart" style="color:var(--primary);margin-right:8px;"></i>Donasi Terbaru</span>
             <a href="{{ route('admin.donasi.index') }}" class="btn btn-secondary btn-sm">Lihat Semua</a>
         </div>
         <div class="card-body" style="padding:16px 20px;">
             @forelse($donasi_terbaru as $d)
             <div class="recent-item">
-                <div class="recent-avatar" style="background:#dbeafe;color:#1d4ed8;">
+                <div class="recent-avatar" style="background:#ede5dc;color:var(--primary-dark);">
                     <i class="fas fa-user"></i>
                 </div>
                 <div class="recent-info">
@@ -218,10 +224,10 @@
 <!-- Dokumentasi Video (digabung di Galeri) -->
 <div class="card" style="margin-top: 20px;">
     <div class="card-header">
-        <span class="card-title"><i class="fas fa-video" style="color:#7c3aed;margin-right:8px;"></i>Dokumentasi Video</span>
-        <div style="display:flex;gap:8px;">
+            <span class="card-title"><i class="fas fa-video" style="color:var(--primary);margin-right:8px;"></i>Dokumentasi Video</span>
+        <div class="card-header-actions">
             <a href="{{ route('admin.galeri.index') }}?tab=video" class="btn btn-secondary btn-sm">Kelola di Galeri</a>
-            <a href="{{ route('admin.dokumentasi-video.create') }}" class="btn btn-primary btn-sm" style="background:#7c3aed;">
+            <a href="{{ route('admin.dokumentasi-video.create') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus"></i> Tambah Dokumentasi Video
             </a>
         </div>
@@ -235,7 +241,7 @@
 
 <!-- Pengelolaan Donasi -->
 <div class="card" style="margin-top: 20px;">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="card-header">
         <span class="card-title"><i class="fas fa-wallet" style="color:#059669;margin-right:8px;"></i>Pengelolaan Donasi</span>
         <a href="{{ route('admin.pengelolaan-donasi.create') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-plus"></i> Tambah Pengelolaan Donasi
@@ -307,7 +313,7 @@ new Chart(document.getElementById('donasiChart'), {
         datasets: [{
             label: 'Total Donasi (Rp)',
             data: values.length ? values : [0],
-            backgroundColor: 'rgba(37,99,235,.8)',
+            backgroundColor: 'rgba(14,165,233,.85)',
             borderRadius: 6,
             borderSkipped: false,
         }]
@@ -349,7 +355,7 @@ new Chart(document.getElementById('kunjunganChart'), {
                 {{ $stats['kunjungan_completed'] }},
                 {{ $stats['kunjungan_rejected'] }},
             ],
-            backgroundColor: ['#fbbf24','#10b981','#3b82f6','#ef4444'],
+            backgroundColor: ['#38bdf8','#3d7a52','#0ea5e9','#c62828'],
             borderWidth: 0,
             hoverOffset: 6,
         }]
@@ -396,8 +402,8 @@ new Chart(document.getElementById('grafikPemasukanPengeluaranSaldo'), {
                 label: 'Sisa Saldo',
                 data: grafikDonasi.map(d => d.sisa_saldo),
                 type: 'line',
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37,99,235,.1)',
+                borderColor: '#0ea5e9',
+                backgroundColor: 'rgba(14,165,233,.12)',
                 fill: true,
                 tension: 0.3,
                 pointRadius: 4,

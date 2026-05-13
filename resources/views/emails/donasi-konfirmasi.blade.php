@@ -10,7 +10,7 @@
   .wrapper { max-width: 600px; margin: 32px auto; padding: 0 16px; }
   .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
   .header { background: linear-gradient(135deg, #7f1d1d 0%, #DC2626 55%, #f97316 100%); padding: 40px 32px; text-align: center; }
-  .header .icon { font-size: 56px; display: block; margin-bottom: 16px; }
+  .header .icon { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 12px; opacity: 0.9; }
   .header h1 { color: #fff; font-size: 26px; font-weight: 800; margin-bottom: 6px; }
   .header p  { color: rgba(255,255,255,0.85); font-size: 15px; }
   .body { padding: 36px 32px; }
@@ -46,14 +46,14 @@
 
     <!-- Header -->
     <div class="header">
-      <span class="icon">🎉</span>
+      <span class="icon">Konfirmasi donasi</span>
       <h1>Donasi Anda Berhasil!</h1>
       <p>Panti Asuhan Santa Susana Timika berterima kasih</p>
     </div>
 
     <!-- Body -->
     <div class="body">
-      <p class="greeting">Halo, {{ $donasi->nama }}! 👋</p>
+      <p class="greeting">Halo, {{ $donasi->nama }}!</p>
       <p class="intro">
         Pembayaran donasi Anda telah <strong>berhasil dikonfirmasi</strong> dan dicatat oleh sistem kami.
         Kebaikan hati Anda sangat berarti bagi anak-anak di Panti Asuhan Santa Susana Timika.
@@ -61,7 +61,7 @@
 
       <!-- Kwitansi Donasi -->
       <div class="receipt">
-        <h3>📄 Rincian Donasi</h3>
+        <h3>Rincian donasi</h3>
         <div class="receipt-row">
           <span class="label">Nomor Order</span>
           <span class="value" style="font-family: monospace; font-size: 13px;">{{ $donasi->order_id }}</span>
@@ -94,33 +94,33 @@
         </div>
         <div class="receipt-row">
           <span class="label">Status</span>
-          <span class="value badge">✅ Lunas</span>
+          <span class="value badge">Lunas</span>
         </div>
       </div>
 
       @if($donasi->catatan)
       <!-- Pesan Donatur -->
       <div class="message-box">
-        <div class="label">💬 Pesan & Doa Anda</div>
+        <div class="label">Pesan &amp; doa Anda</div>
         <p>"{{ $donasi->catatan }}"</p>
       </div>
       @endif
 
       <!-- Dampak Donasi -->
       <div class="impact">
-        <h3>💚 Dampak Nyata Donasi Anda</h3>
+        <h3>Dampak nyata donasi Anda</h3>
         <ul>
           @php
             $nominal = (int) $donasi->nominal;
             $items = [];
-            if ($nominal >= 50000)   $items[] = ['🍽️', 'Makan bergizi ' . floor($nominal / 50000) . ' anak selama 3 hari'];
-            if ($nominal >= 150000)  $items[] = ['📚', 'Paket buku pelajaran untuk ' . floor($nominal / 150000) . ' anak'];
-            if ($nominal >= 500000)  $items[] = ['💊', 'Biaya kesehatan ' . floor($nominal / 500000) . ' anak selama sebulan'];
-            if ($nominal >= 1000000) $items[] = ['🎒', 'Biaya sekolah + perlengkapan ' . floor($nominal / 1000000) . ' anak'];
-            if (empty($items))       $items[] = ['❤️', 'Berkontribusi nyata untuk kehidupan anak-anak'];
+            if ($nominal >= 50000)   $items[] = 'Makan bergizi ' . floor($nominal / 50000) . ' anak selama 3 hari';
+            if ($nominal >= 150000)  $items[] = 'Paket buku pelajaran untuk ' . floor($nominal / 150000) . ' anak';
+            if ($nominal >= 500000)  $items[] = 'Biaya kesehatan ' . floor($nominal / 500000) . ' anak selama sebulan';
+            if ($nominal >= 1000000) $items[] = 'Biaya sekolah + perlengkapan ' . floor($nominal / 1000000) . ' anak';
+            if (empty($items))       $items[] = 'Berkontribusi nyata untuk kehidupan anak-anak';
           @endphp
-          @foreach($items as $item)
-          <li><span>{{ $item[0] }}</span> {{ $item[1] }}</li>
+          @foreach($items as $line)
+          <li>{{ $line }}</li>
           @endforeach
         </ul>
       </div>
@@ -140,7 +140,7 @@
 
     <!-- Footer -->
     <div class="footer">
-      <p class="org">🏠 Panti Asuhan Santa Susana Timika</p>
+      <p class="org">Panti Asuhan Santa Susana Timika</p>
       <p>Yayasan Peduli Kasih Mimika · Timika, Kab. Mimika, Papua Tengah</p>
       <p style="margin-top:8px;">
         <a href="https://pantisusana.web.id">pantisusana.web.id</a> &nbsp;·&nbsp;

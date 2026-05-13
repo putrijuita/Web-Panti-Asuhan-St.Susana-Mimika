@@ -6,7 +6,7 @@
 
 @section('content')
 <div style="display:flex;gap:20px;flex-wrap:wrap;">
-    <div style="flex:2;min-width:280px;">
+    <div style="flex:2;min-width:0;max-width:100%;">
         <div class="card">
             <div class="card-header">
                 <span class="card-title"><i class="fas fa-hand-holding-heart" style="color:#3b82f6;margin-right:8px;"></i>Informasi Donasi</span>
@@ -64,7 +64,7 @@
             </div>
         </div>
     </div>
-    <div style="flex:1;min-width:240px;">
+    <div style="flex:1;min-width:0;max-width:100%;">
         <div class="card">
             <div class="card-header">
                 <span class="card-title"><i class="fas fa-edit" style="color:#8b5cf6;margin-right:8px;"></i>Status</span>

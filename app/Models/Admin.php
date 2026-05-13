@@ -10,7 +10,7 @@ class Admin extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'avatar'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -19,6 +19,15 @@ class Admin extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function avatarUrl(): ?string
+    {
+        if (empty($this->avatar)) {
+            return null;
+        }
+
+        return asset('storage/'.$this->avatar);
     }
 
     public function isSuperAdmin(): bool

@@ -1,25 +1,32 @@
 @extends('layouts.app')
 
-@section('title', 'Galeri - Panti Asuhan Santa Susana Timika')
+@section('title', $galeriPage->page_meta_title ?? 'Galeri')
 
 @push('styles')
 <style>
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--aksen);
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+.section-label i { opacity: 0.95; }
 .galeri-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
-    border-radius: 24px;
-    padding: 4rem 3rem;
+    background: var(--aksen-gelap);
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
     color: white;
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     position: relative;
-    overflow: hidden;
 }
-.galeri-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 30% 70%, rgba(135,206,235,0.12) 0%, transparent 55%),
-                radial-gradient(circle at 70% 30%, rgba(46,134,171,0.1) 0%, transparent 50%);
-}
+.galeri-hero::before { display: none; }
 .galeri-hero h1 { font-size: clamp(2rem,5vw,3rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
 .galeri-hero p  { font-size: 1.1rem; opacity: 0.85; max-width: 560px; margin: 0 auto; line-height: 1.7; position: relative; }
 
@@ -33,7 +40,7 @@
     border-radius: 50px;
     border: 2px solid #E2E8F0;
     background: white;
-    color: #64748B;
+    color: var(--teks-muted);
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
@@ -48,20 +55,20 @@
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
 }
 .gallery-item {
     border-radius: 20px;
     overflow: hidden;
     background: white;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.08);
     transition: all 0.4s;
     cursor: pointer;
     position: relative;
 }
-.gallery-item:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 16px 48px rgba(46,134,171,0.18); }
+.gallery-item:hover { box-shadow: 0 8px 28px rgba(8, 47, 73, 0.1); }
 .gallery-thumb {
     width: 100%;
     aspect-ratio: 4/3;
@@ -91,7 +98,7 @@
     display: inline-block;
     padding: 0.15rem 0.65rem;
     border-radius: 999px;
-    background: rgba(59,130,246,0.95);
+    background: rgba(14, 165, 233, 0.95);
     font-size: 0.7rem;
     font-weight: 700;
     margin-bottom: 0.4rem;
@@ -108,7 +115,7 @@
 }
 .gallery-info { padding: 1.25rem 1.5rem; }
 .gallery-info h4 { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.3rem; }
-.gallery-info p  { font-size: 0.85rem; color: #64748B; }
+.gallery-info p  { font-size: 0.85rem; color: var(--teks-muted); }
 .gallery-tag {
     display: inline-block;
     padding: 0.2rem 0.7rem;
@@ -129,12 +136,12 @@
 .mosaic-item {
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.1);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.1);
     transition: all 0.4s;
     cursor: pointer;
     position: relative;
 }
-.mosaic-item:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(46,134,171,0.2); z-index: 1; }
+.mosaic-item:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(14,165,233,0.2); z-index: 1; }
 .mosaic-item.wide  { grid-column: span 2; }
 .mosaic-item.tall  { grid-row: span 2; }
 .mosaic-thumb {
@@ -167,7 +174,7 @@
     background: white;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.08);
     transition: all 0.3s;
 }
 .video-card:hover { transform: translateY(-4px); }
@@ -272,13 +279,13 @@
 
 @section('content')
 <div class="galeri-hero">
-    <h1>📸 Galeri Kegiatan</h1>
-    <p>Sekilas momen berharga dari kehidupan dan kegiatan anak-anak di Panti Asuhan Santa Susana Timika</p>
+    <h1><i class="{{ $galeriPage->hero_icon }}" style="margin-right:0.35em;opacity:0.9;" aria-hidden="true"></i>{{ $galeriPage->hero_title }}</h1>
+    <p>{{ $galeriPage->hero_subtitle }}</p>
 </div>
 
 <!-- Filter -->
 <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterGallery('semua', this)">Semua</button>
+    <button type="button" class="filter-btn active" onclick="filterGallery('semua', this)">{{ $galeriPage->filter_btn_semua }}</button>
     @if(isset($categories) && $categories->count())
         @foreach($categories as $category)
             <button
@@ -294,8 +301,8 @@
 @if($items->isNotEmpty())
     <!-- Grid Gallery dari database -->
     <div style="margin-bottom: 1rem;">
-        <div class="section-label"><i class="fas fa-th"></i> Album Kegiatan</div>
-        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">Foto Kegiatan di Panti</h2>
+        <div class="section-label"><i class="{{ $galeriPage->album_section_icon }}" aria-hidden="true"></i> {{ $galeriPage->album_section_label }}</div>
+        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 2rem;">{{ $galeriPage->album_section_title }}</h2>
     </div>
 
     <div class="gallery-grid" id="albumContainer">
@@ -310,14 +317,14 @@
                     @if($foto->gambar)
                         <img src="{{ asset('storage/'.$foto->gambar) }}" alt="{{ $foto->nama }}" style="width:100%;height:100%;object-fit:cover;">
                     @else
-                        📸
+                        <span style="font-size:2.5rem;color:var(--teks-muted);"><i class="fas fa-image" aria-hidden="true"></i></span>
                     @endif
                     <div class="overlay">
                         <div class="gallery-overlay-content">
-                            <span class="gallery-overlay-tag">Kegiatan</span>
+                            <span class="gallery-overlay-tag">{{ $galeriPage->gallery_overlay_tag }}</span>
                             <h4 class="gallery-overlay-title">{{ $foto->nama }}</h4>
                             <p class="gallery-overlay-desc">
-                                {{ $foto->keterangan ?: 'Dokumentasi kegiatan di Panti Asuhan Santa Susana.' }}
+                                {{ $foto->keterangan ?: $galeriPage->gallery_default_caption }}
                             </p>
                         </div>
                     </div>
@@ -327,18 +334,18 @@
     </div>
 @else
     <div style="margin-bottom: 3rem;">
-        <div class="section-label"><i class="fas fa-th"></i> Album Kegiatan</div>
-        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.75rem;">Belum Ada Foto Galeri</h2>
-        <p style="color:#64748B;font-size:0.95rem;">Tim kami akan segera menambahkan foto-foto kegiatan anak-anak di panti.</p>
+        <div class="section-label"><i class="{{ $galeriPage->album_section_icon }}" aria-hidden="true"></i> {{ $galeriPage->album_section_label }}</div>
+        <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.75rem;">{{ $galeriPage->empty_title }}</h2>
+        <p style="color:var(--teks-muted);font-size:0.95rem;">{{ $galeriPage->empty_text }}</p>
     </div>
 @endif
 
 <!-- Video Section -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-photo-film"></i> Dokumentasi</div>
-    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.5rem;">Dokumentasi Video</h2>
-    <p style="font-size: 0.95rem; color: #64748B; margin-bottom: 2rem;">
-        Video dokumentasi kegiatan di Panti Asuhan Santa Susana Timika.
+    <div class="section-label"><i class="{{ $galeriPage->video_section_icon }}" aria-hidden="true"></i> {{ $galeriPage->video_section_label }}</div>
+    <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.5rem;">{{ $galeriPage->video_section_title }}</h2>
+    <p style="font-size: 0.95rem; color: var(--teks-muted); margin-bottom: 2rem;">
+        {{ $galeriPage->video_section_sub }}
     </p>
     @if(isset($videos) && $videos->count())
         <div class="video-grid">
@@ -355,7 +362,7 @@
                         <div class="video-thumb">
                             <video controls preload="metadata" playsinline style="width:100%;height:100%;object-fit:contain;">
                                 <source src="{{ $streamUrl }}" type="{{ $mimeType }}">
-                                Browser Anda tidak mendukung pemutaran video.
+                                {{ $galeriPage->video_browser_unsupported }}
                             </video>
                         </div>
                     @else
@@ -373,25 +380,25 @@
             @endforeach
         </div>
     @else
-        <p style="color:#64748B;font-size:0.95rem;">
-            Belum ada dokumentasi video yang ditambahkan. Nantikan update dokumentasi kegiatan terbaru kami.
+        <p style="color:var(--teks-muted);font-size:0.95rem;">
+            {{ $galeriPage->video_empty_message }}
         </p>
     @endif
 </div>
 
 <!-- CTA -->
-<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 24px; padding: 3rem 2rem; text-align: center; color: white;">
-    <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Jadilah Bagian dari Cerita Ini</h2>
-    <p style="opacity: 0.85; margin-bottom: 2rem;">Kunjungi kami dan ciptakan momen berharga bersama anak-anak</p>
+<div style="background: var(--aksen-gelap); border-radius: 12px; padding: 2.5rem 1.5rem; text-align: center; color: white;">
+    <h2 style="font-size: 1.65rem; margin-bottom: 0.75rem;">{{ $galeriPage->cta_title }}</h2>
+    <p style="opacity: 0.88; margin-bottom: 1.75rem;">{{ $galeriPage->cta_subtitle }}</p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{{ route('kunjungan.create') }}" class="btn btn-white">📸 Kunjungi Kami</a>
-        <a href="{{ route('donasi.index') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">💝 Donasi</a>
+        <a href="{{ route('kunjungan.create') }}" class="btn btn-white"><i class="fas fa-door-open" style="margin-right:6px;"></i>{{ $galeriPage->cta_btn_kunjungan }}</a>
+        <a href="{{ route('donasi.index') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);"><i class="fas fa-heart" style="margin-right:6px;"></i>{{ $galeriPage->cta_btn_donasi }}</a>
     </div>
 </div>
 
 <!-- Lightbox untuk preview gambar -->
 <div id="galleryLightbox" class="gallery-lightbox" aria-hidden="true">
-    <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox()" aria-label="Tutup">&times;</button>
+    <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox()" aria-label="{{ $galeriPage->lightbox_close_label }}">&times;</button>
     <div class="gallery-lightbox-backdrop" onclick="closeGalleryLightbox()"></div>
     <div class="gallery-lightbox-content">
         <img id="galleryLightboxImg" src="" alt="">

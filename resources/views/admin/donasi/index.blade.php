@@ -26,7 +26,7 @@
                         <option value="failure" {{ request('status')=='failure'?'selected':'' }}>Failure</option>
                     </select>
                 </div>
-                <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div class="filter-bar-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i> Filter
                     </button>

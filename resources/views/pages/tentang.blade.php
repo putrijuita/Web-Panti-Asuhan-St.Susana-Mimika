@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Tentang Kami - Panti Asuhan Santa Susana Timika')
+@section('title')
+{{ $tentangContent->page_meta_title }}
+@endsection
 
 @push('styles')
 <style>
@@ -26,7 +28,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(46,134,171,0.1);
+    background: rgba(14,165,233,0.1);
     color: var(--biru-tua);
     padding: 0.35rem 1rem;
     border-radius: 50px;
@@ -35,7 +37,7 @@
     margin-bottom: 0.75rem;
 }
 .section-head { font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.5rem; }
-.section-sub  { color: #64748B; font-size: 1rem; margin-bottom: 2rem; }
+.section-sub  { color: var(--teks-muted); font-size: 1rem; margin-bottom: 2rem; }
 
 .visi-misi-grid {
     display: grid;
@@ -47,7 +49,7 @@
     background: white;
     border-radius: 20px;
     padding: 2.5rem;
-    box-shadow: 0 4px 30px rgba(46,134,171,0.08);
+    box-shadow: 0 4px 30px rgba(14,165,233,0.08);
     position: relative;
     overflow: hidden;
 }
@@ -67,7 +69,7 @@
     margin-bottom: 1.25rem;
 }
 .vm-card h3 { font-size: 1.25rem; color: var(--biru-gelap); margin-bottom: 1rem; }
-.vm-card p  { color: #64748B; line-height: 1.7; }
+.vm-card p  { color: var(--teks-muted); line-height: 1.7; }
 
 .nilai-grid {
     display: grid;
@@ -80,13 +82,13 @@
     border-radius: 16px;
     padding: 1.75rem 1.25rem;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(46,134,171,0.06);
+    box-shadow: 0 4px 20px rgba(14,165,233,0.06);
     transition: transform 0.3s;
 }
 .nilai-item:hover { transform: translateY(-5px); }
 .nilai-item .emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .nilai-item h4    { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.4rem; }
-.nilai-item p     { font-size: 0.85rem; color: #64748B; line-height: 1.5; }
+.nilai-item p     { font-size: 0.85rem; color: var(--teks-muted); line-height: 1.5; }
 
 .sejarah-timeline {
     position: relative;
@@ -123,7 +125,7 @@
     margin-bottom: 0.25rem;
 }
 .timeline-title { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.4rem; }
-.timeline-desc  { color: #64748B; font-size: 0.95rem; line-height: 1.6; }
+.timeline-desc  { color: var(--teks-muted); font-size: 0.95rem; line-height: 1.6; }
 
 .team-grid {
     display: grid;
@@ -136,8 +138,8 @@
     border-radius: 20px;
     padding: 2rem 1.5rem;
     text-align: center;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
-    border: 1px solid rgba(46,134,171,0.12);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.08);
+    border: 1px solid rgba(14,165,233,0.12);
     transition: all 0.3s;
     /* Kotak jelas per pengurus */
     min-height: 300px;
@@ -146,7 +148,7 @@
     align-items: center;
     justify-content: flex-start;
 }
-.team-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(46,134,171,0.15); }
+.team-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(14,165,233,0.15); }
 .team-avatar {
     width: 180px; height: 180px;
     border-radius: 50%;
@@ -154,27 +156,11 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 3rem;
     margin: 0 auto 1rem;
-    box-shadow: 0 4px 16px rgba(46,134,171,0.25);
+    box-shadow: 0 4px 16px rgba(14,165,233,0.25);
     flex-shrink: 0;
 }
 .team-card h4   { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.25rem; }
 .team-card span { font-size: 0.85rem; color: var(--biru-tua); font-weight: 600; }
-
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-.stat-box {
-    background: linear-gradient(135deg, var(--biru-gelap), var(--biru-tua));
-    border-radius: 20px;
-    padding: 2rem 1rem;
-    text-align: center;
-    color: white;
-}
-.stat-box .num  { font-size: 2.5rem; font-weight: 800; line-height: 1; }
-.stat-box .desc { font-size: 0.85rem; opacity: 0.85; margin-top: 0.4rem; }
 
 @media (max-width: 640px) {
     .visi-misi-grid { grid-template-columns: 1fr; }
@@ -238,28 +224,26 @@
 @section('content')
 <!-- Hero -->
 <div class="about-hero">
-    <h1>Tentang Panti Asuhan Santa Susana</h1>
-    <p>Mengenal lebih dekat perjalanan, visi, dan dedikasi kami dalam melayani anak-anak di Timika, Papua Tengah</p>
+    <h1>{{ $tentangContent->tentang_hero_title }}</h1>
+    <p>{{ $tentangContent->tentang_hero_description }}</p>
 </div>
 
 <!-- Visi & Misi -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-star"></i> Visi & Misi</div>
+    <div class="section-label"><i class="fas fa-star" aria-hidden="true"></i> {{ $tentangContent->vm_section_label }}</div>
     <div class="visi-misi-grid">
         <div class="vm-card">
-            <div class="vm-icon">🌟</div>
-            <h3>Visi</h3>
-            <p>Ada bersama mereka, mendampingi dan membimbing mereka serta membentuk karakter anak asuh agar menjadi pribadi yang menjunjung tinggi nilai-nilai moralitas secara Katolik, memiliki intelektual yang berkualitas dan disiplin yang tinggi serta menjadi pribadi yang takut akan Tuhan dan mengasihi sesama.</p>
+            <div class="vm-icon"><i class="{{ $tentangContent->vm_visi_icon }}" aria-hidden="true"></i></div>
+            <h3>{{ $tentangContent->vm_visi_heading }}</h3>
+            <p>{{ $tentangContent->visi_text }}</p>
         </div>
         <div class="vm-card">
-            <div class="vm-icon">🎯</div>
-            <h3>Misi</h3>
-            <ul style="padding-left: 1.2rem; color: #64748B; line-height: 2;">
-                <li>Memberikan kenyamanan dan kedamaian bagi anak asuh.</li>
-                <li>Memberi kesempatan kepada anak asuh untuk mengembangkan bakat dan kemampuan secara jasmani maupun rohani.</li>
-                <li>Mendidik, membina, mengayomi, memotivasi dan mengarahkan agar menjadi pribadi yang mandiri, menghargai hidup dan menjadi berkat bagi bangsa serta memberikan pengaruh yang positif bagi sesama, hidup menghayati dan menghormati Allah Tritunggal Maha Kudus serta menghormati Bunda Maria sebagai Ibu Kehidupan.</li>
-                <li>Membentuk pola hidup kerohanian yang layak dan membentuk karakter hidup bersosial.</li>
-                <li>Membina dan menanamkan hidup beriman secara Katolik dan mengamalkannya dalam hidup sehari-hari.</li>
+            <div class="vm-icon"><i class="{{ $tentangContent->vm_misi_icon }}" aria-hidden="true"></i></div>
+            <h3>{{ $tentangContent->vm_misi_heading }}</h3>
+            <ul style="padding-left: 1.2rem; color: var(--teks-muted); line-height: 2;">
+                @foreach(($tentangContent->misi_items ?? []) as $misiItem)
+                    <li>{{ $misiItem }}</li>
+                @endforeach
             </ul>
         </div>
     </div>
@@ -267,70 +251,46 @@
 
 <!-- Nilai -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-heart"></i> Nilai Kami</div>
-    <h2 class="section-head">Nilai-Nilai yang Kami Junjung</h2>
+    <div class="section-label"><i class="fas fa-heart" aria-hidden="true"></i> {{ $tentangContent->nilai_section_label }}</div>
+    <h2 class="section-head">{{ $tentangContent->nilai_section_title }}</h2>
+    @if(filled($tentangContent->nilai_section_sub ?? null))
+        <p class="section-sub">{{ $tentangContent->nilai_section_sub }}</p>
+    @endif
     <div class="nilai-grid">
-        <div class="nilai-item"><div class="emoji">💗</div><h4>Kasih</h4><p>Setiap tindakan dilandasi cinta dan kepedulian tulus</p></div>
-        <div class="nilai-item"><div class="emoji">🙏</div><h4>Iman</h4><p>Berpijak pada nilai-nilai rohani dan kepercayaan kepada Tuhan</p></div>
-        <div class="nilai-item"><div class="emoji">🤝</div><h4>Kebersamaan</h4><p>Membangun komunitas yang solid dan saling mendukung</p></div>
-        <div class="nilai-item"><div class="emoji">📚</div><h4>Pendidikan</h4><p>Pendidikan adalah kunci utama masa depan cerah</p></div>
-        <div class="nilai-item"><div class="emoji">💪</div><h4>Kemandirian</h4><p>Membekali anak menjadi pribadi mandiri dan percaya diri</p></div>
-        <div class="nilai-item"><div class="emoji">✨</div><h4>Integritas</h4><p>Transparansi dan kejujuran dalam setiap langkah pelayanan</p></div>
+        @foreach(($tentangContent->nilai_items ?? []) as $nilai)
+            <div class="nilai-item">
+                <div class="emoji"><i class="{{ $nilai['icon'] ?? 'fas fa-circle' }}" aria-hidden="true"></i></div>
+                <h4>{{ $nilai['title'] ?? '' }}</h4>
+                <p>{{ $nilai['text'] ?? '' }}</p>
+            </div>
+        @endforeach
     </div>
 </div>
 
 <!-- Sejarah -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-clock-rotate-left"></i> Sejarah</div>
-    <h2 class="section-head">Perjalanan Kami</h2>
-    <p class="section-sub">Dari awal yang sederhana hingga tumbuh menjadi rumah bagi banyak anak</p>
+    <div class="section-label"><i class="fas fa-clock-rotate-left" aria-hidden="true"></i> {{ $tentangContent->sejarah_section_label }}</div>
+    <h2 class="section-head">{{ $tentangContent->sejarah_section_title }}</h2>
+    <p class="section-sub">{{ $tentangContent->sejarah_section_sub }}</p>
     <div class="card" style="padding: 2.5rem;">
         <div class="sejarah-timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-year">Awal Berdiri</div>
-                <div class="timeline-title">Pendirian Yayasan Peduli Kasih Mimika</div>
-                <div class="timeline-desc">Didirikan atas dasar kepedulian terhadap anak-anak kurang mampu di wilayah Mimika, Papua Tengah. Bermula dari sekelompok kecil yang bersatu hati.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-year">Perkembangan</div>
-                <div class="timeline-title">Pembukaan Panti Asuhan Santa Susana</div>
-                <div class="timeline-desc">Rumah pengasuhan resmi mulai beroperasi, menerima anak-anak dari berbagai latar belakang untuk mendapat pendidikan dan kasih sayang.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-year">Pertumbuhan</div>
-                <div class="timeline-title">Perluasan Program & Fasilitas</div>
-                <div class="timeline-desc">Program pendidikan, kesehatan, dan keterampilan diperluas. Dukungan donatur dari berbagai penjuru semakin menguat.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-year">Kini</div>
-                <div class="timeline-title">Melayani dengan Penuh Kasih</div>
-                <div class="timeline-desc">Terus bertumbuh dan berbenah, memberikan pelayanan terbaik bagi anak-anak demi masa depan yang lebih cerah.</div>
-            </div>
+            @foreach(($tentangContent->sejarah_items ?? []) as $item)
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">{{ $item['badge'] ?? '' }}</div>
+                    <div class="timeline-title">{{ $item['title'] ?? '' }}</div>
+                    <div class="timeline-desc">{{ $item['body'] ?? '' }}</div>
+                </div>
+            @endforeach
         </div>
-    </div>
-</div>
-
-<!-- Angka -->
-<div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-chart-bar"></i> Dampak</div>
-    <h2 class="section-head">Dampak yang Kami Ciptakan</h2>
-    <div class="stats-row">
-        <div class="stat-box"><div class="num">💝</div><div class="desc">Donasi Diterima</div></div>
-        <div class="stat-box"><div class="num">🎓</div><div class="desc">Anak Bersekolah</div></div>
-        <div class="stat-box"><div class="num">🤝</div><div class="desc">Relawan Aktif</div></div>
-        <div class="stat-box"><div class="num">❤️</div><div class="desc">Tahun Melayani</div></div>
     </div>
 </div>
 
 <!-- Pengurus -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-users"></i> Pengurus</div>
-    <h2 class="section-head">Orang-Orang di Balik Pelayanan</h2>
-    <p class="section-sub">Tim pengurus yang berdedikasi dan berkomitmen untuk anak-anak</p>
+    <div class="section-label"><i class="fas fa-users" aria-hidden="true"></i> {{ $tentangContent->pengurus_section_label }}</div>
+    <h2 class="section-head">{{ $tentangContent->pengurus_section_title }}</h2>
+    <p class="section-sub">{{ $tentangContent->pengurus_section_sub }}</p>
     <div class="team-grid">
         @forelse($pengurus as $p)
             <div class="team-card">
@@ -357,12 +317,12 @@
 
 <!-- CTA -->
 <div style="background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap)); border-radius: 24px; padding: 3rem 2rem; text-align: center; color: white;">
-    <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Ikut Berkontribusi Bersama Kami</h2>
-    <p style="opacity: 0.9; margin-bottom: 2rem;">Donasi atau kunjungan Anda adalah bukti nyata kepedulian</p>
+    <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">{{ $tentangContent->cta_title }}</h2>
+    <p style="opacity: 0.9; margin-bottom: 2rem;">{{ $tentangContent->cta_subtitle }}</p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{{ route('donasi.index') }}" class="btn btn-white">💝 Donasi Sekarang</a>
-        <a href="{{ route('kunjungan.create') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">🏠 Ajukan Kunjungan</a>
-        <a href="{{ route('kontak') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">📞 Hubungi Kami</a>
+        <a href="{{ route('donasi.index') }}" class="btn btn-white"><i class="fas fa-heart" style="margin-right:6px;" aria-hidden="true"></i>{{ $tentangContent->cta_btn_donasi }}</a>
+        <a href="{{ route('kunjungan.create') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);"><i class="fas fa-door-open" style="margin-right:6px;" aria-hidden="true"></i>{{ $tentangContent->cta_btn_kunjungan }}</a>
+        <a href="{{ route('kontak') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);"><i class="fas fa-phone" style="margin-right:6px;" aria-hidden="true"></i>{{ $tentangContent->cta_btn_kontak }}</a>
     </div>
 </div>
 

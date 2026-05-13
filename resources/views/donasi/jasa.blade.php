@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Donasi Jasa - Panti Asuhan Santa Susana Timika')
+@section('title', $dj['page_title'] ?? 'Donasi Jasa - Panti Asuhan Santa Susana Timika')
 
 @push('styles')
 <style>
@@ -27,8 +27,8 @@
 .back-link:hover { opacity:1; color: white; }
 .jasa-hero h1 { font-size: clamp(1.8rem,4.5vw,2.8rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
 .jasa-hero p  { font-size: 1.05rem; opacity: 0.9; max-width: 560px; margin: 0 auto; line-height: 1.7; position: relative; }
+.jasa-hero i { color: #fff; }
 
-/* Penjelasan tujuan halaman */
 .page-explanation {
     background: #F0FDF4;
     border: 1px solid #BBF7D0;
@@ -45,6 +45,7 @@
     align-items: center;
     gap: 0.5rem;
 }
+.page-explanation h2 i { color: var(--biru-gelap); }
 .page-explanation ul {
     list-style: none;
     padding: 0;
@@ -61,10 +62,17 @@
 }
 .page-explanation li:last-child { margin-bottom: 0; }
 .page-explanation li i {
-    color: #059669;
+    color: var(--biru-gelap);
     margin-top: 0.2rem;
     flex-shrink: 0;
 }
+.page-explanation-li-body {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+.page-explanation-li-body strong { font-weight: 700; color: #065f46; }
 
 .jasa-layout {
     display: grid;
@@ -80,16 +88,18 @@
     position: sticky;
     top: 88px;
 }
+.form-card > p i { color: var(--biru-gelap); margin-right: 0.25em; }
 .info-card {
     background: white;
     border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.07);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.07);
     margin-bottom: 1.5rem;
 }
 .info-card h3 { font-size: 1.05rem; color: var(--biru-gelap); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+.info-card h3 > i { color: var(--biru-gelap); }
+.jasa-layout .info-card ul li > i.fas { color: var(--biru-gelap); }
 
-/* Jenis Jasa Pilihan Grid */
 .jasa-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -113,6 +123,7 @@
 .jasa-chip:hover { border-color: #059669; background: #F0FDF4; }
 .jasa-chip.selected { border-color: #059669; background: linear-gradient(135deg, #059669, #10b981); color: white; }
 .jasa-chip .jasa-icon { font-size: 1.4rem; line-height: 1; }
+.jasa-chip.selected .jasa-icon i { color: #fff; }
 .jasa-chip .jasa-label { font-size: 0.72rem; font-weight: 700; }
 
 .jenis-chip-wrap {
@@ -122,7 +133,7 @@
     display: flex; align-items: center; gap: 0.4rem;
     padding: 0.5rem 0.9rem; border-radius: 50px;
     font-size: 0.82rem; font-weight: 600; border: none;
-    cursor: pointer; font-family: inherit; transition: all 0.2s;
+    cursor: default; font-family: inherit; transition: all 0.2s;
     border: 2px solid transparent;
 }
 .jenis-chip.green  { background: #D1FAE5; color: #065f46; }
@@ -142,7 +153,7 @@
     color: white; font-weight: 800; font-size: 0.85rem;
 }
 .how-text h4 { font-weight: 700; color: var(--teks-gelap); margin-bottom: 0.2rem; font-size: 0.93rem; }
-.how-text p  { font-size: 0.83rem; color: #64748B; line-height: 1.5; }
+.how-text p  { font-size: 0.83rem; color: var(--teks-muted); line-height: 1.5; }
 
 .submit-btn {
     width: 100%; padding: 1rem;
@@ -154,6 +165,7 @@
     display: flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
 .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(5,150,105,0.4); }
+.submit-btn i { color: inherit; }
 
 @media (max-width: 860px) {
     .jasa-layout { grid-template-columns: 1fr; }
@@ -167,178 +179,148 @@
 @endpush
 
 @section('content')
+@php
+    $jasaChips = $dj['form']['chips'];
+    $jasaLainnyaVal = end($jasaChips)['value'] ?? 'Lainnya';
+    reset($jasaChips);
+@endphp
 <div class="jasa-hero">
     <a href="{{ route('donasi.index') }}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Kembali ke Pilihan Donasi
+        <i class="fas fa-arrow-left"></i> {{ $dj['back_link'] }}
     </a>
-    <h1>🤲 Donasi Jasa & Keahlian</h1>
-    <p>Waktu dan keahlian Anda adalah harta yang sangat berharga. Bagikan keduanya untuk langsung mengubah kehidupan anak-anak kami.</p>
+    <h1>{{ $dj['hero']['title'] }}</h1>
+    <p>{{ $dj['hero']['lead'] }}</p>
 </div>
 
 <div class="page-explanation">
-    <h2><i class="fas fa-info-circle"></i> Apa itu Donasi Jasa?</h2>
+    <h2><i class="{{ e($dj['explain']['title_icon']) }}" aria-hidden="true"></i> {{ $dj['explain']['title'] }}</h2>
     <ul>
-        <li><i class="fas fa-check"></i> Donasi jasa merupakan kegiatan kunjungan yang dilakukan secara <strong>rutin dan terjadwal</strong>.</li>
-        <li><i class="fas fa-check"></i> Kegiatan ini memiliki <strong>timeline atau jadwal kegiatan</strong> yang telah dipilih dan disusun oleh panti.</li>
-        <li><i class="fas fa-check"></i> Pengunjung atau relawan yang mendaftar pada halaman ini <strong>mengikuti rangkaian kegiatan</strong> yang telah disusun sebelumnya.</li>
+        @foreach ($dj['explain']['items'] as $row)
+            <li>
+                <i class="{{ e($dj['explain']['list_icon']) }}" aria-hidden="true"></i>
+                <div class="page-explanation-li-body">{{ $row['prefix'] }}<strong>{{ $row['strong'] }}</strong>{{ $row['suffix'] ?? '' }}</div>
+            </li>
+        @endforeach
     </ul>
 </div>
 
 <div class="jasa-layout">
-    <!-- Info Kiri -->
     <div>
         <div class="info-card">
-            <h3><i class="fas fa-star" style="color:#059669;"></i> Bidang Jasa yang Dibutuhkan</h3>
-            <p style="color:#64748B; font-size:0.88rem; margin-bottom:1rem;">Kami menyambut kontribusi di berbagai bidang:</p>
+            <h3><i class="{{ e($dj['bidang']['title_icon']) }}" aria-hidden="true"></i> {{ $dj['bidang']['title'] }}</h3>
+            <p style="color:var(--teks-muted); font-size:0.88rem; margin-bottom:1rem;">{{ $dj['bidang']['intro'] }}</p>
             <div class="jenis-chip-wrap">
-                <span class="jenis-chip green">📚 Mengajar / Tutoring</span>
-                <span class="jenis-chip blue">💻 Teknologi & IT</span>
-                <span class="jenis-chip purple">🎨 Seni & Desain</span>
-                <span class="jenis-chip orange">🏥 Medis & Kesehatan</span>
-                <span class="jenis-chip pink">🍳 Memasak & Gizi</span>
-                <span class="jenis-chip green">⚽ Olahraga & Fisik</span>
-                <span class="jenis-chip blue">🎵 Musik & Seni Budaya</span>
-                <span class="jenis-chip purple">🔨 Konstruksi & Teknik</span>
-                <span class="jenis-chip orange">💇 Kecantikan & Tata Rambut</span>
-                <span class="jenis-chip pink">🤝 Konseling & Psikologi</span>
-                <span class="jenis-chip green">📸 Fotografi & Videografi</span>
-                <span class="jenis-chip blue">🌐 Bahasa & Komunikasi</span>
+                @foreach ($dj['bidang']['chips'] as $chip)
+                    <span class="jenis-chip {{ e($chip['style']) }}">{{ $chip['label'] }}</span>
+                @endforeach
             </div>
         </div>
 
         <div class="info-card">
-            <h3><i class="fas fa-route" style="color:#059669;"></i> Alur Donasi Jasa</h3>
-            <div class="how-item"><div class="how-num">1</div><div class="how-text"><h4>Daftarkan Diri</h4><p>Isi form dengan bidang keahlian dan ketersediaan waktu Anda</p></div></div>
-            <div class="how-item"><div class="how-num">2</div><div class="how-text"><h4>Konfirmasi Tim</h4><p>Pengurus akan menghubungi Anda dalam 1–2 hari untuk diskusi lebih lanjut</p></div></div>
-            <div class="how-item"><div class="how-num">3</div><div class="how-text"><h4>Rencanakan Bersama</h4><p>Kami sesuaikan jadwal, target peserta, dan kebutuhan teknis</p></div></div>
-            <div class="how-item" style="margin-bottom:0;"><div class="how-num">4</div><div class="how-text"><h4>Berikan Jasamu!</h4><p>Laksanakan kegiatan dan rasakan dampak nyata yang Anda buat</p></div></div>
+            <h3><i class="{{ e($dj['alur']['title_icon']) }}" aria-hidden="true"></i> {{ $dj['alur']['title'] }}</h3>
+            @foreach ($dj['alur']['steps'] as $idx => $step)
+                <div class="how-item" @if($idx === count($dj['alur']['steps']) - 1) style="margin-bottom:0;" @endif>
+                    <div class="how-num">{{ $step['num'] }}</div>
+                    <div class="how-text">
+                        <h4>{{ $step['title'] }}</h4>
+                        <p>{{ $step['body'] }}</p>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
-        <div class="info-card" style="background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 1px solid #BBF7D0;">
-            <h3><i class="fas fa-award" style="color:#059669;"></i> Apa yang Anda Dapatkan</h3>
+        <div class="info-card" style="background: {{ e($dj['benefits']['card_style']) }}; border: {{ e($dj['benefits']['border']) }};">
+            <h3><i class="{{ e($dj['benefits']['title_icon']) }}" aria-hidden="true"></i> {{ $dj['benefits']['title'] }}</h3>
             <ul style="list-style:none; padding:0;">
-                <li style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem; font-size:0.88rem; color:#065f46;">
-                    <i class="fas fa-check-circle"></i> Sertifikat kontribusi sukarela
-                </li>
-                <li style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem; font-size:0.88rem; color:#065f46;">
-                    <i class="fas fa-check-circle"></i> Pengalaman nyata melayani masyarakat
-                </li>
-                <li style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem; font-size:0.88rem; color:#065f46;">
-                    <i class="fas fa-check-circle"></i> Dokumentasi kegiatan untuk portofolio
-                </li>
-                <li style="display:flex; align-items:center; gap:0.6rem; font-size:0.88rem; color:#065f46;">
-                    <i class="fas fa-check-circle"></i> Jaringan relawan yang solid dan penuh inspirasi
-                </li>
+                @foreach ($dj['benefits']['items'] as $line)
+                    <li style="display:flex; align-items:center; gap:0.6rem; font-size:0.88rem; color:#065f46;{{ $loop->last ? '' : ' margin-bottom:0.75rem;' }}">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i> {{ $line }}
+                    </li>
+                @endforeach
             </ul>
         </div>
     </div>
 
-    <!-- Form Kanan -->
     <div class="form-card">
-        <h2 style="font-size:1.4rem; color:var(--biru-gelap); margin-bottom:0.4rem;">Form Donasi Jasa</h2>
-        <p style="color:#64748B; font-size:0.9rem; margin-bottom:2rem;">Ceritakan keahlian Anda untuk kami</p>
+        <h2 style="font-size:1.4rem; color:var(--biru-gelap); margin-bottom:0.4rem;">{{ $dj['form']['title'] }}</h2>
+        <p style="color:var(--teks-muted); font-size:0.9rem; margin-bottom:2rem;">{{ $dj['form']['intro'] }}</p>
 
         <form action="{{ route('donasi.jasa.store') }}" method="POST">
             @csrf
 
             <div class="form-group">
-                <label>Jenis Jasa yang Ditawarkan *</label>
+                <label>{{ $dj['fields']['jenis_label'] }}</label>
                 <div class="jasa-grid" id="jasaGrid">
-                    <button type="button" class="jasa-chip" onclick="setJasa('Mengajar / Tutoring', this)">
-                        <span class="jasa-icon">📚</span><span class="jasa-label">Mengajar</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Teknologi & IT', this)">
-                        <span class="jasa-icon">💻</span><span class="jasa-label">Teknologi</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Medis & Kesehatan', this)">
-                        <span class="jasa-icon">🏥</span><span class="jasa-label">Kesehatan</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Seni & Desain', this)">
-                        <span class="jasa-icon">🎨</span><span class="jasa-label">Seni</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Memasak & Gizi', this)">
-                        <span class="jasa-icon">🍳</span><span class="jasa-label">Memasak</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Olahraga & Fisik', this)">
-                        <span class="jasa-icon">⚽</span><span class="jasa-label">Olahraga</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Musik & Seni Budaya', this)">
-                        <span class="jasa-icon">🎵</span><span class="jasa-label">Musik</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Konseling & Psikologi', this)">
-                        <span class="jasa-icon">🤝</span><span class="jasa-label">Konseling</span>
-                    </button>
-                    <button type="button" class="jasa-chip" onclick="setJasa('Lainnya', this)">
-                        <span class="jasa-icon">✨</span><span class="jasa-label">Lainnya</span>
-                    </button>
+                    @foreach ($dj['form']['chips'] as $chip)
+                        <button type="button" class="jasa-chip" data-value="{{ e($chip['value']) }}" onclick="setJasaFromBtn(this)">
+                            <span class="jasa-icon">{{ $chip['icon'] }}</span><span class="jasa-label">{{ $chip['label'] }}</span>
+                        </button>
+                    @endforeach
                 </div>
                 <input type="hidden" id="jenis_jasa" name="jenis_jasa" value="{{ old('jenis_jasa') }}">
-                <input type="text" id="jenis_jasa_custom" placeholder="Atau tulis jenis jasa lainnya..."
+                <input type="text" id="jenis_jasa_custom" placeholder="{{ $dj['fields']['jenis_custom_ph'] }}"
                     style="margin-top:0.5rem;" oninput="document.getElementById('jenis_jasa').value=this.value">
                 @error('jenis_jasa')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
 
             <div class="form-group">
-                <label>Nama Lengkap *</label>
-                <input type="text" name="nama" value="{{ old('nama') }}" required placeholder="Nama Anda">
+                <label>{{ $dj['fields']['nama'] }}</label>
+                <input type="text" name="nama" value="{{ old('nama') }}" required placeholder="{{ $dj['fields']['nama_ph'] }}">
                 @error('nama')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required placeholder="email@contoh.com">
+                    <label>{{ $dj['fields']['email'] }}</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required placeholder="{{ $dj['fields']['email_ph'] }}">
                     @error('email')<span class="error-msg">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label>Telepon</label>
-                    <input type="text" name="telepon" value="{{ old('telepon') }}" placeholder="08xxxxxxxxxx">
+                    <label>{{ $dj['fields']['telepon'] }}</label>
+                    <input type="text" name="telepon" value="{{ old('telepon') }}" placeholder="{{ $dj['fields']['telepon_ph'] }}">
                 </div>
             </div>
             <div class="form-group">
-                <label>Instansi / Lembaga (opsional)</label>
-                <input type="text" name="instansi" value="{{ old('instansi') }}" placeholder="Nama kampus, perusahaan, komunitas, dll">
+                <label>{{ $dj['fields']['instansi'] }}</label>
+                <input type="text" name="instansi" value="{{ old('instansi') }}" placeholder="{{ $dj['fields']['instansi_ph'] }}">
             </div>
             <div class="form-group">
-                <label>Keahlian & Pengalaman *</label>
-                <textarea name="keahlian" required placeholder="Ceritakan keahlian dan pengalaman relevan Anda...">{{ old('keahlian') }}</textarea>
+                <label>{{ $dj['fields']['keahlian'] }}</label>
+                <textarea name="keahlian" required placeholder="{{ $dj['fields']['keahlian_ph'] }}">{{ old('keahlian') }}</textarea>
                 @error('keahlian')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Tanggal Mulai *</label>
+                    <label>{{ $dj['fields']['tanggal_mulai'] }}</label>
                     <input type="date" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required min="{{ date('Y-m-d') }}">
                     @error('tanggal_mulai')<span class="error-msg">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label>Durasi *</label>
+                    <label>{{ $dj['fields']['durasi'] }}</label>
                     <select name="durasi" required>
-                        <option value="" disabled {{ old('durasi') ? '' : 'selected' }}>Pilih...</option>
-                        <option value="1 hari" {{ old('durasi')=='1 hari'?'selected':'' }}>1 Hari</option>
-                        <option value="2-3 hari" {{ old('durasi')=='2-3 hari'?'selected':'' }}>2-3 Hari</option>
-                        <option value="1 minggu" {{ old('durasi')=='1 minggu'?'selected':'' }}>1 Minggu</option>
-                        <option value="2-4 minggu" {{ old('durasi')=='2-4 minggu'?'selected':'' }}>2-4 Minggu</option>
-                        <option value="1-3 bulan" {{ old('durasi')=='1-3 bulan'?'selected':'' }}>1-3 Bulan</option>
-                        <option value="Rutin / Jangka Panjang" {{ old('durasi')=='Rutin / Jangka Panjang'?'selected':'' }}>Rutin / Jangka Panjang</option>
+                        <option value="" disabled @if(! old('durasi')) selected @endif>{{ $dj['form']['durasi_placeholder'] }}</option>
+                        @foreach ($dj['form']['durasi_options'] as $opt)
+                            <option value="{{ e($opt['value']) }}" @if(old('durasi') === $opt['value']) selected @endif>{{ $opt['label'] }}</option>
+                        @endforeach
                     </select>
                     @error('durasi')<span class="error-msg">{{ $message }}</span>@enderror
                 </div>
             </div>
             <div class="form-group">
-                <label>Deskripsi Rencana Kegiatan *</label>
+                <label>{{ $dj['fields']['deskripsi'] }}</label>
                 <textarea name="deskripsi" required style="min-height:100px;"
-                    placeholder="Jelaskan rencana kegiatan yang ingin Anda lakukan, target sasaran, metode, dll...">{{ old('deskripsi') }}</textarea>
+                    placeholder="{{ $dj['fields']['deskripsi_ph'] }}">{{ old('deskripsi') }}</textarea>
                 @error('deskripsi')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
             <div class="form-group">
-                <label>Catatan Tambahan</label>
-                <textarea name="catatan" placeholder="Informasi lain yang perlu kami ketahui...">{{ old('catatan') }}</textarea>
+                <label>{{ $dj['fields']['catatan'] }}</label>
+                <textarea name="catatan" placeholder="{{ $dj['fields']['catatan_ph'] }}">{{ old('catatan') }}</textarea>
             </div>
             <button type="submit" class="submit-btn">
-                <i class="fas fa-paper-plane"></i> Daftarkan Donasi Jasa Saya
+                <i class="fas fa-paper-plane"></i> {{ $dj['buttons']['submit'] }}
             </button>
         </form>
         <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:#94A3B8;">
-            <i class="fas fa-clock"></i> Konfirmasi dalam 1-2 hari kerja
+            <i class="fas fa-clock"></i> {{ $dj['footer_note'] }}
         </p>
     </div>
 </div>
@@ -346,11 +328,15 @@
 
 @push('scripts')
 <script>
-function setJasa(val, btn) {
+const JASA_LAINNYA_VALUE = @json($jasaLainnyaVal);
+
+function setJasaFromBtn(btn) {
+    const val = btn.getAttribute('data-value');
     document.querySelectorAll('.jasa-chip').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     document.getElementById('jenis_jasa').value = val;
-    document.getElementById('jenis_jasa_custom').value = val !== 'Lainnya' ? val : '';
+    const custom = document.getElementById('jenis_jasa_custom');
+    custom.value = (val !== JASA_LAINNYA_VALUE) ? val : '';
 }
 </script>
 @endpush

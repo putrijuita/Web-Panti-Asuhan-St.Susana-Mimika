@@ -19,12 +19,14 @@
             <div class="form-group">
                 <input type="text" name="search" class="form-control" placeholder="Cari nama atau email..." value="{{ $search }}">
             </div>
+            <div class="filter-bar-actions">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-search"></i> Cari
             </button>
             @if($search)
                 <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary">Reset</a>
             @endif
+            </div>
         </form>
     </div>
 
@@ -46,8 +48,12 @@
                     <td style="color:var(--gray-500)">{{ $admins->firstItem() + $loop->index }}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div style="width:32px;height:32px;background:{{ $admin->isSuperAdmin() ? '#dbeafe' : '#f1f5f9' }};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ $admin->isSuperAdmin() ? 'var(--primary)' : 'var(--gray-500)' }};flex-shrink:0">
-                                <i class="fas fa-user"></i>
+                            <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;background:{{ $admin->isSuperAdmin() ? '#dbeafe' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ $admin->isSuperAdmin() ? 'var(--primary)' : 'var(--gray-500)' }};border:1px solid rgba(15,23,42,.06)">
+                                @if($admin->avatarUrl())
+                                    <img src="{{ $admin->avatarUrl() }}" alt="{{ $admin->name }}" style="width:100%;height:100%;object-fit:cover;display:block">
+                                @else
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                @endif
                             </div>
                             <strong>{{ $admin->name }}</strong>
                         </div>

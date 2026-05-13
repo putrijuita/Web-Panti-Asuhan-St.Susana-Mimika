@@ -1,48 +1,75 @@
 @extends('layouts.app')
 
-@section('title', 'Kegiatan Rutin Kami - Panti Asuhan Santa Susana Timika')
+@section('title')
+{{ $programPage->page_meta_title }}
+@endsection
 
 @push('styles')
 <style>
 .program-hero {
-    background: linear-gradient(135deg, #0f4c75 0%, var(--biru-tua) 50%, #3eb489 100%);
-    border-radius: 24px;
-    padding: 4rem 3rem;
-    color: white;
-    text-align: center;
     position: relative;
+    text-align: center;
+    padding: 4rem 2rem 3rem;
     overflow: hidden;
     margin-bottom: 3rem;
+    border-radius: 24px;
 }
 .program-hero::before {
     content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 25% 75%, rgba(255,255,255,0.07) 0%, transparent 55%),
-                radial-gradient(circle at 80% 20%, rgba(62,180,137,0.15) 0%, transparent 50%);
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 15% 50%, rgba(14, 165, 233, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 50%, rgba(56, 189, 248, 0.12) 0%, transparent 55%);
+    pointer-events: none;
 }
-.program-hero h1 { font-size: clamp(2rem,5vw,3rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
-.program-hero p  { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; line-height: 1.7; position: relative; }
+.program-hero h1 {
+    font-size: clamp(2rem, 5vw, 2.85rem);
+    font-weight: 800;
+    color: var(--biru-gelap);
+    margin-bottom: 1rem;
+    position: relative;
+}
+.program-hero p {
+    font-size: 1.1rem;
+    color: var(--teks-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+    position: relative;
+}
 
 .section-label {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: rgba(46,134,171,0.1); color: var(--biru-tua);
-    padding: 0.35rem 1rem; border-radius: 50px;
-    font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--aksen);
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
 }
 .section-head { font-size: 1.65rem; font-weight: 800; color: var(--biru-gelap); margin-bottom: 0.5rem; }
-.section-sub  { color: #64748B; font-size: 1rem; margin-bottom: 2rem; }
+.section-sub  { color: var(--teks-muted); font-size: 1rem; margin-bottom: 2rem; }
 
 .program-card {
-    background: white;
+    background: var(--putih);
+    border: 1px solid var(--border);
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 30px rgba(46,134,171,0.08);
+    box-shadow: 0 8px 36px rgba(8, 47, 73, 0.09);
     transition: all 0.4s;
     margin-bottom: 2rem;
     display: grid;
     grid-template-columns: 1fr 2fr;
 }
-.program-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(46,134,171,0.15); }
+.program-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(8, 47, 73, 0.12);
+}
 .program-card.reverse { direction: rtl; }
 .program-card.reverse > * { direction: ltr; }
 .program-visual {
@@ -64,11 +91,11 @@
 }
 .program-content { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
 .program-content h3 { font-size: 1.5rem; color: var(--biru-gelap); margin-bottom: 0.75rem; }
-.program-content p  { color: #64748B; line-height: 1.7; margin-bottom: 1rem; }
+.program-content p  { color: var(--teks-muted); line-height: 1.7; margin-bottom: 1rem; }
 .program-list { list-style: none; margin-bottom: 1.5rem; }
 .program-list li {
     display: flex; align-items: flex-start; gap: 0.6rem;
-    margin-bottom: 0.6rem; color: #475569; font-size: 0.95rem;
+    margin-bottom: 0.6rem; color: var(--teks-muted); font-size: 0.95rem;
 }
 .program-list .dot {
     width: 8px; height: 8px;
@@ -84,10 +111,11 @@
 }
 .mini-card {
     position: relative;
-    background: #ffffff;
+    background: var(--putih);
+    border: 1px solid var(--border);
     border-radius: 26px;
     overflow: hidden;
-    box-shadow: 0 20px 55px rgba(15,76,117,0.18);
+    box-shadow: 0 8px 36px rgba(8, 47, 73, 0.09);
     transform-origin: center;
     transition: transform 0.45s ease, box-shadow 0.45s ease;
 }
@@ -96,15 +124,15 @@
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 0 0, rgba(59,130,246,0.12), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(34,197,94,0.12), transparent 55%);
+        radial-gradient(circle at 0 0, rgba(14, 165, 233, 0.08), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.1), transparent 55%);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
 }
 .mini-card:hover {
-    transform: translateY(-10px) scale(1.01);
-    box-shadow: 0 26px 70px rgba(15,76,117,0.28);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 56px rgba(8, 47, 73, 0.14);
 }
 .mini-card:hover::before {
     opacity: 1;
@@ -131,7 +159,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-    color: #e0f2fe;
+    color: var(--latar);
     font-size: 3rem;
 }
 .mini-badge-strip {
@@ -146,8 +174,8 @@
     padding: 0.18rem 0.9rem;
     border-radius: 999px;
     backdrop-filter: blur(12px);
-    background: rgba(15,23,42,0.55);
-    color: #e2e8f0;
+    background: rgba(8, 47, 73, 0.72);
+    color: #f0f9ff;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.09em;
@@ -162,18 +190,18 @@
     justify-content: center;
     font-weight: 800;
     font-size: 0.9rem;
-    color: #0f172a;
-    background: #e0f2fe;
-    box-shadow: 0 12px 25px rgba(15,23,42,0.55);
+    color: var(--aksen-gelap);
+    background: var(--latar-panel);
+    box-shadow: 0 8px 20px rgba(8, 47, 73, 0.2);
 }
 .mini-card:nth-child(3n+1) .mini-index {
-    background: #fee2e2;
+    background: rgba(196, 168, 130, 0.35);
 }
 .mini-card:nth-child(3n+2) .mini-index {
-    background: #dcfce7;
+    background: rgba(61, 122, 82, 0.2);
 }
 .mini-card:nth-child(3n) .mini-index {
-    background: #e0f2fe;
+    background: rgba(56, 189, 248, 0.22);
 }
 .mini-body {
     padding: 1.7rem 1.7rem 1.8rem;
@@ -184,8 +212,8 @@
     gap: 0.5rem;
     padding: 0.18rem 0.8rem;
     border-radius: 999px;
-    background: rgba(148,163,184,0.16);
-    color: #475569;
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--teks-muted);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.09em;
@@ -196,7 +224,7 @@
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    background: var(--biru-tua);
+    background: var(--aksen);
 }
 .mini-card h4 {
     font-weight: 800;
@@ -205,7 +233,7 @@
     font-size: 1.08rem;
 }
 .mini-card p {
-    color: #64748B;
+    color: var(--teks-muted);
     font-size: 0.9rem;
     line-height: 1.7;
     margin-bottom: 0.6rem;
@@ -221,26 +249,27 @@
     border-radius: 999px;
     font-size: 0.72rem;
     font-weight: 600;
-    background: rgba(148,163,184,0.18);
-    color: #475569;
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--teks-muted);
 }
 .mini-chip.primary {
-    background: rgba(59,130,246,0.14);
-    color: #1d4ed8;
+    background: rgba(14, 165, 233, 0.14);
+    color: var(--aksen);
 }
 .mini-chip.success {
-    background: rgba(22,163,74,0.14);
-    color: #15803d;
+    background: rgba(61, 122, 82, 0.12);
+    color: var(--aksen-zaitun);
 }
 
 .unggul-wrapper {
     margin-bottom: 3rem;
 }
 .unggul-card {
-    background: white;
+    background: var(--putih);
+    border: 1px solid var(--border);
     border-radius: 26px;
     overflow: hidden;
-    box-shadow: 0 18px 55px rgba(15,76,117,0.22);
+    box-shadow: 0 8px 36px rgba(8, 47, 73, 0.1);
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
     align-items: stretch;
@@ -276,7 +305,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-    color: #e0f2fe;
+    color: var(--latar);
     font-size: 3.2rem;
 }
 .unggul-body {
@@ -291,8 +320,8 @@
     gap: 0.6rem;
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
-    background: rgba(59,130,246,0.10);
-    color: #1d4ed8;
+    background: rgba(14, 165, 233, 0.12);
+    color: var(--aksen);
     font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.09em;
@@ -304,7 +333,7 @@
     height: 8px;
     min-width: 8px;
     border-radius: 999px;
-    background: #1d4ed8;
+    background: var(--aksen);
     flex-shrink: 0;
 }
 .unggul-body h3 {
@@ -315,7 +344,7 @@
     line-height: 1.3;
 }
 .unggul-body p {
-    color: #475569;
+    color: var(--teks-muted);
     line-height: 1.7;
     margin-bottom: 1rem;
 }
@@ -326,7 +355,7 @@
     margin-bottom: 1.2rem;
 }
 .unggul-meta .mini-chip {
-    background: rgba(59,130,246,0.08);
+    background: rgba(14, 165, 233, 0.1);
 }
 .unggul-share-row {
     display: flex;
@@ -335,7 +364,7 @@
     align-items: center;
 }
 .unggul-share-row small {
-    color: #94a3b8;
+    color: var(--teks-muted);
     font-size: 0.75rem;
 }
 .btn-share-kegiatan {
@@ -345,11 +374,15 @@
     padding: 0.55rem 1.2rem;
     border-radius: 999px;
     border: none;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    color: white;
+    background: linear-gradient(135deg, var(--aksen), var(--aksen-hover));
+    color: var(--putih);
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
+}
+.btn-share-kegiatan:hover {
+    filter: brightness(1.05);
+    color: var(--putih);
 }
 .btn-share-kegiatan i {
     font-size: 0.9rem;
@@ -362,11 +395,12 @@
     margin-bottom: 3rem;
 }
 .involvement-item {
-    background: white;
+    background: var(--putih);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 2rem 1.5rem;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(46,134,171,0.06);
+    box-shadow: 0 8px 28px rgba(8, 47, 73, 0.08);
 }
 .involvement-item .step {
     width: 44px; height: 44px;
@@ -376,7 +410,35 @@
     margin: 0 auto 1rem;
 }
 .involvement-item h4 { font-weight: 700; color: var(--biru-gelap); margin-bottom: 0.4rem; }
-.involvement-item p  { color: #64748B; font-size: 0.85rem; }
+.involvement-item p  { color: var(--teks-muted); font-size: 0.85rem; }
+
+.program-page-cta {
+    background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--putih);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 40px rgba(8, 47, 73, 0.18);
+}
+.program-page-cta h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    color: inherit;
+}
+.program-page-cta > p {
+    opacity: 0.95;
+    margin-bottom: 2rem;
+}
+.program-page-cta .btn-outline-light {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--putih);
+    border: 2px solid rgba(255, 255, 255, 0.45);
+}
+.program-page-cta .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--putih);
+}
 
 @media (max-width: 700px) {
     .program-card { grid-template-columns: 1fr; }
@@ -398,16 +460,16 @@
 
 @section('content')
 <div class="program-hero">
-    <h1>Kegiatan Rutin Kami</h1>
-    <p>Berbagai kegiatan rutin yang kami jalankan untuk memastikan setiap anak tumbuh sehat, cerdas, berkarakter, dan mandiri.</p>
+    <h1>{{ $programPage->hero_title }}</h1>
+    <p>{{ $programPage->hero_subtitle }}</p>
 </div>
 
 @if($unggulKegiatan->isNotEmpty())
     <div class="unggul-wrapper">
         <div style="margin-bottom: 1rem;">
-            <div class="section-label"><i class="fas fa-star"></i> Program Unggulan</div>
-            <h2 class="section-head">Program Unggulan di Panti</h2>
-            <p class="section-sub">Program-program inti yang menjadi fokus pengembangan karakter, pendidikan, dan kemandirian anak-anak.</p>
+            <div class="section-label"><i class="fas fa-star" aria-hidden="true"></i> {{ $programPage->unggul_section_label }}</div>
+            <h2 class="section-head">{{ $programPage->unggul_section_title }}</h2>
+            <p class="section-sub">{{ $programPage->unggul_section_sub }}</p>
         </div>
 
         @foreach($unggulKegiatan as $index => $item)
@@ -416,25 +478,25 @@
                     @if($item->gambar)
                         <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}">
                     @else
-                        <div class="unggul-media-fallback">🌟</div>
+                        <div class="unggul-media-fallback"><i class="{{ $programPage->unggul_fallback_icon }}" aria-hidden="true"></i></div>
                     @endif
                 </div>
                 <div class="unggul-body">
                     <div class="unggul-eyebrow">
                         <span></span>
-                        <span>Program Unggulan</span>
+                        <span>{{ $programPage->unggul_eyebrow }}</span>
                     </div>
                     <h3>{{ $item->nama }}</h3>
-                    <p>{{ $item->deskripsi ?: 'Program fokus pembinaan karakter, pendidikan, dan kemandirian anak di Panti.' }}</p>
+                    <p>{{ $item->deskripsi ?: $programPage->unggul_default_desc }}</p>
                     <div class="unggul-meta">
-                        <span class="mini-chip success">Program Unggulan</span>
+                        <span class="mini-chip success">{{ $programPage->unggul_chip }}</span>
                     </div>
                     <div class="unggul-share-row">
                         <a href="{{ route('donasi.index') }}" class="btn-share-kegiatan">
-                            <i class="fas fa-hand-holding-heart"></i>
-                            <span>Lakukan donasi pada program ini</span>
+                            <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
+                            <span>{{ $programPage->unggul_donate_btn }}</span>
                         </a>
-                        <small>Dukung program ini dengan donasi Anda.</small>
+                        <small>{{ $programPage->unggul_donate_hint }}</small>
                     </div>
                 </div>
             </article>
@@ -444,9 +506,9 @@
 
 @if($rutinKegiatan->isNotEmpty())
     <div style="margin-bottom: 1rem;">
-        <div class="section-label"><i class="fas fa-list-check"></i> Kegiatan Rutin</div>
-        <h2 class="section-head">Kegiatan Rutin di Panti</h2>
-        <p class="section-sub">Berikut adalah kegiatan rutin yang saat ini berjalan di Panti Asuhan Santa Susana Timika.</p>
+        <div class="section-label"><i class="fas fa-list-check" aria-hidden="true"></i> {{ $programPage->rutin_section_label }}</div>
+        <h2 class="section-head">{{ $programPage->rutin_section_title }}</h2>
+        <p class="section-sub">{{ $programPage->rutin_section_sub }}</p>
     </div>
 
     <div class="mini-program-grid">
@@ -456,20 +518,20 @@
                     @if($item->gambar)
                         <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}">
                     @else
-                        <div class="mini-media-fallback">📌</div>
+                        <div class="mini-media-fallback"><i class="{{ $programPage->rutin_fallback_icon }}" aria-hidden="true"></i></div>
                     @endif
                     <div class="mini-badge-strip">
-                        <span class="mini-pill">Kegiatan Rutin</span>
+                        <span class="mini-pill">{{ $programPage->rutin_pill }}</span>
                         <span class="mini-index">{{ $index + 1 }}</span>
                     </div>
                 </div>
                 <div class="mini-body">
                     <div class="mini-eyebrow">
                         <span class="mini-eyebrow-dot"></span>
-                        <span>Di Panti Santa Susana</span>
+                        <span>{{ $programPage->rutin_eyebrow }}</span>
                     </div>
                     <h4>{{ $item->nama }}</h4>
-                    <p>{{ $item->deskripsi ?: 'Belum ada keterangan untuk kegiatan ini, namun kegiatan ini berjalan secara rutin di Panti.' }}</p>
+                    <p>{{ $item->deskripsi ?: $programPage->rutin_default_desc }}</p>
                     <div class="mini-meta">
                     </div>
                 </div>
@@ -478,31 +540,34 @@
     </div>
 @elseif($unggulKegiatan->isEmpty())
     <div style="margin: 2rem 0 3rem;">
-        <div class="section-label"><i class="fas fa-list-check"></i> Kegiatan</div>
-        <h2 class="section-head">Belum Ada Kegiatan Terdaftar</h2>
-        <p class="section-sub">Saat ini belum ada data kegiatan rutin yang ditampilkan. Silakan kembali lagi nanti.</p>
+        <div class="section-label"><i class="fas fa-list-check" aria-hidden="true"></i> {{ $programPage->empty_section_label }}</div>
+        <h2 class="section-head">{{ $programPage->empty_section_title }}</h2>
+        <p class="section-sub">{{ $programPage->empty_section_sub }}</p>
     </div>
 @endif
 
 <!-- Cara Terlibat -->
 <div style="margin-bottom: 3rem;">
-    <div class="section-label"><i class="fas fa-handshake"></i> Terlibat</div>
-    <h2 class="section-head">Cara Anda Bisa Terlibat</h2>
+    <div class="section-label"><i class="fas fa-handshake" aria-hidden="true"></i> {{ $programPage->involve_section_label }}</div>
+    <h2 class="section-head">{{ $programPage->involve_section_title }}</h2>
     <div class="involvement-grid">
-        <div class="involvement-item"><div class="step">1</div><h4>Pilih Program</h4><p>Pilih program yang ingin Anda dukung</p></div>
-        <div class="involvement-item"><div class="step">2</div><h4>Donasikan</h4><p>Kirim donasi melalui form donasi kami</p></div>
-        <div class="involvement-item"><div class="step">3</div><h4>Kunjungi</h4><p>Ajukan kunjungan dan temui anak-anak</p></div>
-        <div class="involvement-item"><div class="step">4</div><h4>Dampak</h4><p>Lihat dampak nyata dari kontribusi Anda</p></div>
+        @foreach(($programPage->involve_steps ?? []) as $idx => $step)
+            <div class="involvement-item">
+                <div class="step">{{ $idx + 1 }}</div>
+                <h4>{{ $step['title'] ?? '' }}</h4>
+                <p>{{ $step['text'] ?? '' }}</p>
+            </div>
+        @endforeach
     </div>
 </div>
 
 <!-- CTA -->
-<div style="background: linear-gradient(135deg, #0f4c75, var(--biru-tua)); border-radius: 24px; padding: 3rem 2rem; text-align: center; color: white;">
-    <h2 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Mulai Berkontribusi Hari Ini</h2>
-    <p style="opacity: 0.9; margin-bottom: 2rem;">Setiap kontribusi, sekecil apapun, sangat berarti bagi anak-anak kami.</p>
+<div class="program-page-cta">
+    <h2>{{ $programPage->cta_title }}</h2>
+    <p>{{ $programPage->cta_subtitle }}</p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{{ route('donasi.index') }}" class="btn btn-white">💝 Donasi Sekarang</a>
-        <a href="{{ route('kunjungan.create') }}" class="btn" style="background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);">🏠 Ajukan Kunjungan</a>
+        <a href="{{ route('donasi.index') }}" class="btn btn-white"><i class="fas fa-heart" style="margin-right:6px;" aria-hidden="true"></i>{{ $programPage->cta_btn_donasi }}</a>
+        <a href="{{ route('kunjungan.create') }}" class="btn btn-outline-light"><i class="fas fa-door-open" style="margin-right:6px;" aria-hidden="true"></i>{{ $programPage->cta_btn_kunjungan }}</a>
     </div>
 </div>
 @endsection

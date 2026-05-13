@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KontakPageContent;
+use App\Models\KontakPesan;
 use App\Models\StrukturOrganisasi;
 use App\Models\Kegiatan;
 use App\Models\KegiatanCategory;
@@ -143,6 +145,11 @@ class PageController extends Controller
             'pesan' => 'required|string|max:2000',
         ]);
 
-        return redirect()->route('kontak')->with('success', 'Pesan Anda berhasil dikirim! Kami akan menghubungi Anda segera.');
+        if (Schema::hasTable('kontak_pesan')) {
+            KontakPesan::create($request->only(['nama', 'email', 'subjek', 'pesan']));
+        }
+
+        return redirect()->route('kontak')->with('success', KontakPageContent::resolvedForPublic()->success_message);
     }
+
 }

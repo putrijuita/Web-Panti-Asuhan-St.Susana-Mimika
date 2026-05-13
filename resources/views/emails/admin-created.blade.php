@@ -10,7 +10,7 @@
   .wrapper { max-width: 600px; margin: 32px auto; padding: 0 16px; }
   .card { background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.12); }
   .header { background: linear-gradient(135deg, #0f172a 0%, #1D4ED8 55%, #22C55E 100%); padding: 32px 28px; text-align: center; }
-  .header .icon { font-size: 46px; display: block; margin-bottom: 10px; }
+  .header .icon { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 8px; opacity: 0.9; }
   .header h1 { color: #ffffff; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
   .header p  { color: rgba(241,245,249,0.86); font-size: 14px; }
   .body { padding: 26px 28px 24px; }
@@ -34,7 +34,7 @@
 <div class="wrapper">
   <div class="card">
     <div class="header">
-      <span class="icon">🎉</span>
+      <span class="icon">Akun admin</span>
       <h1>Selamat, Akun Admin Dibuat</h1>
       <p>Sistem Panti Asuhan Santa Susana Timika</p>
     </div>

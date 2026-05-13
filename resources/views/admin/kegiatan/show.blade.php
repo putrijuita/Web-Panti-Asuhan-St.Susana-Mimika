@@ -13,7 +13,7 @@
             Detail Program
         </span>
     </div>
-    <div class="card-body" style="display:grid;grid-template-columns:1.2fr 2fr;gap:24px;align-items:flex-start;">
+    <div class="card-body admin-grid-split-main">
         <div>
             @if($kegiatan->gambar)
                 <img src="{{ asset('storage/'.$kegiatan->gambar) }}" alt="{{ $kegiatan->nama }}"

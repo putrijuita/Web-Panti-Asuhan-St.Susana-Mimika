@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-<nav style="display:flex;gap:4px;align-items:center;">
+<nav class="admin-pagination">
     @if ($paginator->onFirstPage())
         <span style="padding:5px 10px;border:1px solid #e2e8f0;border-radius:6px;color:#cbd5e1;font-size:12px;">
             <i class="fas fa-chevron-left"></i>

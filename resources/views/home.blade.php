@@ -4,87 +4,152 @@
 
 @push('styles')
 <style>
-    .hero {
+    /* ── Pembuka: sambutan resmi (pertama kali dibuka) ── */
+    .home-hero {
         position: relative;
-        padding: 4rem 2rem;
         text-align: center;
+        padding: 3rem 1.5rem 3.25rem;
+        margin-bottom: 0.5rem;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(165deg, #ffffff 0%, #f0f9ff 50%, #e0f2fe 100%);
+        box-shadow:
+            0 12px 40px rgba(8, 47, 73, 0.09),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
         overflow: hidden;
     }
-    .hero::before {
+    .home-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 80% 60% at 50% -20%, rgba(14, 165, 233, 0.12), transparent 55%),
+            radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.08), transparent 45%);
+        pointer-events: none;
+    }
+    .home-hero::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 80%, rgba(135,206,235,0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(91,163,198,0.2) 0%, transparent 50%);
-        pointer-events: none;
+        height: 4px;
+        background: linear-gradient(90deg, var(--biru-muda-gelap), var(--biru-tua), var(--biru-muda));
     }
-    .hero-content {
+    .home-hero-inner {
         position: relative;
         z-index: 1;
+        max-width: 720px;
+        margin: 0 auto;
     }
-    .hero-badge {
+    .home-hero-kicker {
         display: inline-block;
-        background: rgba(46,134,171,0.15);
-        color: var(--biru-tua);
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        animation: fadeInDown 0.8s ease;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--biru-muda-gelap);
+        margin-bottom: 1rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.12);
+        border: 1px solid rgba(14, 165, 233, 0.2);
     }
-    .hero h1 {
-        font-size: clamp(2rem, 5vw, 3.5rem);
+    .home-hero h1 {
+        font-size: clamp(1.65rem, 4.2vw, 2.65rem);
         font-weight: 800;
         color: var(--biru-gelap);
         line-height: 1.2;
-        margin-bottom: 1rem;
-        animation: fadeInUp 0.8s ease 0.2s both;
+        margin: 0 0 1rem 0;
+        animation: fadeInUp 0.75s ease 0.05s both;
     }
-    .hero h1 span {
-        background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    .home-hero-desc {
+        font-size: 1.05rem;
+        color: var(--teks-muted);
+        line-height: 1.75;
+        margin: 0 auto 1.75rem;
+        max-width: 34rem;
+        animation: fadeInUp 0.75s ease 0.15s both;
     }
-    .hero-desc {
-        font-size: 1.2rem;
-        color: #64748B;
-        max-width: 600px;
-        margin: 0 auto 2rem;
-        line-height: 1.7;
-        animation: fadeInUp 0.8s ease 0.4s both;
-    }
-    .hero-btns {
+    .home-hero-actions {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
         justify-content: center;
         flex-wrap: wrap;
-        animation: fadeInUp 0.8s ease 0.6s both;
+        animation: fadeInUp 0.75s ease 0.25s both;
     }
-    .hero-btns .btn {
-        padding: 0.9rem 2rem;
-        font-size: 1rem;
+    .home-hero-actions .btn {
+        padding: 0.7rem 1.35rem;
+        font-size: 0.92rem;
+    }
+    .home-hero-actions .btn i {
+        margin-right: 0.4rem;
+        opacity: 0.95;
     }
 
-    .section {
-        padding: 3rem 0;
+    .home-section {
+        padding: 2.75rem 0;
     }
-    .section-title {
+    .home-section:first-of-type {
+        padding-top: 2.25rem;
+    }
+
+    /* ── Tentang (kotak profil) ── */
+    #tentang .tentang-box {
+        background: linear-gradient(165deg, #ffffff 0%, #f0f9ff 45%, #e0f2fe 100%);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 1.75rem 1.5rem 2rem;
+        box-shadow:
+            0 8px 32px rgba(8, 47, 73, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        position: relative;
+        overflow: hidden;
+    }
+    #tentang .tentang-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--biru-muda-gelap), var(--biru-tua), var(--biru-muda));
+        opacity: 0.95;
+    }
+    #tentang .tentang-box-header {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.35rem;
+        border-bottom: 1px solid var(--border);
     }
-    .section-title h2 {
-        font-size: 1.75rem;
+    #tentang .tentang-box-header h2 {
+        font-size: clamp(1.75rem, 3.8vw, 2.35rem);
+        font-weight: 800;
         color: var(--biru-gelap);
-        margin-bottom: 0.5rem;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
     }
-    .section-title p {
-        color: #64748B;
+    #tentang .tentang-box-subtitle {
+        margin: 0 auto;
+        max-width: 36rem;
+        font-size: 1.02rem;
+        line-height: 1.55;
+        color: var(--teks-muted);
+        font-weight: 500;
+    }
+    #tentang .about-content p {
+        font-size: 1.08rem;
+        line-height: 1.82;
+    }
+    #tentang .about-content strong {
+        font-size: 1.06em;
+        color: var(--biru-gelap);
+    }
+    #tentang .about-visual .about-visual-caption h3 {
+        font-size: 1.5rem;
+    }
+    #tentang .about-visual .about-visual-caption p {
+        font-size: 1rem;
     }
 
     .about-card {
@@ -93,12 +158,21 @@
         gap: 2rem;
         align-items: center;
     }
+    #tentang .tentang-box .about-card {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
     .about-visual {
         background: linear-gradient(135deg, var(--biru-muda) 0%, var(--biru-tua) 100%);
-        border-radius: 24px;
+        border-radius: 20px;
         overflow: hidden;
         position: relative;
         min-height: 280px;
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        box-shadow: 0 10px 36px rgba(8, 47, 73, 0.12);
     }
     .about-visual .about-photo {
         width: 100%;
@@ -113,24 +187,23 @@
         left: 0;
         right: 0;
         padding: 1.5rem 1.5rem 1.25rem;
-        background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+        background: linear-gradient(to top, rgba(8, 47, 73, 0.88), transparent);
         color: white;
         text-align: center;
     }
-    .about-visual .icon-wrap,
-    .about-visual .about-image {
-        margin-bottom: 1rem;
-    }
     .about-visual .about-image {
         width: 100%;
-        max-height: 220px;
+        min-height: 280px;
+        height: 100%;
         object-fit: cover;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        border-radius: 0;
+        box-shadow: none;
+        margin-bottom: 0;
+        display: block;
     }
     .about-visual .about-visual-caption h3,
     .about-visual h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         margin: 0 0 0.25rem 0;
         font-weight: 700;
     }
@@ -140,311 +213,213 @@
         opacity: 0.95;
     }
     .about-content p {
-        color: #64748B;
+        color: var(--teks-muted);
         line-height: 1.8;
         margin-bottom: 1rem;
     }
+    #tentang .tentang-about-more {
+        margin-top: 1.35rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        text-align: left;
+    }
+    #tentang .tentang-about-more p {
+        font-size: 0.98rem;
+        line-height: 1.65;
+        color: var(--teks-muted);
+        margin-bottom: 1rem;
+    }
+    #tentang .tentang-about-more p:last-of-type {
+        margin-bottom: 0;
+    }
+    #tentang .tentang-about-more .btn-tentang-lengkap {
+        margin-top: 0.35rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
 
-    .stats-grid {
+    /* ── Kontak beranda ── */
+    #kontak .kontak-home-title {
+        text-align: center;
+        margin-bottom: 0.25rem;
+    }
+    #kontak .kontak-home-title h2 {
+        font-size: clamp(1.65rem, 3.5vw, 2.1rem);
+        color: var(--biru-gelap);
+        margin-bottom: 0.4rem;
+    }
+    #kontak .kontak-home-title p {
+        color: var(--teks-muted);
+        font-size: 1.02rem;
+        margin-bottom: 1.75rem;
+        max-width: 36rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #kontak .kontak-home-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
-        margin: 2rem 0;
-    }
-    .stat-item {
-        text-align: center;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(46,134,171,0.08);
-    }
-    .stat-item .number {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--biru-tua);
-        line-height: 1;
-    }
-    .stat-item .label {
-        font-size: 0.9rem;
-        color: #64748B;
-        margin-top: 0.25rem;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-    }
-    .feature-card {
-        background: white;
+        padding: 1.75rem;
         border-radius: 20px;
-        padding: 2.5rem;
-        text-align: center;
-        box-shadow: 0 4px 30px rgba(46,134,171,0.1);
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+        box-shadow: 0 8px 28px rgba(8, 47, 73, 0.07);
     }
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--biru-muda), var(--biru-tua));
-        transform: scaleX(0);
-        transition: transform 0.4s ease;
+    #kontak .kontak-home-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
     }
-    .feature-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 40px rgba(46,134,171,0.2);
-    }
-    .feature-card:hover::before {
-        transform: scaleX(1);
-    }
-    .feature-card .icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1.5rem;
-        background: linear-gradient(135deg, #E0F4FF, var(--biru-muda));
-        border-radius: 20px;
+    #kontak .kontak-home-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--biru-muda-gelap), var(--biru-tua));
+        box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
     }
-    .feature-card h3 {
-        font-size: 1.25rem;
+    #kontak .kontak-home-item h4 {
+        margin: 0 0 0.35rem 0;
+        font-size: 0.95rem;
         color: var(--biru-gelap);
-        margin-bottom: 0.75rem;
     }
-    .feature-card p {
-        color: #64748B;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+    #kontak .kontak-home-item a {
+        color: var(--biru-tua);
+        text-decoration: none;
+        font-weight: 600;
     }
-
-    .quote-section {
-        background: linear-gradient(135deg, var(--biru-gelap) 0%, var(--biru-tua) 100%);
-        border-radius: 24px;
-        padding: 3rem;
-        text-align: center;
-        color: white;
-        margin: 3rem 0;
+    #kontak .kontak-home-item a:hover {
+        text-decoration: underline;
     }
-    .quote-section .quote-icon {
-        font-size: 3rem;
-        opacity: 0.5;
-        margin-bottom: 1rem;
-    }
-    .quote-section blockquote {
-        font-size: 1.35rem;
-        font-style: italic;
-        line-height: 1.7;
-        max-width: 700px;
-        margin: 0 auto 1rem;
-    }
-    .quote-section cite {
-        font-size: 1rem;
-        opacity: 0.9;
-    }
-
-    .cta-section {
-        text-align: center;
-        padding: 3rem 2rem;
-        background: white;
-        border-radius: 24px;
-        box-shadow: 0 4px 30px rgba(46,134,171,0.1);
-    }
-    .cta-section h2 {
-        font-size: 1.75rem;
-        color: var(--biru-gelap);
-        margin-bottom: 0.75rem;
-    }
-    .cta-section p {
-        color: #64748B;
-        margin-bottom: 2rem;
+    #kontak .kontak-home-item .kontak-home-muted {
+        font-size: 0.88rem;
+        color: var(--teks-muted);
+        margin: 0.2rem 0 0 0;
     }
 
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(14px);
         }
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
+
+    @media (min-width: 640px) {
+        .home-hero {
+            padding: 3.5rem 2rem 3.75rem;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        #tentang .tentang-box {
+            padding: 2.25rem 2rem 2.5rem;
+        }
+        #tentang .tentang-box-subtitle {
+            font-size: 1.08rem;
         }
     }
 </style>
 @endpush
 
 @section('content')
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-content">
-        <span class="hero-badge">💝 Yayasan Peduli Kasih Mimika</span>
-        <h1>Berbagi Kasih untuk <span>Masa Depan</span> Mereka</h1>
-        <p class="hero-desc">
-            Kami merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih. Donasi dan kunjungan Anda membawa harapan.
-        </p>
-        <div class="hero-btns">
-            <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi Sekarang</a>
-            <a href="{{ route('kunjungan.create') }}" class="btn btn-outline">Ajukan Kunjungan</a>
-        </div>
-    </div>
-</section>
-
-<!-- Tentang Kami -->
-<section class="section" id="tentang">
-    <div class="section-title">
-        <h2>Tentang Kami</h2>
-        <p>Mengenal Santa Susana</p>
-    </div>
-    <div class="card about-card">
-        <div class="about-visual">
-            <img src="{{ asset('images/panti-gedung.png') }}" alt="Panti Asuhan Santa Susana Timika" class="about-image">
-            <div class="about-visual-caption">
-                <h3>Rumah Penuh Kasih</h3>
-                <p>Timika, Papua Tengah</p>
-            </div>
-        </div>
-        <div class="about-content">
-            <p>
-                <strong>Yayasan Peduli Kasih Mimika - Panti Asuhan Santa Susana Timika</strong> berkomitmen 
-                mendidik, mengasuh, dan menyayangi anak-anak di Mimika, Papua Tengah.
+<!-- Sambutan resmi -->
+<section class="home-section home-section--hero" aria-label="Sambutan">
+    <div class="home-hero">
+        <div class="home-hero-inner">
+            @if(!empty($tentangContent->hero_kicker))
+                <p class="home-hero-kicker">{{ $tentangContent->hero_kicker }}</p>
+            @endif
+            <h1>{{ $tentangContent->hero_title }}</h1>
+            <p class="home-hero-desc">
+                {{ $tentangContent->hero_description }}
             </p>
-            <p>
-                Setiap anak berhak bermimpi dan tumbuh dalam lingkungan penuh perhatian. Dukungan Anda 
-                membuka masa depan yang cerah.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- Angka yang Berbicara -->
-<section class="section">
-    <div class="section-title">
-        <h2>Dampak Kita Bersama</h2>
-        <p>Kontribusi Anda membawa perubahan nyata</p>
-    </div>
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="number">💝</div>
-            <div class="label">Donasi</div>
-        </div>
-        <div class="stat-item">
-            <div class="number">🤝</div>
-            <div class="label">Relawan</div>
-        </div>
-        <div class="stat-item">
-            <div class="number">🌟</div>
-            <div class="label">Anak Terbantu</div>
-        </div>
-        <div class="stat-item">
-            <div class="number">❤️</div>
-            <div class="label">Kasih</div>
-        </div>
-    </div>
-</section>
-
-<!-- Cara Berkontribusi -->
-<section class="section">
-    <div class="section-title">
-        <h2>Cara Berkontribusi</h2>
-        <p>Bantu wujudkan harapan mereka</p>
-    </div>
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="icon">💝</div>
-            <h3>Donasi</h3>
-            <p>Setiap donasi untuk pendidikan, makanan, dan kebutuhan sehari-hari anak-anak.</p>
-            <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi Sekarang</a>
-        </div>
-        <div class="feature-card">
-            <div class="icon">🏠</div>
-            <h3>Kunjungan</h3>
-            <p>Berbagi waktu dan kegiatan bersama. Kunjungan Anda membawa kebahagiaan bagi mereka.</p>
-            <a href="{{ route('kunjungan.create') }}" class="btn btn-outline">Ajukan Kunjungan</a>
-        </div>
-    </div>
-</section>
-
-<!-- Quote -->
-<section class="quote-section">
-    <div class="quote-icon">"</div>
-    <blockquote>
-        "Tangan yang memberi lebih berharga dari seribu tangan yang menerima. Bersama kita wujudkan masa depan cerah bagi anak-anak."
-    </blockquote>
-    <cite>— Panti Asuhan Santa Susana Timika</cite>
-</section>
-
-<!-- Kontak Section -->
-<section class="section" id="kontak">
-    <div class="section-title">
-        <h2>Hubungi Kami</h2>
-        <p>Kami siap melayani Anda</p>
-    </div>
-    <div class="card" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-        <div style="display: flex; align-items: flex-start; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                <i class="fas fa-phone"></i>
+            <div class="home-hero-actions">
+                <a href="{{ route('donasi.index') }}" class="btn btn-primary"><i class="fas fa-heart" aria-hidden="true"></i> {{ $siteContent->home_btn_donasi }}</a>
+                <a href="{{ route('kunjungan.create') }}" class="btn btn-outline"><i class="fas fa-calendar-check" aria-hidden="true"></i> {{ $siteContent->home_btn_kunjungan }}</a>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tentang Kami (ringkasan) -->
+<section class="home-section" id="tentang">
+    <div class="tentang-box">
+        <header class="tentang-box-header">
+            <h2>{{ $siteContent->home_tentang_section_title }}</h2>
+            <p class="tentang-box-subtitle">{{ $tentangContent->summary_subtitle }}</p>
+        </header>
+        <div class="about-card">
+            <div class="about-content">
+                <p>
+                    {{ $tentangContent->summary_paragraph_1 }}
+                </p>
+                <p>
+                    {{ $tentangContent->summary_paragraph_2 }}
+                </p>
+                <div class="tentang-about-more">
+                    <p>
+                        {{ $tentangContent->summary_cta_note }}
+                    </p>
+                    <a href="{{ route('tentang') }}" class="btn btn-outline btn-tentang-lengkap">
+                        <span>{{ $siteContent->home_tentang_cta_label }}</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="about-visual">
+                <img src="{{ \App\Models\SiteContent::aboutImageUrl($siteContent->home_about_image ?? null) }}" alt="{{ $siteContent->home_about_image_alt }}" class="about-image">
+                <div class="about-visual-caption">
+                    <h3>{{ $siteContent->home_visual_title }}</h3>
+                    <p>{{ $siteContent->home_visual_subtitle }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Kontak -->
+<section class="home-section" id="kontak">
+    <div class="kontak-home-title">
+        <h2>{{ $siteContent->home_kontak_title }}</h2>
+        <p>{{ $siteContent->home_kontak_intro }}</p>
+    </div>
+    <div class="kontak-home-grid">
+        <div class="kontak-home-item">
+            <div class="kontak-home-icon" aria-hidden="true"><i class="fas fa-phone"></i></div>
             <div>
-                <h4 style="margin-bottom: 0.25rem;">Telepon / WhatsApp</h4>
-                <a href="tel:082198595245" style="color: var(--biru-tua); text-decoration: none; font-weight: 600;">0821-9859-5245</a><br>
-                <a href="https://wa.me/6282198595245" target="_blank" rel="noopener" style="color: var(--biru-muda-gelap); font-size: 0.9rem;">Chat WhatsApp</a>
+                <h4>{{ $siteContent->home_kontak_phone_heading }}</h4>
+                <a href="{{ $siteContent->home_kontak_phone_href }}">{{ $siteContent->home_kontak_phone_display }}</a>
+                <p class="kontak-home-muted"><a href="{{ $siteContent->home_kontak_wa_url }}" target="_blank" rel="noopener">{{ $siteContent->home_kontak_wa_text }}</a></p>
             </div>
         </div>
-        <div style="display: flex; align-items: flex-start; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                <i class="fab fa-facebook-f"></i>
-            </div>
+        <div class="kontak-home-item">
+            <div class="kontak-home-icon" aria-hidden="true"><i class="fab fa-facebook-f"></i></div>
             <div>
-                <h4 style="margin-bottom: 0.25rem;">Facebook</h4>
-                <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener" style="color: var(--biru-tua); text-decoration: none;">Yayasan Peduli Kasih Mimika</a>
+                <h4>{{ $siteContent->home_kontak_fb_heading }}</h4>
+                <a href="{{ $siteContent->home_kontak_fb_url }}" target="_blank" rel="noopener">{{ $siteContent->home_kontak_fb_text }}</a>
             </div>
         </div>
-        <div style="display: flex; align-items: flex-start; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                <i class="fab fa-instagram"></i>
-            </div>
+        <div class="kontak-home-item">
+            <div class="kontak-home-icon" aria-hidden="true"><i class="fab fa-instagram"></i></div>
             <div>
-                <h4 style="margin-bottom: 0.25rem;">Instagram</h4>
-                <a href="https://www.instagram.com/yayasanpedulikasihmimika" target="_blank" rel="noopener" style="color: var(--biru-tua); text-decoration: none;">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a>
+                <h4>{{ $siteContent->home_kontak_ig_heading }}</h4>
+                <a href="{{ $siteContent->home_kontak_ig_url }}" target="_blank" rel="noopener">{{ $siteContent->home_kontak_ig_text }}</a>
             </div>
         </div>
-        <div style="display: flex; align-items: flex-start; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--biru-muda), var(--biru-tua)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
+        <div class="kontak-home-item">
+            <div class="kontak-home-icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></div>
             <div>
-                <h4 style="margin-bottom: 0.25rem;">Alamat</h4>
-                <p style="margin: 0; color: #64748B;">Timika, Kabupaten Mimika, Papua Tengah</p>
+                <h4>{{ $siteContent->home_kontak_addr_heading }}</h4>
+                <p class="kontak-home-muted" style="margin:0;">{{ $siteContent->home_kontak_addr_text }}</p>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-    <h2>Siap Berbagi?</h2>
-    <p>Pilih cara yang sesuai dengan Anda</p>
-    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{{ route('donasi.index') }}" class="btn btn-primary">Donasi</a>
-        <a href="{{ route('kunjungan.create') }}" class="btn btn-outline">Kunjungan</a>
-        <a href="#kontak" class="btn btn-outline">Hubungi Kami</a>
     </div>
 </section>
 @endsection

@@ -24,7 +24,7 @@
                     </div>
                 @endif
             </div>
-            <div style="flex:1;min-width:220px;">
+            <div style="flex:1;min-width:0;max-width:100%">
                 <div class="form-group">
                     <label class="form-label">Nama</label>
                     <div style="font-weight:600;font-size:14px;">{{ $struktur->nama }}</div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Donasi;
 use App\Models\DonasiJasa;
 use App\Models\PengelolaanDonasi;
+use App\Models\SiteContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Mail\DonasiKonfirmasi;
@@ -102,7 +103,9 @@ class DonasiController extends Controller
     // ── Donasi Keuangan ──────────────────────────────
     public function keuangan()
     {
-        return view('donasi.keuangan');
+        $dk = SiteContent::resolvedDonasiKeuanganPage();
+
+        return view('donasi.keuangan', compact('dk'));
     }
 
     /**
@@ -348,7 +351,9 @@ class DonasiController extends Controller
     // ── Donasi Jasa ──────────────────────────────────
     public function jasa()
     {
-        return view('donasi.jasa');
+        $dj = SiteContent::resolvedDonasiJasaPage();
+
+        return view('donasi.jasa', compact('dj'));
     }
 
     public function jasaStore(Request $request)
@@ -396,7 +401,7 @@ class DonasiController extends Controller
     /**
      * Download laporan donasi keuangan (PDF) — transparansi publik
      */
-    public function laporanDonasi()
+    public function laporanDonasi(Request $request)
     {
         $donasi = Donasi::where('status', 'completed')
             ->orderByDesc('updated_at')
@@ -407,19 +412,27 @@ class DonasiController extends Controller
 
         $pdf = Pdf::loadView('donasi.laporan-donasi', compact('donasi', 'generatedAt'));
 
+        if ($request->boolean('inline')) {
+            return $pdf->stream($filename);
+        }
+
         return $pdf->download($filename);
     }
 
     /**
      * Download laporan pengelolaan donasi (PDF) — transparansi penggunaan dana
      */
-    public function laporanPengelolaanDonasi()
+    public function laporanPengelolaanDonasi(Request $request)
     {
         $items = PengelolaanDonasi::orderByDesc('tanggal_waktu')->get();
         $generatedAt = now();
         $filename = 'laporan-pengelolaan-donasi-' . $generatedAt->format('Y-m-d') . '.pdf';
 
         $pdf = Pdf::loadView('donasi.laporan-pengelolaan-donasi', compact('items', 'generatedAt'));
+
+        if ($request->boolean('inline')) {
+            return $pdf->stream($filename);
+        }
 
         return $pdf->download($filename);
     }

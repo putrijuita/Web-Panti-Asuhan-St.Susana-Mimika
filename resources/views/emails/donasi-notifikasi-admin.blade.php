@@ -10,7 +10,7 @@
   .wrapper { max-width: 600px; margin: 32px auto; padding: 0 16px; }
   .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
   .header { background: linear-gradient(135deg, #1e3a5f 0%, #1D4ED8 60%, #0EA5E9 100%); padding: 36px 32px; text-align: center; }
-  .header .icon { font-size: 52px; display: block; margin-bottom: 14px; }
+  .header .icon { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 10px; opacity: 0.9; }
   .header h1 { color: #fff; font-size: 24px; font-weight: 800; margin-bottom: 6px; }
   .header p  { color: rgba(255,255,255,0.82); font-size: 14px; }
   .alert-bar { background: #DCFCE7; border-bottom: 2px solid #BBF7D0; padding: 14px 32px; display: flex; align-items: center; gap: 10px; }
@@ -40,14 +40,14 @@
 
     <!-- Header -->
     <div class="header">
-      <span class="icon">🔔</span>
+      <span class="icon">Notifikasi admin</span>
       <h1>Donasi Baru Masuk!</h1>
       <p>Sistem Panti Asuhan Santa Susana Timika</p>
     </div>
 
     <!-- Alert bar -->
     <div class="alert-bar">
-      <span>✅ Pembayaran QRIS berhasil dikonfirmasi oleh Midtrans</span>
+      <span>Pembayaran QRIS berhasil dikonfirmasi oleh Midtrans</span>
     </div>
 
     <div class="body">
@@ -59,7 +59,7 @@
       </div>
 
       <!-- Data donatur -->
-      <p class="section-label">📋 Data Donatur</p>
+      <p class="section-label">Data donatur</p>
       <table class="data-table">
         <tr>
           <td>Order ID</td>
@@ -87,7 +87,7 @@
         </tr>
         <tr>
           <td>Status</td>
-          <td><span class="badge badge-success">✅ Lunas / Completed</span></td>
+          <td><span class="badge badge-success">Lunas / Completed</span></td>
         </tr>
         <tr>
           <td>Waktu</td>
@@ -98,7 +98,7 @@
       @if($donasi->catatan)
       <!-- Pesan donatur -->
       <div class="message-box">
-        <div class="label">💬 Pesan dari Donatur</div>
+        <div class="label">Pesan dari donatur</div>
         <p>"{{ $donasi->catatan }}"</p>
       </div>
       @endif
@@ -111,7 +111,7 @@
 
     <!-- Footer -->
     <div class="footer">
-      <p><strong>🏠 Panti Asuhan Santa Susana Timika</strong></p>
+      <p><strong>Panti Asuhan Santa Susana Timika</strong></p>
       <p>Email notifikasi otomatis · Yayasan Peduli Kasih Mimika</p>
       <p style="margin-top:8px; font-size:11px; color:#CBD5E1;">
         Jangan balas email ini. Untuk bantuan hubungi admin sistem.

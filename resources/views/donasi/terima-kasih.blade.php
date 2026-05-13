@@ -16,32 +16,38 @@
     text-align: center;
     max-width: 600px;
     width: 100%;
-    box-shadow: 0 16px 60px rgba(46,134,171,0.1);
+    box-shadow: 0 16px 48px rgba(8, 47, 73, 0.08);
     position: relative;
     overflow: hidden;
 }
 .thanks-card::before {
     content: '';
     position: absolute; top: 0; left: 0; right: 0; height: 6px;
-    background: var(--gradient, linear-gradient(135deg, #DC2626, #f97316));
+    background: var(--gradient, linear-gradient(135deg, #0ea5e9, #0284c7));
 }
 .thanks-card-blue {
     background: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
     box-shadow: 0 16px 60px rgba(14, 165, 233, 0.12);
 }
-.confetti-emoji {
-    font-size: 4.5rem;
-    display: block;
-    margin-bottom: 1.5rem;
-    animation: bounce 1s ease infinite alternate;
+.thanks-hero-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: rgba(14, 165, 233, 0.12);
+    color: var(--aksen);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
 }
-@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+.thanks-card-jasa .thanks-hero-icon { background: rgba(61, 122, 82, 0.15); color: var(--aksen-zaitun); }
 .thanks-card h1 {
     font-size: 2rem; font-weight: 800;
     margin-bottom: 0.75rem; line-height: 1.2;
 }
 .thanks-card .sub {
-    font-size: 1.05rem; color: #64748B;
+    font-size: 1.05rem; color: var(--teks-muted);
     line-height: 1.7; margin-bottom: 2rem;
 }
 .info-box {
@@ -76,12 +82,13 @@
     border-radius: 4px 0 0 4px;
 }
 .donor-summary-card::after {
-    content: '♥';
+    content: '';
     position: absolute;
     top: 1rem; right: 1.25rem;
-    font-size: 1.25rem;
-    color: rgba(220, 38, 38, 0.2);
-    font-family: Georgia, serif;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.25);
 }
 .donor-summary-header {
     padding: 1.25rem 1.5rem 0.75rem 1.75rem;
@@ -179,30 +186,30 @@
 @section('content')
 <div class="thanks-wrap">
     @if($jenis === 'jasa')
-    <div class="thanks-card" style="--gradient: linear-gradient(135deg, #059669, #34d399);">
-        <span class="confetti-emoji">🤲</span>
-        <h1 style="color: #065f46;">Terima Kasih, Relawan Hebat!</h1>
+    <div class="thanks-card thanks-card-jasa" style="--gradient: linear-gradient(135deg, #2f5a40, #3d7a52);">
+        <div class="thanks-hero-icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></div>
+        <h1 style="color: var(--biru-gelap);">Terima kasih, relawan hebat</h1>
         <p class="sub">
             Donasi jasa Anda telah kami terima dengan sepenuh hati. Tim kami akan segera menghubungi Anda dalam <strong>1–2 hari kerja</strong> untuk mendiskusikan rencana kegiatan lebih lanjut.
         </p>
         <div class="info-box" style="background: #F0FDF4; color: #065f46; border: 1px solid #BBF7D0;">
-            <strong>🌟 Langkah Selanjutnya:</strong><br>
+            <strong>Langkah selanjutnya</strong><br>
             Kami akan menghubungi Anda melalui nomor telepon atau email yang telah Anda daftarkan. Mohon tetap aktif dan siap untuk berdiskusi.
         </div>
         <div class="info-box" style="background: #ECFDF5; color: #065f46; border: 1px dashed #6EE7B7;">
-            <strong>🏆 Sertifikat Kontribusi</strong> akan disiapkan setelah kegiatan selesai dilaksanakan.
+            <strong>Sertifikat kontribusi</strong> akan disiapkan setelah kegiatan selesai dilaksanakan.
         </div>
         <div class="thanks-actions">
-            <a href="{{ route('home') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #10B981); box-shadow: 0 4px 16px rgba(5,150,105,0.3);">🏠 Kembali ke Beranda</a>
-            <a href="{{ route('donasi.index') }}" class="btn btn-outline" style="border-color:#059669; color:#059669;">🤝 Jenis Donasi Lain</a>
+            <a href="{{ route('home') }}" class="btn btn-primary"><i class="fas fa-home" style="margin-right:8px;"></i>Kembali ke beranda</a>
+            <a href="{{ route('donasi.index') }}" class="btn btn-outline" style="border-color:var(--aksen); color:var(--aksen);"><i class="fas fa-arrow-left" style="margin-right:8px;"></i>Jenis donasi lain</a>
         </div>
     </div>
     @else
-    <div class="thanks-card thanks-card-blue" style="--gradient: linear-gradient(135deg, #0ea5e9, #38bdf8);">
-        <span class="confetti-emoji">🎉</span>
-        <h1 style="color: #0c4a6e;">Terima Kasih atas Donasi Anda!</h1>
+    <div class="thanks-card thanks-card-blue" style="--gradient: linear-gradient(135deg, #0c4a6e, #0ea5e9); background: linear-gradient(160deg, #f0f9ff 0%, #fff 50%, #e0f2fe 100%); box-shadow: 0 16px 48px rgba(8,47,73,0.08);">
+        <div class="thanks-hero-icon" aria-hidden="true"><i class="fas fa-circle-check"></i></div>
+        <h1 style="color: var(--biru-gelap);">Terima kasih atas donasi Anda</h1>
         @if(!empty($donasiTerimaKasih))
-        <p class="sub thanks-personal" style="font-size: 1.1rem; color: #0369a1; margin-bottom: 1.5rem;">
+        <p class="sub thanks-personal" style="font-size: 1.1rem; color: var(--aksen); margin-bottom: 1.5rem;">
             <strong>Terima kasih atas kebaikan Anda, semoga selalu sehat dan diberkati.</strong>
         </p>
         <div class="donor-summary-card donor-summary-card-blue">
@@ -237,8 +244,8 @@
         </p>
         @endif
         <div class="thanks-actions">
-            <a href="{{ route('home') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); box-shadow: 0 4px 16px rgba(14,165,233,0.35);">🏠 Kembali ke Beranda</a>
-            <a href="{{ route('donasi.index') }}" class="btn btn-outline" style="border-color:#0ea5e9; color:#0284c7;">💰 Donasi Lagi</a>
+            <a href="{{ route('home') }}" class="btn btn-primary"><i class="fas fa-home" style="margin-right:8px;"></i>Kembali ke beranda</a>
+            <a href="{{ route('donasi.index') }}" class="btn btn-outline" style="border-color:var(--aksen); color:var(--aksen);"><i class="fas fa-heart" style="margin-right:8px;"></i>Donasi lagi</a>
         </div>
     </div>
     @endif

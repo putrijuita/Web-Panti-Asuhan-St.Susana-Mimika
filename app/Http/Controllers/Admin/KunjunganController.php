@@ -8,6 +8,7 @@ use App\Mail\KunjunganStatusNotification;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class KunjunganController extends Controller
 {
@@ -59,7 +60,8 @@ class KunjunganController extends Controller
             Mail::to($kunjungan->email)->send(new KunjunganStatusNotification($kunjungan));
         } catch (\Throwable $e) {
             report($e);
-            return redirect()->back()->with('error', 'Gagal mengirim email ke pemohon. Silakan coba lagi.');
+
+            return redirect()->back()->with('error', $this->mailFailureUserMessage($e, 'Gagal mengirim email ke pemohon.'));
         }
 
         return redirect()->back()->with('success', 'Email informasi kunjungan berhasil dikirim ke pemohon.');
@@ -77,13 +79,41 @@ class KunjunganController extends Controller
             Mail::to($kunjungan->email)->send(new KunjunganResponNotification($kunjungan, $request->respon));
         } catch (\Throwable $e) {
             report($e);
-            $message = 'Gagal mengirim respon ke pemohon. Silakan coba lagi.';
-            if (config('app.debug')) {
-                $message .= ' Detail: ' . $e->getMessage();
-            }
-            return redirect()->back()->with('error', $message)->withInput();
+
+            return redirect()->back()
+                ->with('error', $this->mailFailureUserMessage($e, 'Gagal mengirim respon ke pemohon.'))
+                ->withInput();
         }
 
         return redirect()->back()->with('success', 'Respon berhasil dikirim ke email terdaftar.');
+    }
+
+    /**
+     * Pesan singkat untuk admin; detail panjang SMTP hanya saat APP_DEBUG=true (dibatasi).
+     */
+    private function mailFailureUserMessage(\Throwable $e, string $lead): string
+    {
+        $raw = $e->getMessage();
+        $smtpAuthHint = $this->smtpLooksLikeBadCredentials($raw)
+            ? ' Penyebab umum: sandi SMTP salah atau Gmail memerlukan Sandi aplikasi (App Password) di file .env hosting, bukan sandi login biasa.'
+            : '';
+
+        $out = $lead.$smtpAuthHint.' Silakan coba lagi setelah pengaturan diperbaiki.';
+
+        if (config('app.debug')) {
+            $compact = Str::limit(preg_replace('/\s+/u', ' ', $raw), 450, '…');
+
+            return $out.' [Debug: '.$compact.']';
+        }
+
+        return $out;
+    }
+
+    private function smtpLooksLikeBadCredentials(string $message): bool
+    {
+        return str_contains($message, '535')
+            || str_contains($message, 'BadCredentials')
+            || str_contains($message, 'Username and Password not accepted')
+            || str_contains($message, 'Failed to authenticate on SMTP');
     }
 }

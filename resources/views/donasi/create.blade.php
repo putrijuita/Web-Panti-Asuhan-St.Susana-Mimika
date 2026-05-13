@@ -32,12 +32,12 @@
     background: white;
     border-radius: 24px;
     padding: 2.5rem;
-    box-shadow: 0 8px 40px rgba(46,134,171,0.1);
+    box-shadow: 0 8px 40px rgba(14,165,233,0.1);
     position: sticky;
     top: 88px;
 }
 .form-card h2 { font-size: 1.4rem; color: var(--biru-gelap); margin-bottom: 0.4rem; }
-.form-card .subtitle { color: #64748B; font-size: 0.9rem; margin-bottom: 2rem; }
+.form-card .subtitle { color: var(--teks-muted); font-size: 0.9rem; margin-bottom: 2rem; }
 
 .amount-grid {
     display: grid;
@@ -58,14 +58,14 @@
     color: var(--teks-gelap);
     text-align: center;
 }
-.amount-btn:hover { border-color: var(--biru-tua); color: var(--biru-tua); background: rgba(46,134,171,0.05); }
+.amount-btn:hover { border-color: var(--biru-tua); color: var(--biru-tua); background: rgba(14,165,233,0.05); }
 .amount-btn.selected { border-color: var(--biru-tua); background: var(--biru-tua); color: white; }
 
 .info-card {
     background: white;
     border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 4px 24px rgba(46,134,171,0.08);
+    box-shadow: 0 4px 24px rgba(14,165,233,0.08);
     margin-bottom: 1.5rem;
 }
 .info-card h3 { font-size: 1.1rem; color: var(--biru-gelap); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
@@ -86,7 +86,7 @@
     flex-shrink: 0;
 }
 .impact-item h4 { font-weight: 700; font-size: 0.9rem; color: var(--teks-gelap); margin-bottom: 0.2rem; }
-.impact-item p  { font-size: 0.8rem; color: #64748B; }
+.impact-item p  { font-size: 0.8rem; color: var(--teks-muted); }
 
 .trust-badges {
     display: flex;
@@ -162,7 +162,7 @@
                 <span class="trust-badge"><i class="fas fa-check"></i> Laporan Berkala</span>
                 <span class="trust-badge"><i class="fas fa-check"></i> Terpercaya</span>
             </div>
-            <p style="color: #64748B; font-size: 0.9rem; line-height: 1.6;">
+            <p style="color: var(--teks-muted); font-size: 0.9rem; line-height: 1.6;">
                 Setiap donasi dikelola secara transparan dan digunakan 100% untuk kebutuhan anak-anak. Laporan penggunaan dana tersedia bagi donatur.
             </p>
         </div>

@@ -4,34 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Panti Asuhan Santa Susana Timika')</title>
+    @php
+        $faviconHref = \App\Models\SiteContent::siteLogoUrl(data_get($siteContent ?? null, 'site_logo'));
+    @endphp
+    @if(filled($faviconHref))
+        <link rel="icon" href="{{ $faviconHref }}">
+        <link rel="apple-touch-icon" href="{{ $faviconHref }}">
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --biru-muda: #87CEEB;
-            --biru-muda-gelap: #5BA3C6;
-            --biru-tua: #2E86AB;
-            --biru-gelap: #1B5B7A;
-            --putih: #FFFFFF;
-            --abu-terang: #F8FAFC;
+            /* Tema: biru langit (sky) + aksen hijau lapangan via --aksen-zaitun */
+            --latar: #f0f9ff;
+            --latar-panel: #e0f2fe;
+            --aksen: #0ea5e9;
+            --aksen-hover: #0284c7;
+            --aksen-muda: #7dd3fc;
+            --aksen-zaitun: #3d7a52;
+            --aksen-gelap: #0c4a6e;
+            --putih: #ffffff;
+            --teks: #0f172a;
+            --teks-muted: #475569;
+            --border: #bae6fd;
+            --abu-terang: #e0f2fe;
             --abu-gelap: #334155;
-            --teks-gelap: #1E293B;
+            --teks-gelap: #0c4a6e;
+            /* Nama legacy — sekarang nuansa biru langit */
+            --biru-muda: #7dd3fc;
+            --biru-muda-gelap: #0369a1;
+            --biru-tua: #0ea5e9;
+            --biru-gelap: #0c4a6e;
+            /* Footer hijau lapangan */
+            --footer-bg-top: #2f5a40;
+            --footer-bg-mid: #234a32;
+            --footer-bg-bottom: #152e1f;
+            --footer-heading: #b8e6c8;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(160deg, #E8F6FF 0%, #C8E9F7 40%, #A3D8EF 100%);
+            font-family: 'Source Sans 3', system-ui, sans-serif;
             min-height: 100vh;
-            color: var(--teks-gelap);
+            color: var(--teks);
+            background-color: var(--latar);
+            background-image: url('{{ asset(config('branding.body_background')) }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(240, 249, 255, 0.9);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body > * { position: relative; z-index: 1; }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Literata', Georgia, serif;
         }
 
         /* ===== NAVBAR ===== */
         .navbar {
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(16px);
-            box-shadow: 0 2px 24px rgba(46,134,171,0.12);
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid var(--border);
             padding: 0 2rem;
             position: sticky;
             top: 0;
@@ -49,26 +92,18 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--biru-gelap);
+            gap: 0.65rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            font-family: 'Literata', Georgia, serif;
+            color: var(--aksen-gelap);
             text-decoration: none;
         }
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
+        .logo .brand-mark-fallback { color: var(--aksen); display: inline-flex; align-items: center; }
+        .logo .brand-mark-img { flex-shrink: 0; }
         .nav-links {
             display: flex;
-            gap: 0.25rem;
+            gap: 0.2rem;
             align-items: center;
         }
         .nav-links a {
@@ -76,24 +111,23 @@
             color: var(--abu-gelap);
             font-weight: 500;
             font-size: 0.95rem;
-            padding: 0.5rem 0.85rem;
-            border-radius: 10px;
-            transition: all 0.2s;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
         }
         .nav-links a:hover,
         .nav-links a.active {
-            color: var(--biru-tua);
-            background: rgba(46,134,171,0.08);
+            color: var(--aksen);
+            background: rgba(14, 165, 233, 0.1);
         }
         .nav-links a.nav-cta {
-            background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-            color: white !important;
-            padding: 0.5rem 1.2rem;
-            box-shadow: 0 3px 12px rgba(46,134,171,0.3);
+            background: var(--aksen);
+            color: #fff !important;
+            padding: 0.5rem 1.15rem;
         }
         .nav-links a.nav-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 16px rgba(46,134,171,0.4);
+            background: var(--aksen-hover);
+            color: #fff !important;
         }
         .nav-hamburger {
             display: none;
@@ -106,9 +140,8 @@
             display: block;
             width: 24px;
             height: 2px;
-            background: var(--biru-gelap);
+            background: var(--aksen-gelap);
             border-radius: 2px;
-            transition: all 0.3s;
         }
 
         /* ===== MAIN ===== */
@@ -117,40 +150,31 @@
             margin: 0 auto;
             padding: 2rem;
             min-height: calc(100vh - 68px - 320px);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 1px 0 rgba(8, 47, 73, 0.06);
         }
 
         /* ===== PAGE HEADER ===== */
         .page-header {
-            background: linear-gradient(135deg, var(--biru-gelap) 0%, var(--biru-tua) 60%, var(--biru-muda-gelap) 100%);
-            color: white;
-            padding: 3.5rem 2rem;
+            background: linear-gradient(135deg, var(--biru-gelap) 0%, var(--biru-muda-gelap) 55%, #0ea5e9 100%);
+            color: #fff;
+            padding: 3rem 2rem;
             text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.07) 0%, transparent 60%);
-            pointer-events: none;
+            margin: -2rem -2rem 2.5rem -2rem;
+            border-radius: 0;
         }
         .page-header h1 {
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            position: relative;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.65rem;
         }
         .page-header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.05rem;
+            opacity: 0.92;
             max-width: 560px;
             margin: 0 auto;
-            position: relative;
+            font-family: 'Source Sans 3', sans-serif;
         }
         .breadcrumb {
             display: flex;
@@ -158,12 +182,11 @@
             justify-content: center;
             gap: 0.5rem;
             margin-bottom: 1rem;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            position: relative;
+            font-size: 0.88rem;
+            opacity: 0.85;
         }
         .breadcrumb a {
-            color: white;
+            color: #fff;
             text-decoration: none;
         }
         .breadcrumb a:hover { text-decoration: underline; }
@@ -171,80 +194,78 @@
         /* ===== COMPONENTS ===== */
         .btn {
             display: inline-block;
-            padding: 0.7rem 1.6rem;
-            border-radius: 12px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
             border: none;
             cursor: pointer;
             font-size: 0.95rem;
             font-family: inherit;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--biru-tua), var(--biru-muda-gelap));
-            color: white;
-            box-shadow: 0 4px 15px rgba(46,134,171,0.3);
+            background: var(--aksen);
+            color: #fff;
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46,134,171,0.4);
+            background: var(--aksen-hover);
+            color: #fff;
         }
         .btn-outline {
             background: transparent;
-            border: 2px solid var(--biru-tua);
-            color: var(--biru-tua);
+            border: 2px solid var(--aksen);
+            color: var(--aksen);
         }
         .btn-outline:hover {
-            background: var(--biru-tua);
-            color: white;
-            transform: translateY(-2px);
+            background: var(--aksen);
+            color: #fff;
         }
         .btn-white {
-            background: white;
-            color: var(--biru-tua);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: #fff;
+            color: var(--aksen);
+            border: 1px solid var(--border);
         }
         .btn-white:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            background: var(--latar-panel);
+            color: var(--aksen-gelap);
         }
         .card {
-            background: white;
-            border-radius: 20px;
+            background: #fff;
+            border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 4px 30px rgba(46,134,171,0.08);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px rgba(8, 47, 73, 0.06);
         }
         .form-group {
             margin-bottom: 1.25rem;
         }
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.45rem;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--teks-gelap);
+            font-size: 0.95rem;
+            color: var(--teks);
         }
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #E2E8F0;
-            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 1rem;
             font-family: inherit;
-            transition: all 0.2s;
-            background: #FAFCFF;
-            color: var(--teks-gelap);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
+            color: var(--teks);
         }
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--biru-tua);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(46,134,171,0.08);
+            border-color: var(--aksen);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
         }
         .form-group textarea { min-height: 120px; resize: vertical; }
         .form-row {
@@ -253,90 +274,92 @@
             gap: 1rem;
         }
         .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
-        .alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-        .alert-error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
-        .error-msg { color: #DC2626; font-size: 0.8rem; margin-top: 0.35rem; display: block; }
+        .alert-success { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+        .alert-error   { background: #ffebee; color: #b71c1c; border: 1px solid #ffcdd2; }
+        .error-msg { color: #c62828; font-size: 0.85rem; margin-top: 0.35rem; display: block; }
 
         /* ===== FOOTER ===== */
         .site-footer {
-            background: linear-gradient(180deg, var(--biru-gelap) 0%, #0a2d3e 100%);
-            color: white;
-            margin-top: 5rem;
-            padding: 4rem 2rem 2rem;
+            background: linear-gradient(165deg, var(--footer-bg-top) 0%, var(--footer-bg-mid) 42%, var(--footer-bg-bottom) 100%);
+            color: #fff;
+            margin-top: 4rem;
+            padding: 3.5rem 2rem 2rem;
+            border-top: 1px solid rgba(184, 230, 200, 0.2);
         }
         .footer-container { max-width: 1200px; margin: 0 auto; }
         .footer-top {
             display: grid;
             grid-template-columns: 1.4fr repeat(3, 1fr);
             gap: 2.5rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
         .footer-logo {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.65rem;
             margin-bottom: 1rem;
         }
+        .footer-logo .brand-mark-fallback { color: rgba(255,255,255,0.95); display: inline-flex; }
         .footer-logo-icon {
             width: 40px;
             height: 40px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-        }
-        .footer-brand-name {
-            font-weight: 700;
-            font-size: 1rem;
-            color: white;
-        }
-        .footer-brand-desc {
-            font-size: 0.9rem;
-            line-height: 1.7;
-            opacity: 0.8;
-            margin-bottom: 1.5rem;
-        }
-        .footer-sosmed {
-            display: flex;
-            gap: 0.6rem;
-        }
-        .footer-sosmed a {
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.1);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            flex-shrink: 0;
+        }
+        .footer-brand-name {
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'Literata', Georgia, serif;
+            color: #fff;
+        }
+        .footer-brand-desc {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            opacity: 0.85;
+            margin-bottom: 1.25rem;
+        }
+        .footer-sosmed {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .footer-sosmed a {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
         .footer-sosmed a:hover {
-            background: var(--biru-tua);
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.2);
         }
         .footer-col h4 {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            margin-bottom: 1.25rem;
-            color: var(--biru-muda);
+            margin-bottom: 1.1rem;
+            color: var(--footer-heading);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
         }
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 0.65rem; }
+        .footer-col ul li { margin-bottom: 0.55rem; }
         .footer-col ul li a {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.82);
             text-decoration: none;
             font-size: 0.9rem;
             transition: color 0.2s;
@@ -344,12 +367,12 @@
             align-items: center;
             gap: 0.4rem;
         }
-        .footer-col ul li a:hover { color: white; }
+        .footer-col ul li a:hover { color: #fff; }
         .footer-contact-item {
             display: flex;
             align-items: flex-start;
             gap: 0.75rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.9rem;
         }
         .footer-contact-icon {
             width: 32px;
@@ -362,21 +385,20 @@
             flex-shrink: 0;
             margin-top: 2px;
         }
-        .footer-contact-text { font-size: 0.88rem; line-height: 1.5; opacity: 0.85; }
-        .footer-contact-text a { color: white; text-decoration: none; }
+        .footer-contact-text { font-size: 0.86rem; line-height: 1.5; opacity: 0.85; }
+        .footer-contact-text a { color: #fff; text-decoration: none; }
         .footer-contact-text a:hover { text-decoration: underline; }
-        .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0 1.5rem; }
+        .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); margin: 1.75rem 0 1.25rem; }
         .footer-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            opacity: 0.75;
+            font-size: 0.82rem;
+            opacity: 0.78;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .footer-top { grid-template-columns: 1fr 1fr; }
         }
@@ -389,15 +411,17 @@
                 top: 68px;
                 left: 0;
                 right: 0;
-                background: white;
-                padding: 1.5rem;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-                gap: 0.25rem;
+                background: #fff;
+                padding: 1.25rem;
+                border-bottom: 1px solid var(--border);
+                gap: 0.15rem;
                 z-index: 999;
             }
             .nav-hamburger { display: flex; }
             .footer-top { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
+            main { border-radius: 0; padding: 1.25rem; }
+            .page-header { margin: -1.25rem -1.25rem 1.5rem -1.25rem; padding: 2rem 1.25rem; }
         }
     </style>
     @stack('styles')
@@ -406,17 +430,17 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ route('home') }}" class="logo">
-                <div class="logo-icon">🏠</div>
-                Santa Susana Timika
+                @include('partials.brand-mark', ['variant' => 'nav'])
+                <span>{{ $siteContent->nav_brand_suffix }}</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-                <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">Tentang</a>
-                <a href="{{ route('program') }}" class="{{ request()->routeIs('program') ? 'active' : '' }}">Kegiatan</a>
-                <a href="{{ route('galeri') }}" class="{{ request()->routeIs('galeri') ? 'active' : '' }}">Galeri</a>
-                <a href="{{ route('donasi.index') }}" class="{{ request()->routeIs('donasi.*') ? 'active' : '' }} nav-cta">Donasi</a>
-                <a href="{{ route('kunjungan.create') }}" class="{{ request()->routeIs('kunjungan.*') ? 'active' : '' }}">Kunjungan</a>
-                <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'active' : '' }}">Kontak</a>
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">{{ $siteContent->nav_beranda }}</a>
+                <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">{{ $siteContent->nav_tentang }}</a>
+                <a href="{{ route('program') }}" class="{{ request()->routeIs('program') ? 'active' : '' }}">{{ $siteContent->nav_kegiatan }}</a>
+                <a href="{{ route('galeri') }}" class="{{ request()->routeIs('galeri') ? 'active' : '' }}">{{ $siteContent->nav_galeri }}</a>
+                <a href="{{ route('donasi.index') }}" class="{{ request()->routeIs('donasi.*') ? 'active' : '' }} nav-cta">{{ $siteContent->nav_donasi }}</a>
+                <a href="{{ route('kunjungan.create') }}" class="{{ request()->routeIs('kunjungan.*') ? 'active' : '' }}">{{ $siteContent->nav_kunjungan }}</a>
+                <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'active' : '' }}">{{ $siteContent->nav_kontak }}</a>
             </div>
             <div class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
                 <span></span><span></span><span></span>
@@ -439,70 +463,70 @@
             <div class="footer-top">
                 <div>
                     <div class="footer-logo">
-                        <div class="footer-logo-icon">🏠</div>
+                        @include('partials.brand-mark', ['variant' => 'footer'])
                         <div>
-                            <div class="footer-brand-name">Panti Asuhan Santa Susana</div>
+                            <div class="footer-brand-name">{{ $siteContent->footer_brand_name }}</div>
                         </div>
                     </div>
                     <p class="footer-brand-desc">
-                        Yayasan Peduli Kasih Mimika – Panti Asuhan Santa Susana Timika.
-                        Merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih di Timika, Papua Tengah.
+                        {{ $siteContent->footer_brand_desc }}
                     </p>
                     <div class="footer-sosmed">
-                        <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="tel:082198595245" title="Telepon"><i class="fas fa-phone"></i></a>
+                        <a href="{{ $siteContent->footer_sosmed_fb_url }}" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{{ $siteContent->footer_sosmed_phone_href }}" title="Telepon"><i class="fas fa-phone"></i></a>
+                        <a href="{{ $siteContent->footer_sosmed_ig_url }}" target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
-                    <h4>Menu</h4>
+                    <h4>{{ $siteContent->footer_heading_menu }}</h4>
                     <ul>
-                        <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right fa-xs"></i> Beranda</a></li>
-                        <li><a href="{{ route('tentang') }}"><i class="fas fa-chevron-right fa-xs"></i> Tentang Kami</a></li>
-                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> Kegiatan</a></li>
-                        <li><a href="{{ route('galeri') }}"><i class="fas fa-chevron-right fa-xs"></i> Galeri</a></li>
-                        <li><a href="{{ route('donasi.index') }}"><i class="fas fa-chevron-right fa-xs"></i> Donasi</a></li>
-                        <li><a href="{{ route('kunjungan.create') }}"><i class="fas fa-chevron-right fa-xs"></i> Kunjungan</a></li>
-                        <li><a href="{{ route('kontak') }}"><i class="fas fa-chevron-right fa-xs"></i> Kontak</a></li>
+                        <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_beranda }}</a></li>
+                        <li><a href="{{ route('tentang') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_tentang }}</a></li>
+                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kegiatan }}</a></li>
+                        <li><a href="{{ route('galeri') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_galeri }}</a></li>
+                        <li><a href="{{ route('donasi.index') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_donasi }}</a></li>
+                        <li><a href="{{ route('kunjungan.create') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kunjungan }}</a></li>
+                        <li><a href="{{ route('kontak') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kontak }}</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Kegiatan</h4>
+                    <h4>{{ $siteContent->footer_heading_kegiatan }}</h4>
                     <ul>
-                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> Kegiatan Rutin Kami</a></li>
-                        <li><a href="{{ route('program.unggulan') }}"><i class="fas fa-chevron-right fa-xs"></i> Program Unggulan</a></li>
-                        <li><a href="{{ route('program.lainnya') }}"><i class="fas fa-chevron-right fa-xs"></i> Program Lainnya</a></li>
+                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_rutin }}</a></li>
+                        <li><a href="{{ route('program.unggulan') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_unggulan }}</a></li>
+                        <li><a href="{{ route('program.lainnya') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_lainnya }}</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Kontak</h4>
+                    <h4>{{ $siteContent->footer_heading_kontak }}</h4>
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fas fa-phone fa-sm"></i></div>
                         <div class="footer-contact-text">
-                            <a href="tel:082198595245">0821-9859-5245</a>
+                            <a href="{{ $siteContent->footer_phone_href }}">{{ $siteContent->footer_phone_display }}</a>
                         </div>
                     </div>
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fab fa-facebook-f fa-sm"></i></div>
                         <div class="footer-contact-text">
-                            <a href="https://facebook.com/YayasanPeduliKasihMimika" target="_blank" rel="noopener noreferrer">Yayasan Peduli Kasih Mimika</a>
+                            <a href="{{ $siteContent->footer_fb_url }}" target="_blank" rel="noopener noreferrer">{{ $siteContent->footer_fb_text }}</a>
                         </div>
                     </div>
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fab fa-instagram fa-sm"></i></div>
                         <div class="footer-contact-text">
-                            <a href="https://www.instagram.com/yayasanpedulikasihmimika/" target="_blank" rel="noopener noreferrer">Yayasan Peduli Kasih Mimika Panti Asuhan Santa Susana Timika</a>
+                            <a href="{{ $siteContent->footer_ig_url }}" target="_blank" rel="noopener noreferrer">{{ $siteContent->footer_ig_text }}</a>
                         </div>
                     </div>
                     <div class="footer-contact-item">
                         <div class="footer-contact-icon"><i class="fas fa-location-dot fa-sm"></i></div>
-                        <div class="footer-contact-text">Timika, Kab. Mimika, Papua Tengah</div>
+                        <div class="footer-contact-text">{{ $siteContent->footer_address }}</div>
                     </div>
                 </div>
             </div>
             <hr class="footer-divider">
             <div class="footer-bottom">
-                <span>&copy; {{ date('Y') }} Yayasan Peduli Kasih Mimika — Panti Asuhan Santa Susana Timika</span>
-                <span>Dibuat dengan ❤️ untuk anak-anak Papua Tengah</span>
+                <span>&copy; {{ date('Y') }} {{ $siteContent->footer_copyright_left }}</span>
+                <span>{{ $siteContent->footer_copyright_right }}</span>
             </div>
         </div>
     </footer>

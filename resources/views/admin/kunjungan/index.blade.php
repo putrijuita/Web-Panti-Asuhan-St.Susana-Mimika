@@ -24,7 +24,7 @@
                         <option value="completed" {{ request('status')=='completed'?'selected':'' }}>Selesai</option>
                     </select>
                 </div>
-                <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div class="filter-bar-actions">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
                     <a href="{{ route('admin.kunjungan.index') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Reset</a>
                 </div>

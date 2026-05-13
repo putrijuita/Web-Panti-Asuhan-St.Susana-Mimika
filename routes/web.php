@@ -2,12 +2,21 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DonasiController as AdminDonasiController;
 use App\Http\Controllers\Admin\JasaController as AdminJasaController;
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\StrukturOrganisasiController;
+use App\Http\Controllers\Admin\BerandaSiteController;
+use App\Http\Controllers\Admin\ProgramPageController;
+use App\Http\Controllers\Admin\DonasiPageController;
+use App\Http\Controllers\Admin\KontakPageController;
+use App\Http\Controllers\Admin\KontakPesanController;
+use App\Http\Controllers\Admin\GaleriPageController;
+use App\Http\Controllers\Admin\KunjunganPageController;
+use App\Http\Controllers\Admin\TentangController as AdminTentangController;
 use App\Http\Controllers\Admin\VideoDokumentasiController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\PengelolaanDonasiController;
@@ -28,6 +37,9 @@ if ($adminDomain) {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
 
+            Route::get('profil', [AdminProfileController::class, 'edit'])->name('profile.edit');
+            Route::put('profil', [AdminProfileController::class, 'update'])->name('profile.update');
+
             Route::get('donasi', [AdminDonasiController::class, 'index'])->name('donasi.index');
             Route::get('donasi/{donasi}', [AdminDonasiController::class, 'show'])->name('donasi.show');
             Route::post('donasi/{donasi}/status', [AdminDonasiController::class, 'status'])->name('donasi.status');
@@ -39,6 +51,11 @@ if ($adminDomain) {
             Route::post('kunjungan/{kunjungan}/respon', [AdminKunjunganController::class, 'sendRespon'])->name('kunjungan.respon');
             Route::post('kunjungan/{kunjungan}/email', [AdminKunjunganController::class, 'sendEmail'])->name('kunjungan.email');
             Route::delete('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'destroy'])->name('kunjungan.destroy');
+
+            Route::get('pesan-kontak', [KontakPesanController::class, 'index'])->name('kontak-pesan.index');
+            Route::get('pesan-kontak/{kontakPesan}', [KontakPesanController::class, 'show'])->name('kontak-pesan.show');
+            Route::post('pesan-kontak/{kontakPesan}/balas', [KontakPesanController::class, 'balas'])->name('kontak-pesan.balas');
+            Route::delete('pesan-kontak/{kontakPesan}', [KontakPesanController::class, 'destroy'])->name('kontak-pesan.destroy');
 
             Route::get('jasa', [AdminJasaController::class, 'index'])->name('jasa.index');
             Route::get('jasa/{jasa}', [AdminJasaController::class, 'show'])->name('jasa.show');
@@ -78,6 +95,29 @@ if ($adminDomain) {
             Route::get('struktur/{struktur}/edit', [StrukturOrganisasiController::class, 'edit'])->name('struktur.edit');
             Route::put('struktur/{struktur}', [StrukturOrganisasiController::class, 'update'])->name('struktur.update');
             Route::delete('struktur/{struktur}', [StrukturOrganisasiController::class, 'destroy'])->name('struktur.destroy');
+
+            // Konten Tentang
+            Route::get('tentang', [AdminTentangController::class, 'edit'])->name('tentang.edit');
+            Route::put('tentang', [AdminTentangController::class, 'update'])->name('tentang.update');
+
+            // Konten beranda, navigasi & footer (publik)
+            Route::get('beranda', [BerandaSiteController::class, 'edit'])->name('beranda.edit');
+            Route::put('beranda', [BerandaSiteController::class, 'update'])->name('beranda.update');
+
+            Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
+            Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');
+
+            Route::get('halaman-galeri', [GaleriPageController::class, 'edit'])->name('galeri-page.edit');
+            Route::put('halaman-galeri', [GaleriPageController::class, 'update'])->name('galeri-page.update');
+
+            Route::get('halaman-kunjungan', [KunjunganPageController::class, 'edit'])->name('kunjungan-page.edit');
+            Route::put('halaman-kunjungan', [KunjunganPageController::class, 'update'])->name('kunjungan-page.update');
+
+            Route::get('halaman-donasi', [DonasiPageController::class, 'edit'])->name('donasi-page.edit');
+            Route::put('halaman-donasi', [DonasiPageController::class, 'update'])->name('donasi-page.update');
+
+            Route::get('halaman-kontak', [KontakPageController::class, 'edit'])->name('kontak-page.edit');
+            Route::put('halaman-kontak', [KontakPageController::class, 'update'])->name('kontak-page.update');
 
             // Galeri Foto
             Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
@@ -148,6 +188,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('profil', [AdminProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profil', [AdminProfileController::class, 'update'])->name('profile.update');
+
         Route::get('donasi', [AdminDonasiController::class, 'index'])->name('donasi.index');
         Route::get('donasi/{donasi}', [AdminDonasiController::class, 'show'])->name('donasi.show');
         Route::post('donasi/{donasi}/status', [AdminDonasiController::class, 'status'])->name('donasi.status');
@@ -159,6 +202,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('kunjungan/{kunjungan}/respon', [AdminKunjunganController::class, 'sendRespon'])->name('kunjungan.respon');
         Route::post('kunjungan/{kunjungan}/email', [AdminKunjunganController::class, 'sendEmail'])->name('kunjungan.email');
         Route::delete('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'destroy'])->name('kunjungan.destroy');
+
+        Route::get('pesan-kontak', [KontakPesanController::class, 'index'])->name('kontak-pesan.index');
+        Route::get('pesan-kontak/{kontakPesan}', [KontakPesanController::class, 'show'])->name('kontak-pesan.show');
+        Route::post('pesan-kontak/{kontakPesan}/balas', [KontakPesanController::class, 'balas'])->name('kontak-pesan.balas');
+        Route::delete('pesan-kontak/{kontakPesan}', [KontakPesanController::class, 'destroy'])->name('kontak-pesan.destroy');
 
         Route::get('jasa', [AdminJasaController::class, 'index'])->name('jasa.index');
         Route::get('jasa/{jasa}', [AdminJasaController::class, 'show'])->name('jasa.show');
@@ -198,6 +246,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('struktur/{struktur}/edit', [StrukturOrganisasiController::class, 'edit'])->name('struktur.edit');
         Route::put('struktur/{struktur}', [StrukturOrganisasiController::class, 'update'])->name('struktur.update');
         Route::delete('struktur/{struktur}', [StrukturOrganisasiController::class, 'destroy'])->name('struktur.destroy');
+
+        // Konten Tentang
+        Route::get('tentang', [AdminTentangController::class, 'edit'])->name('tentang.edit');
+        Route::put('tentang', [AdminTentangController::class, 'update'])->name('tentang.update');
+
+        // Konten beranda, navigasi & footer (publik)
+        Route::get('beranda', [BerandaSiteController::class, 'edit'])->name('beranda.edit');
+        Route::put('beranda', [BerandaSiteController::class, 'update'])->name('beranda.update');
+
+        Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
+        Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');
+
+        Route::get('halaman-galeri', [GaleriPageController::class, 'edit'])->name('galeri-page.edit');
+        Route::put('halaman-galeri', [GaleriPageController::class, 'update'])->name('galeri-page.update');
+
+        Route::get('halaman-kunjungan', [KunjunganPageController::class, 'edit'])->name('kunjungan-page.edit');
+        Route::put('halaman-kunjungan', [KunjunganPageController::class, 'update'])->name('kunjungan-page.update');
+
+        Route::get('halaman-donasi', [DonasiPageController::class, 'edit'])->name('donasi-page.edit');
+        Route::put('halaman-donasi', [DonasiPageController::class, 'update'])->name('donasi-page.update');
+
+        Route::get('halaman-kontak', [KontakPageController::class, 'edit'])->name('kontak-page.edit');
+        Route::put('halaman-kontak', [KontakPageController::class, 'update'])->name('kontak-page.update');
 
         // Galeri Foto
         Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
