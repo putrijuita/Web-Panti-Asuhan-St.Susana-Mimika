@@ -5,11 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\JadwalKegiatanAnak;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class JadwalKegiatanAnakController extends Controller
 {
     public function index(Request $request)
     {
+        if (! Schema::hasTable('jadwal_kegiatan_anak')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `jadwal_kegiatan_anak` belum ada. Jalankan `php artisan migrate`.');
+        }
+
         $search = $request->get('search');
         $hari = $request->get('hari');
         $aktif = $request->get('aktif');
@@ -43,12 +50,24 @@ class JadwalKegiatanAnakController extends Controller
 
     public function create()
     {
+        if (! Schema::hasTable('jadwal_kegiatan_anak')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `jadwal_kegiatan_anak` belum ada. Jalankan `php artisan migrate` terlebih dahulu.');
+        }
+
         $hariOptions = JadwalKegiatanAnak::daftarHari();
         return view('admin.jadwal-anak.create', compact('hariOptions'));
     }
 
     public function store(Request $request)
     {
+        if (! Schema::hasTable('jadwal_kegiatan_anak')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `jadwal_kegiatan_anak` belum ada. Jalankan `php artisan migrate`.');
+        }
+
         $data = $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'nullable|string|max:100',

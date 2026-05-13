@@ -5,12 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AnakAsuh;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class AnakAsuhController extends Controller
 {
     public function index(Request $request)
     {
+        if (! Schema::hasTable('anak_asuh')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `anak_asuh` belum ada. Jalankan `php artisan migrate` di environment database yang dipakai (sqlite/mysql/pgsql).');
+        }
+
         $search = $request->get('search');
         $sekolah = $request->get('sekolah');
 
@@ -36,11 +43,23 @@ class AnakAsuhController extends Controller
 
     public function create()
     {
+        if (! Schema::hasTable('anak_asuh')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `anak_asuh` belum ada. Jalankan `php artisan migrate` terlebih dahulu.');
+        }
+
         return view('admin.anak-asuh.create');
     }
 
     public function store(Request $request)
     {
+        if (! Schema::hasTable('anak_asuh')) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', 'Tabel `anak_asuh` belum ada. Jalankan `php artisan migrate` terlebih dahulu.');
+        }
+
         $data = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'nama_panggilan' => 'nullable|string|max:255',
