@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnakAsuh;
 use App\Models\KontakPageContent;
 use App\Models\KontakPesan;
 use App\Models\StrukturOrganisasi;
 use App\Models\Kegiatan;
 use App\Models\KegiatanCategory;
+use App\Models\JadwalKegiatanAnak;
 use App\Models\VideoDokumentasi;
 use App\Models\Galeri;
 use App\Models\GaleriCategory;
@@ -150,6 +152,32 @@ class PageController extends Controller
         }
 
         return redirect()->route('kontak')->with('success', KontakPageContent::resolvedForPublic()->success_message);
+    }
+
+    public function anakAsuh()
+    {
+        $anak = AnakAsuh::query()
+            ->orderByRaw("COALESCE(NULLIF(nama_panggilan,''), nama_lengkap)")
+            ->latest()
+            ->get();
+
+        return view('pages.anak-asuh', compact('anak'));
+    }
+
+    public function jadwalKegiatanAnak()
+    {
+        $hariOptions = JadwalKegiatanAnak::daftarHari();
+
+        $jadwalByHari = JadwalKegiatanAnak::query()
+            ->where('aktif', true)
+            ->orderByRaw("FIELD(hari,'setiap_hari','senin','selasa','rabu','kamis','jumat','sabtu','minggu'), urutan, jam_mulai")
+            ->get()
+            ->groupBy('hari');
+
+        return view('pages.jadwal-kegiatan-anak', [
+            'hariOptions' => $hariOptions,
+            'jadwalByHari' => $jadwalByHari,
+        ]);
     }
 
 }

@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\TentangController as AdminTentangController;
 use App\Http\Controllers\Admin\VideoDokumentasiController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\PengelolaanDonasiController;
+use App\Http\Controllers\Admin\AnakAsuhController;
+use App\Http\Controllers\Admin\JadwalKegiatanAnakController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KunjunganController;
@@ -77,6 +79,24 @@ if ($adminDomain) {
             Route::get('kegiatan/kategori/{category}/edit', [AdminKegiatanController::class, 'categoryEdit'])->name('kegiatan.categories.edit');
             Route::put('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryUpdate'])->name('kegiatan.categories.update');
             Route::delete('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryDestroy'])->name('kegiatan.categories.destroy');
+
+            // Data Anak Asuh
+            Route::get('anak-asuh', [AnakAsuhController::class, 'index'])->name('anak-asuh.index');
+            Route::get('anak-asuh/create', [AnakAsuhController::class, 'create'])->name('anak-asuh.create');
+            Route::post('anak-asuh', [AnakAsuhController::class, 'store'])->name('anak-asuh.store');
+            Route::get('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'show'])->name('anak-asuh.show');
+            Route::get('anak-asuh/{anakAsuh}/edit', [AnakAsuhController::class, 'edit'])->name('anak-asuh.edit');
+            Route::put('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'update'])->name('anak-asuh.update');
+            Route::delete('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'destroy'])->name('anak-asuh.destroy');
+
+            // Jadwal Kegiatan Anak
+            Route::get('jadwal-kegiatan-anak', [JadwalKegiatanAnakController::class, 'index'])->name('jadwal-anak.index');
+            Route::get('jadwal-kegiatan-anak/create', [JadwalKegiatanAnakController::class, 'create'])->name('jadwal-anak.create');
+            Route::post('jadwal-kegiatan-anak', [JadwalKegiatanAnakController::class, 'store'])->name('jadwal-anak.store');
+            Route::get('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'show'])->name('jadwal-anak.show');
+            Route::get('jadwal-kegiatan-anak/{jadwal}/edit', [JadwalKegiatanAnakController::class, 'edit'])->name('jadwal-anak.edit');
+            Route::put('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'update'])->name('jadwal-anak.update');
+            Route::delete('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'destroy'])->name('jadwal-anak.destroy');
 
             // Dokumentasi Video
             Route::get('dokumentasi-video', [VideoDokumentasiController::class, 'index'])->name('dokumentasi-video.index');
@@ -179,6 +199,10 @@ Route::get('/kunjungan', [KunjunganController::class, 'create'])->name('kunjunga
 Route::post('/kunjungan', [KunjunganController::class, 'store'])->name('kunjungan.store');
 Route::get('/kunjungan/terima-kasih', [KunjunganController::class, 'terimaKasih'])->name('kunjungan.terima-kasih');
 
+// Halaman publik: Data Anak Asuh & Jadwal Kegiatan Anak
+Route::get('/anak-asuh', [PageController::class, 'anakAsuh'])->name('anak-asuh');
+Route::get('/jadwal-kegiatan-anak', [PageController::class, 'jadwalKegiatanAnak'])->name('jadwal-kegiatan-anak');
+
 // Admin (path: /admin/*) — untuk akses lewat domain utama
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
@@ -228,6 +252,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('kegiatan/kategori/{category}/edit', [AdminKegiatanController::class, 'categoryEdit'])->name('kegiatan.categories.edit');
         Route::put('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryUpdate'])->name('kegiatan.categories.update');
         Route::delete('kegiatan/kategori/{category}', [AdminKegiatanController::class, 'categoryDestroy'])->name('kegiatan.categories.destroy');
+
+        // Data Anak Asuh
+        Route::get('anak-asuh', [AnakAsuhController::class, 'index'])->name('anak-asuh.index');
+        Route::get('anak-asuh/create', [AnakAsuhController::class, 'create'])->name('anak-asuh.create');
+        Route::post('anak-asuh', [AnakAsuhController::class, 'store'])->name('anak-asuh.store');
+        Route::get('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'show'])->name('anak-asuh.show');
+        Route::get('anak-asuh/{anakAsuh}/edit', [AnakAsuhController::class, 'edit'])->name('anak-asuh.edit');
+        Route::put('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'update'])->name('anak-asuh.update');
+        Route::delete('anak-asuh/{anakAsuh}', [AnakAsuhController::class, 'destroy'])->name('anak-asuh.destroy');
+
+        // Jadwal Kegiatan Anak
+        Route::get('jadwal-kegiatan-anak', [JadwalKegiatanAnakController::class, 'index'])->name('jadwal-anak.index');
+        Route::get('jadwal-kegiatan-anak/create', [JadwalKegiatanAnakController::class, 'create'])->name('jadwal-anak.create');
+        Route::post('jadwal-kegiatan-anak', [JadwalKegiatanAnakController::class, 'store'])->name('jadwal-anak.store');
+        Route::get('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'show'])->name('jadwal-anak.show');
+        Route::get('jadwal-kegiatan-anak/{jadwal}/edit', [JadwalKegiatanAnakController::class, 'edit'])->name('jadwal-anak.edit');
+        Route::put('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'update'])->name('jadwal-anak.update');
+        Route::delete('jadwal-kegiatan-anak/{jadwal}', [JadwalKegiatanAnakController::class, 'destroy'])->name('jadwal-anak.destroy');
 
         // Dokumentasi Video
         Route::get('dokumentasi-video', [VideoDokumentasiController::class, 'index'])->name('dokumentasi-video.index');

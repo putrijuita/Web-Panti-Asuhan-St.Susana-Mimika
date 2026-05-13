@@ -334,6 +334,14 @@
                 <span class="icon"><i class="fas fa-list-check"></i></span>
                 Manajemen kegiatan
             </a>
+            <a href="{{ route('admin.anak-asuh.index') }}" class="nav-link {{ request()->routeIs('admin.anak-asuh.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-children"></i></span>
+                Data anak asuh
+            </a>
+            <a href="{{ route('admin.jadwal-anak.index') }}" class="nav-link {{ request()->routeIs('admin.jadwal-anak.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                Jadwal kegiatan anak
+            </a>
             <a href="{{ route('admin.struktur.index') }}" class="nav-link {{ request()->routeIs('admin.struktur.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-sitemap"></i></span>
                 Struktur organisasi
