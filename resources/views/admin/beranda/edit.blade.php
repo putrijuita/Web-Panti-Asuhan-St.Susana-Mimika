@@ -2,7 +2,7 @@
 
 @section('title', 'Konten Beranda & Situs')
 @section('page-title', 'Konten Beranda & Situs')
-@section('page-subtitle', 'Sambutan hero, ringkasan Tentang, navigasi, footer, kontak, donasi keuangan & donasi jasa — tersimpan di database')
+@section('page-subtitle', 'Sambutan hero, ringkasan Tentang, latar belakang, footer, kontak, donasi keuangan & donasi jasa — tersimpan di database.'.(! empty($headerSiteCmsReady) ? ' Logo dan menu atas dikelola lewat Header situs.' : ' Logo dan navigasi atas juga di halaman ini.'))
 
 @section('content')
 <div class="card" style="margin-bottom:20px;">
@@ -41,6 +41,7 @@
         </div>
     </div>
 
+    @if(empty($headerSiteCmsReady))
     <div class="card" style="margin-bottom:18px;">
         <div class="card-header"><span class="card-title">Logo situs &amp; ikon tab (favicon)</span></div>
         <div class="card-body">
@@ -73,7 +74,51 @@
             @endif
         </div>
     </div>
+    @else
+    <div class="card" style="margin-bottom:18px;border-color:#bae6fd;background:var(--gray-50);">
+        <div class="card-header"><span class="card-title">Logo situs &amp; menu atas</span></div>
+        <div class="card-body" style="font-size:13px;color:var(--gray-600);line-height:1.55;margin:0;">
+            Unggah logo, teks merek di samping logo (mis. YPKSSM), dan urutan item navigasi atas kini diatur di
+            <a href="{{ route('admin.header-site.edit') }}"><strong>Header situs publik</strong></a>.
+        </div>
+    </div>
+    @endif
 
+    <div class="card" style="margin-bottom:18px;">
+        <div class="card-header"><span class="card-title">Latar belakang situs &amp; login admin</span></div>
+        <div class="card-body">
+            @if(!empty($bodyBackgroundCmsReady))
+                <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px;line-height:1.55;">
+                    Foto ini tampil halus di belakang halaman situs publik, panel admin, dan kolom kiri halaman login admin (bersama overlay hijau).
+                    Jika dikosongkan, dipakai gambar dari pengaturan server (<code>.env</code> → <code>BRANDING_BODY_BG</code> / bawaan aplikasi).
+                    Disarankan foto lebar (mis. 1600px ke atas), JPG atau WebP, ukuran berkas maksimal 5&nbsp;MB.
+                </p>
+                @if($site->site_body_background)
+                    <div style="margin-bottom:12px;">
+                        <img src="{{ \App\Models\SiteContent::bodyBackgroundUrl() }}" alt="Pratinjau latar belakang" style="max-width:100%;max-height:160px;width:auto;object-fit:cover;border-radius:12px;border:1px solid var(--gray-200);">
+                    </div>
+                @endif
+                <div class="form-group">
+                    <label class="form-label" for="site_body_background">Unggah gambar baru (JPG/PNG/WebP/GIF, maks. 5&nbsp;MB)</label>
+                    <input id="site_body_background" type="file" name="site_body_background" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
+                    @error('site_body_background')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
+                </div>
+                @if($site->site_body_background)
+                <div class="form-group" style="margin-bottom:0;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                        <input type="hidden" name="remove_site_body_background" value="0">
+                        <input type="checkbox" name="remove_site_body_background" value="1" {{ old('remove_site_body_background') ? 'checked' : '' }}>
+                        Hapus gambar (kembali ke latar dari pengaturan server)
+                    </label>
+                </div>
+                @endif
+            @else
+                <p style="margin:0;font-size:13px;color:var(--gray-600);">Kolom latar belakang belum ada di database. Jalankan migrasi terbaru lalu muat ulang halaman ini.</p>
+            @endif
+        </div>
+    </div>
+
+    @if(empty($headerSiteCmsReady))
     <div class="card" style="margin-bottom:18px;">
         <div class="card-header"><span class="card-title">Navigasi atas</span></div>
         <div class="card-body">
@@ -86,7 +131,22 @@
                 @foreach ([
                     'nav_beranda' => 'Beranda',
                     'nav_tentang' => 'Tentang',
-                    'nav_kegiatan' => 'Kegiatan',
+                ] as $name => $label)
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="{{ $name }}">{{ $label }}</label>
+                    <input id="{{ $name }}" name="{{ $name }}" class="form-control" required value="{{ old($name, $site->$name) }}">
+                    @error($name)<small style="color:#b91c1c;">{{ $message }}</small>@enderror
+                </div>
+                @endforeach
+                @if(\Illuminate\Support\Facades\Schema::hasColumn('site_contents', 'nav_anak_asuh'))
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="nav_anak_asuh">Anak asuh (menu → /anak-asuh)</label>
+                    <input id="nav_anak_asuh" name="nav_anak_asuh" class="form-control" required value="{{ old('nav_anak_asuh', $site->nav_anak_asuh) }}">
+                    @error('nav_anak_asuh')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
+                </div>
+                @endif
+                @foreach ([
+                    'nav_kegiatan' => 'Jadwal (menu → /program)',
                     'nav_galeri' => 'Galeri',
                     'nav_donasi' => 'Donasi',
                     'nav_kunjungan' => 'Kunjungan',
@@ -101,6 +161,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="card" style="margin-bottom:18px;">
         <div class="card-header"><span class="card-title">Tombol aksi hero (beranda)</span></div>
@@ -303,7 +364,21 @@
                 @foreach ([
                     'footer_menu_beranda' => 'Beranda',
                     'footer_menu_tentang' => 'Tentang Kami',
-                    'footer_menu_kegiatan' => 'Kegiatan',
+                ] as $name => $label)
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="{{ $name }}">{{ $label }}</label>
+                    <input id="{{ $name }}" name="{{ $name }}" class="form-control" required value="{{ old($name, $site->$name) }}">
+                </div>
+                @endforeach
+                @if(\Illuminate\Support\Facades\Schema::hasColumn('site_contents', 'footer_menu_anak_asuh'))
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="footer_menu_anak_asuh">Data anak asuh (→ /anak-asuh)</label>
+                    <input id="footer_menu_anak_asuh" name="footer_menu_anak_asuh" class="form-control" required value="{{ old('footer_menu_anak_asuh', $site->footer_menu_anak_asuh) }}">
+                    @error('footer_menu_anak_asuh')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
+                </div>
+                @endif
+                @foreach ([
+                    'footer_menu_kegiatan' => 'Menu: jadwal (/program)',
                     'footer_menu_galeri' => 'Galeri',
                     'footer_menu_donasi' => 'Donasi',
                     'footer_menu_kunjungan' => 'Kunjungan',
@@ -315,18 +390,18 @@
                 </div>
                 @endforeach
             </div>
-            <p style="font-size:12px;color:var(--gray-500);margin:12px 0 8px;">Tautan kegiatan (footer)</p>
+            <p style="font-size:12px;color:var(--gray-500);margin:12px 0 8px;">Kolom footer «Jadwal» (satu tautan ke /program). Dua field di bawah hanya untuk cadangan teks di CMS, tidak ditampilkan di footer.</p>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" for="footer_kegiatan_rutin">Kegiatan rutin</label>
+                    <label class="form-label" for="footer_kegiatan_rutin">Teks tautan jadwal</label>
                     <input id="footer_kegiatan_rutin" name="footer_kegiatan_rutin" class="form-control" required value="{{ old('footer_kegiatan_rutin', $site->footer_kegiatan_rutin) }}">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" for="footer_kegiatan_unggulan">Program unggulan</label>
+                    <label class="form-label" for="footer_kegiatan_unggulan">Cadangan (tidak dipakai di footer)</label>
                     <input id="footer_kegiatan_unggulan" name="footer_kegiatan_unggulan" class="form-control" required value="{{ old('footer_kegiatan_unggulan', $site->footer_kegiatan_unggulan) }}">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" for="footer_kegiatan_lainnya">Program lainnya</label>
+                    <label class="form-label" for="footer_kegiatan_lainnya">Cadangan (tidak dipakai di footer)</label>
                     <input id="footer_kegiatan_lainnya" name="footer_kegiatan_lainnya" class="form-control" required value="{{ old('footer_kegiatan_lainnya', $site->footer_kegiatan_lainnya) }}">
                 </div>
             </div>
@@ -376,6 +451,7 @@
                     <input id="footer_sosmed_ig_url" name="footer_sosmed_ig_url" class="form-control" required value="{{ old('footer_sosmed_ig_url', $site->footer_sosmed_ig_url) }}">
                 </div>
             </div>
+            @include('admin.beranda._footer-navigation')
             <div class="admin-grid-2 admin-mt-8">
                 <div class="form-group" style="margin-bottom:0;">
                     <label class="form-label" for="footer_copyright_left">Hak cipta (setelah tahun)</label>

@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 
 class SiteContent extends Model
 {
@@ -13,12 +15,14 @@ class SiteContent extends Model
         'nav_brand_suffix',
         'nav_beranda',
         'nav_tentang',
+        'nav_anak_asuh',
         'nav_kegiatan',
         'nav_galeri',
         'nav_donasi',
         'nav_kunjungan',
         'nav_kontak',
         'site_logo',
+        'site_body_background',
         'home_btn_donasi',
         'home_btn_kunjungan',
         'home_tentang_section_title',
@@ -49,6 +53,7 @@ class SiteContent extends Model
         'footer_heading_kontak',
         'footer_menu_beranda',
         'footer_menu_tentang',
+        'footer_menu_anak_asuh',
         'footer_menu_kegiatan',
         'footer_menu_galeri',
         'footer_menu_donasi',
@@ -69,6 +74,8 @@ class SiteContent extends Model
         'footer_sosmed_ig_url',
         'footer_copyright_left',
         'footer_copyright_right',
+        'footer_navigation',
+        'header_navigation',
         'donasi_keuangan_page',
         'donasi_jasa_page',
     ];
@@ -76,6 +83,8 @@ class SiteContent extends Model
     protected $casts = [
         'donasi_keuangan_page' => 'array',
         'donasi_jasa_page' => 'array',
+        'footer_navigation' => 'array',
+        'header_navigation' => 'array',
     ];
 
     public static function defaults(): array
@@ -84,12 +93,14 @@ class SiteContent extends Model
             'nav_brand_suffix' => 'Santa Susana Timika',
             'nav_beranda' => 'Beranda',
             'nav_tentang' => 'Tentang',
-            'nav_kegiatan' => 'Kegiatan',
+            'nav_anak_asuh' => 'Anak asuh',
+            'nav_kegiatan' => 'Jadwal',
             'nav_galeri' => 'Galeri',
             'nav_donasi' => 'Donasi',
             'nav_kunjungan' => 'Kunjungan',
             'nav_kontak' => 'Kontak',
             'site_logo' => null,
+            'site_body_background' => null,
             'home_btn_donasi' => 'Donasi',
             'home_btn_kunjungan' => 'Kunjungan',
             'home_tentang_section_title' => 'Tentang Kami',
@@ -116,16 +127,17 @@ class SiteContent extends Model
             'footer_brand_name' => 'Panti Asuhan Santa Susana',
             'footer_brand_desc' => 'Yayasan Peduli Kasih Mimika – Panti Asuhan Santa Susana Timika. Merawat, mendidik, dan memberdayakan anak-anak dengan penuh kasih di Timika, Papua Tengah.',
             'footer_heading_menu' => 'Menu',
-            'footer_heading_kegiatan' => 'Kegiatan',
+            'footer_heading_kegiatan' => 'Jadwal',
             'footer_heading_kontak' => 'Kontak',
             'footer_menu_beranda' => 'Beranda',
             'footer_menu_tentang' => 'Tentang Kami',
-            'footer_menu_kegiatan' => 'Kegiatan',
+            'footer_menu_anak_asuh' => 'Data anak asuh',
+            'footer_menu_kegiatan' => 'Jadwal kegiatan anak',
             'footer_menu_galeri' => 'Galeri',
             'footer_menu_donasi' => 'Donasi',
             'footer_menu_kunjungan' => 'Kunjungan',
             'footer_menu_kontak' => 'Kontak',
-            'footer_kegiatan_rutin' => 'Kegiatan Rutin Kami',
+            'footer_kegiatan_rutin' => 'Lihat jadwal di /program',
             'footer_kegiatan_unggulan' => 'Program Unggulan',
             'footer_kegiatan_lainnya' => 'Program Lainnya',
             'footer_phone_display' => '0821-9859-5245',
@@ -181,6 +193,28 @@ class SiteContent extends Model
         }
 
         return asset('storage/'.ltrim($path, '/'));
+    }
+
+    /**
+     * URL gambar latar tubuh (situs publik, panel admin, halaman login admin).
+     * Prioritas: unggahan CMS → path di .env / config branding.body_background.
+     */
+    public static function bodyBackgroundUrl(): string
+    {
+        if (Schema::hasTable('site_contents') && Schema::hasColumn('site_contents', 'site_body_background')) {
+            $path = static::singleton()->site_body_background;
+            if (filled($path)) {
+                if (filter_var($path, FILTER_VALIDATE_URL)) {
+                    return $path;
+                }
+
+                return asset('storage/'.ltrim((string) $path, '/'));
+            }
+        }
+
+        $configPath = config('branding.body_background');
+
+        return ($configPath !== null && $configPath !== '') ? asset(ltrim((string) $configPath, '/')) : '';
     }
 
     /** URL logo situs (nav, footer, favicon). Null jika belum diunggah. */
@@ -608,5 +642,1055 @@ class SiteContent extends Model
         $rules['dj.buttons.submit'] = ['required', 'string', 'max:120'];
 
         return $rules;
+    }
+
+    /** Format JSON footer navigasi (tersimpan di <code>footer_navigation</code>). */
+    public const FOOTER_NAV_VERSION = 2;
+
+    public const FOOTER_MENU_ITEMS_MAX = 25;
+
+    public const FOOTER_KEGIATAN_ITEMS_MAX = 15;
+
+    public const FOOTER_SOCIAL_ITEMS_MAX = 12;
+
+    public const FOOTER_CONTACT_ITEMS_MAX = 15;
+
+    /**
+     * Rute bernama halaman publik yang boleh dipilih untuk tautan footer (dropdown CMS).
+     *
+     * @return array<string, string>
+     */
+    public static function footerPublicRouteOptions(): array
+    {
+        return [
+            'home' => 'Beranda (/)',
+            'tentang' => 'Tentang Kami (/tentang)',
+            'anak-asuh' => 'Data anak asuh (/anak-asuh)',
+            'program' => 'Kegiatan / jadwal (/program)',
+            'program.unggulan' => 'Program unggulan',
+            'program.lainnya' => 'Program lainnya',
+            'galeri' => 'Galeri (/galeri)',
+            'kontak' => 'Kontak (/kontak)',
+            'donasi.index' => 'Donasi — beranda (/donasi)',
+            'donasi.keuangan' => 'Donasi keuangan',
+            'kunjungan.create' => 'Kunjungan (form)',
+        ];
+    }
+
+    /** @return list<string> */
+    public static function footerPublicRouteNames(): array
+    {
+        return array_keys(self::footerPublicRouteOptions());
+    }
+
+    /** @return list<string> */
+    public static function footerContactItemTypes(): array
+    {
+        return ['preset_phone', 'preset_fb', 'preset_ig', 'preset_address', 'custom_link', 'custom_plain'];
+    }
+
+    public static function coerceFooterNavigationForAdmin(?array $stored, object $site, bool $includeAnakAsuhMenu): array
+    {
+        return self::resolvedFooterNavigationStructure($stored, $site, $includeAnakAsuhMenu);
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $storedRaw
+     * @return array<string, mixed>
+     */
+    public static function resolvedFooterNavigationStructure(?array $storedRaw, object $site, bool $includeAnakAsuhMenu): array
+    {
+        $stored = is_array($storedRaw) ? $storedRaw : [];
+        if (($stored['v'] ?? null) !== self::FOOTER_NAV_VERSION || self::footerNavigationLooksLikeLegacyV1($stored)) {
+            $stored = self::migrateFooterNavigationFromLegacyV1($stored, $site, $includeAnakAsuhMenu);
+        }
+        if (($stored['menu_items'] ?? []) === []) {
+            $stored = self::defaultFooterNavigationV2($site, $includeAnakAsuhMenu);
+        }
+        $stored['v'] = self::FOOTER_NAV_VERSION;
+
+        return self::ensureFooterNavigationSections($stored);
+    }
+
+    /** @param  array<string, mixed>  $stored */
+    public static function footerNavigationLooksLikeLegacyV1(array $stored): bool
+    {
+        if (isset($stored['social_slots'])) {
+            return true;
+        }
+        if (isset($stored['contact_slots'])) {
+            return true;
+        }
+        $firstMenu = (($stored['menu_items'] ?? [])[0] ?? null);
+        if (is_array($firstMenu) && isset($firstMenu['slug']) && ! isset($firstMenu['label'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Migrasi struktur penyimpanan lama (slot/slug v1) ke format v2.
+     *
+     * @param  array<string, mixed>  $stored
+     * @return array<string, mixed>
+     */
+    public static function migrateFooterNavigationFromLegacyV1(array $stored, object $site, bool $includeAnakAsuhMenu): array
+    {
+        $menuOut = [];
+        foreach ($stored['menu_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $slug = (string) ($row['slug'] ?? '');
+            if ($slug === 'anak_asuh' && ! $includeAnakAsuhMenu) {
+                continue;
+            }
+            $label = trim((string) ($row['label'] ?? ''));
+            if ($label === '' && $slug !== '') {
+                $label = self::footerMenuLabelForSlug($site, $slug);
+            }
+            if ($label === '') {
+                $label = $slug !== '' ? $slug : 'Menu';
+            }
+            $menuOut[] = [
+                'label' => $label,
+                'href_type' => in_array(($row['href_type'] ?? 'route'), ['route', 'url'], true) ? $row['href_type'] : 'route',
+                'route' => (string) ($row['route'] ?? ''),
+                'href' => (string) ($row['href'] ?? ''),
+                'icon' => isset($row['icon']) && is_string($row['icon']) && $row['icon'] !== ''
+                    ? $row['icon']
+                    : 'fas fa-chevron-right fa-xs',
+            ];
+        }
+
+        $kegiatanOut = [];
+        foreach ($stored['kegiatan_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $label = trim((string) ($row['label'] ?? ''));
+            if ($label === '') {
+                $label = (string) ($site->footer_kegiatan_rutin ?? 'Kegiatan');
+            }
+            $kegiatanOut[] = [
+                'label' => $label,
+                'href_type' => in_array(($row['href_type'] ?? 'route'), ['route', 'url'], true) ? $row['href_type'] : 'route',
+                'route' => (string) ($row['route'] ?? ''),
+                'href' => (string) ($row['href'] ?? ''),
+                'icon' => isset($row['icon']) && is_string($row['icon']) && $row['icon'] !== ''
+                    ? $row['icon']
+                    : 'fas fa-chevron-right fa-xs',
+            ];
+        }
+
+        $slotHref = [
+            'facebook' => (string) ($site->footer_sosmed_fb_url ?? ''),
+            'phone' => (string) ($site->footer_sosmed_phone_href ?? ''),
+            'instagram' => (string) ($site->footer_sosmed_ig_url ?? ''),
+        ];
+
+        $socialOut = [];
+        foreach ($stored['social_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $socialOut[] = [
+                'url' => (string) ($row['url'] ?? ''),
+                'icon' => isset($row['icon']) && is_string($row['icon']) ? $row['icon'] : 'fab fa-link',
+                'title' => (string) ($row['title'] ?? ''),
+            ];
+        }
+
+        if ($socialOut === [] && isset($stored['social_slots'])) {
+            foreach ($stored['social_slots'] ?? [] as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $slot = (string) ($row['slot'] ?? '');
+                $socialOut[] = [
+                    'url' => (string) ($slotHref[$slot] ?? ''),
+                    'icon' => isset($row['icon']) && is_string($row['icon']) ? $row['icon'] : 'fab fa-link',
+                    'title' => (string) ($row['title'] ?? ''),
+                ];
+            }
+        }
+
+        $contactOut = [];
+        foreach ($stored['contact_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            if (isset($row['type']) && is_string($row['type']) && in_array($row['type'], self::footerContactItemTypes(), true)) {
+                $contactOut[] = $row;
+            }
+        }
+
+        if ($contactOut === [] && isset($stored['contact_slots'])) {
+            foreach ($stored['contact_slots'] ?? [] as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $slot = (string) ($row['slot'] ?? '');
+                $isPlain = ($row['kind'] ?? '') === 'plain' || $slot === 'footer_address';
+                if ($isPlain) {
+                    $contactOut[] = [
+                        'type' => 'preset_address',
+                        'icon' => (string) ($row['icon'] ?? 'fas fa-location-dot fa-sm'),
+                    ];
+
+                    continue;
+                }
+                $type = match ($slot) {
+                    'footer_phone' => 'preset_phone',
+                    'footer_fb' => 'preset_fb',
+                    'footer_ig' => 'preset_ig',
+                    default => 'preset_phone',
+                };
+                $contactOut[] = [
+                    'type' => $type,
+                    'href_type' => isset($row['href_type']) && in_array($row['href_type'], ['site', 'route', 'url'], true)
+                        ? $row['href_type']
+                        : 'site',
+                    'route' => (string) ($row['route'] ?? ''),
+                    'href' => (string) ($row['href'] ?? ''),
+                    'icon' => (string) ($row['icon'] ?? 'fas fa-link'),
+                ];
+            }
+        }
+
+        return [
+            'v' => self::FOOTER_NAV_VERSION,
+            'menu_items' => $menuOut,
+            'kegiatan_items' => $kegiatanOut,
+            'social_items' => $socialOut,
+            'contact_items' => $contactOut,
+        ];
+    }
+
+    /** @param  array<string, mixed>  $stored */
+    public static function ensureFooterNavigationSections(array $stored): array
+    {
+        $stored['menu_items'] = array_values(array_filter(array_map(static function ($r) {
+            return is_array($r) ? $r : [];
+        }, $stored['menu_items'] ?? []), static fn ($r) => $r !== []));
+
+        $stored['kegiatan_items'] = array_values(array_filter(array_map(static function ($r) {
+            return is_array($r) ? $r : [];
+        }, $stored['kegiatan_items'] ?? [])));
+
+        $stored['social_items'] = array_values(array_filter(array_map(static function ($r) {
+            return is_array($r) ? $r : [];
+        }, $stored['social_items'] ?? [])));
+
+        $stored['contact_items'] = array_values(array_filter(array_map(static function ($r) {
+            return is_array($r) ? $r : [];
+        }, $stored['contact_items'] ?? [])));
+
+        return $stored;
+    }
+
+    /** @return array<string, mixed> */
+    public static function defaultFooterNavigationV2(object $site, bool $includeAnakAsuhMenu): array
+    {
+        $menu = [
+            ['label' => (string) ($site->footer_menu_beranda ?? 'Beranda'), 'href_type' => 'route', 'route' => 'home', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+            ['label' => (string) ($site->footer_menu_tentang ?? 'Tentang Kami'), 'href_type' => 'route', 'route' => 'tentang', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+        ];
+
+        if ($includeAnakAsuhMenu) {
+            $menu[] = [
+                'label' => (string) ($site->footer_menu_anak_asuh ?? 'Data anak asuh'),
+                'href_type' => 'route',
+                'route' => 'anak-asuh',
+                'href' => '',
+                'icon' => 'fas fa-chevron-right fa-xs',
+            ];
+        }
+
+        array_push(
+            $menu,
+            ['label' => (string) ($site->footer_menu_kegiatan ?? 'Kegiatan'), 'href_type' => 'route', 'route' => 'program', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+            ['label' => (string) ($site->footer_menu_galeri ?? 'Galeri'), 'href_type' => 'route', 'route' => 'galeri', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+            ['label' => (string) ($site->footer_menu_donasi ?? 'Donasi'), 'href_type' => 'route', 'route' => 'donasi.index', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+            ['label' => (string) ($site->footer_menu_kunjungan ?? 'Kunjungan'), 'href_type' => 'route', 'route' => 'kunjungan.create', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+            ['label' => (string) ($site->footer_menu_kontak ?? 'Kontak'), 'href_type' => 'route', 'route' => 'kontak', 'href' => '', 'icon' => 'fas fa-chevron-right fa-xs'],
+        );
+
+        return [
+            'v' => self::FOOTER_NAV_VERSION,
+            'menu_items' => $menu,
+            'kegiatan_items' => [
+                [
+                    'label' => (string) ($site->footer_kegiatan_rutin ?? 'Kegiatan rutin'),
+                    'href_type' => 'route',
+                    'route' => 'program',
+                    'href' => '',
+                    'icon' => 'fas fa-chevron-right fa-xs',
+                ],
+            ],
+            'social_items' => [
+                ['url' => (string) ($site->footer_sosmed_fb_url ?? '#'), 'icon' => 'fab fa-facebook-f', 'title' => 'Facebook'],
+                ['url' => (string) ($site->footer_sosmed_phone_href ?? '#'), 'icon' => 'fas fa-phone', 'title' => 'Telepon'],
+                ['url' => (string) ($site->footer_sosmed_ig_url ?? '#'), 'icon' => 'fab fa-instagram', 'title' => 'Instagram'],
+            ],
+            'contact_items' => [
+                ['type' => 'preset_phone', 'href_type' => 'site', 'route' => '', 'href' => '', 'icon' => 'fas fa-phone fa-sm'],
+                ['type' => 'preset_fb', 'href_type' => 'site', 'route' => '', 'href' => '', 'icon' => 'fab fa-facebook-f fa-sm'],
+                ['type' => 'preset_ig', 'href_type' => 'site', 'route' => '', 'href' => '', 'icon' => 'fab fa-instagram fa-sm'],
+                ['type' => 'preset_address', 'icon' => 'fas fa-location-dot fa-sm'],
+            ],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $fn
+     * @return array<string, mixed>
+     */
+    public static function filterFooterNavEmptyRepeaterRows(array $fn): array
+    {
+        $fn['kegiatan_items'] = array_values(array_filter($fn['kegiatan_items'] ?? [], static function ($row) {
+            if (! is_array($row)) {
+                return false;
+            }
+
+            return trim((string) ($row['label'] ?? '')) !== '';
+        }));
+
+        $fn['social_items'] = array_values(array_filter($fn['social_items'] ?? [], static function ($row) {
+            if (! is_array($row)) {
+                return false;
+            }
+
+            return trim((string) ($row['url'] ?? '')) !== ''
+                || trim((string) ($row['icon'] ?? '')) !== ''
+                || trim((string) ($row['title'] ?? '')) !== '';
+        }));
+
+        $fn['contact_items'] = array_values(array_filter($fn['contact_items'] ?? [], static function ($row) {
+            if (! is_array($row)) {
+                return false;
+            }
+
+            return isset($row['type']) && is_string($row['type']) && $row['type'] !== '';
+        }));
+
+        return $fn;
+    }
+
+    /**
+     * @param  array<string, mixed>  $fn
+     * @return array<string, mixed>
+     */
+    public static function sanitizeFooterNavigationForStorage(array $fn): array
+    {
+        return [
+            'v' => self::FOOTER_NAV_VERSION,
+            'menu_items' => array_values($fn['menu_items'] ?? []),
+            'kegiatan_items' => array_values($fn['kegiatan_items'] ?? []),
+            'social_items' => array_values($fn['social_items'] ?? []),
+            'contact_items' => array_values($fn['contact_items'] ?? []),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $fn
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public static function assertFooterNavigationValid(array $fn): void
+    {
+        $allowedRoutes = self::footerPublicRouteNames();
+        $messages = [];
+
+        $menus = $fn['menu_items'] ?? [];
+        if (! is_array($menus) || count($menus) < 1 || count($menus) > self::FOOTER_MENU_ITEMS_MAX) {
+            $messages['fn.menu_items'] = ['Kolom menu footer perlu 1–'.self::FOOTER_MENU_ITEMS_MAX.' item.'];
+        } else {
+            foreach ($menus as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $ht = ($row['href_type'] ?? '') === 'url' ? 'url' : 'route';
+                if ($ht === 'route') {
+                    $rName = trim((string) ($row['route'] ?? ''));
+                    if ($rName === '' || ! in_array($rName, $allowedRoutes, true)) {
+                        $messages['fn.menu_items.'.$i.'.route'] = ['Pilih route yang valid.'];
+                    }
+                } elseif (trim((string) ($row['href'] ?? '')) === '') {
+                    $messages['fn.menu_items.'.$i.'.href'] = ['Isi URL ketika jenis tautan URL.'];
+                }
+            }
+        }
+
+        $kegiatan = $fn['kegiatan_items'] ?? [];
+        if (! is_array($kegiatan) || count($kegiatan) > self::FOOTER_KEGIATAN_ITEMS_MAX) {
+            if (is_array($kegiatan) && count($kegiatan) > self::FOOTER_KEGIATAN_ITEMS_MAX) {
+                $messages['fn.kegiatan_items'] = ['Maksimal '.self::FOOTER_KEGIATAN_ITEMS_MAX.' tautan kegiatan.'];
+            }
+        } elseif (is_array($kegiatan)) {
+            foreach ($kegiatan as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $ht = ($row['href_type'] ?? '') === 'url' ? 'url' : 'route';
+                if ($ht === 'route') {
+                    $rName = trim((string) ($row['route'] ?? ''));
+                    if ($rName === '' || ! in_array($rName, $allowedRoutes, true)) {
+                        $messages['fn.kegiatan_items.'.$i.'.route'] = ['Pilih route yang valid.'];
+                    }
+                } elseif (trim((string) ($row['href'] ?? '')) === '') {
+                    $messages['fn.kegiatan_items.'.$i.'.href'] = ['Isi URL ketika jenis tautan URL.'];
+                }
+            }
+        }
+
+        $social = $fn['social_items'] ?? [];
+        if (! is_array($social) || count($social) > self::FOOTER_SOCIAL_ITEMS_MAX) {
+            if (is_array($social) && count($social) > self::FOOTER_SOCIAL_ITEMS_MAX) {
+                $messages['fn.social_items'] = ['Maksimal '.self::FOOTER_SOCIAL_ITEMS_MAX.' ikon sosial.'];
+            }
+        } elseif (is_array($social)) {
+            foreach ($social as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                if (trim((string) ($row['url'] ?? '')) === '') {
+                    $messages['fn.social_items.'.$i.'.url'] = ['URL wajib diisi.'];
+                }
+            }
+        }
+
+        $contact = $fn['contact_items'] ?? [];
+        if (! is_array($contact) || count($contact) > self::FOOTER_CONTACT_ITEMS_MAX) {
+            if (is_array($contact) && count($contact) > self::FOOTER_CONTACT_ITEMS_MAX) {
+                $messages['fn.contact_items'] = ['Maksimal '.self::FOOTER_CONTACT_ITEMS_MAX.' baris kontak.'];
+            }
+        } elseif (is_array($contact)) {
+            $contactTypes = self::footerContactItemTypes();
+            foreach ($contact as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $type = (string) ($row['type'] ?? '');
+                if (! in_array($type, $contactTypes, true)) {
+                    $messages['fn.contact_items.'.$i.'.type'] = ['Jenis baris kontak tidak dikenal.'];
+
+                    continue;
+                }
+                if (in_array($type, ['preset_phone', 'preset_fb', 'preset_ig'], true)) {
+                    $ht = isset($row['href_type']) && in_array($row['href_type'], ['site', 'route', 'url'], true)
+                        ? $row['href_type']
+                        : 'site';
+                    if ($ht === 'route') {
+                        $rName = trim((string) ($row['route'] ?? ''));
+                        if ($rName === '' || ! in_array($rName, $allowedRoutes, true)) {
+                            $messages['fn.contact_items.'.$i.'.route'] = ['Pilih route yang valid.'];
+                        }
+                    } elseif ($ht === 'url' && trim((string) ($row['href'] ?? '')) === '') {
+                        $messages['fn.contact_items.'.$i.'.href'] = ['Isi URL manual.'];
+                    }
+                } elseif ($type === 'custom_link') {
+                    if (trim((string) ($row['label'] ?? '')) === '') {
+                        $messages['fn.contact_items.'.$i.'.label'] = ['Label wajib untuk tautan kustom.'];
+                    }
+                    if (trim((string) ($row['url'] ?? '')) === '') {
+                        $messages['fn.contact_items.'.$i.'.url'] = ['URL wajib untuk tautan kustom.'];
+                    }
+                } elseif ($type === 'custom_plain') {
+                    if (trim((string) ($row['body'] ?? '')) === '') {
+                        $messages['fn.contact_items.'.$i.'.body'] = ['Isi teks untuk baris teks polos.'];
+                    }
+                }
+            }
+        }
+
+        if ($messages !== []) {
+            throw \Illuminate\Validation\ValidationException::withMessages($messages);
+        }
+    }
+
+    /**
+     * Ubah satu baris kontak footer menjadi format layout publik.
+     *
+     * @return array<string, mixed>
+     */
+    public static function resolveFooterContactItemRow(object $site, array $row): array
+    {
+        $type = (string) ($row['type'] ?? '');
+        $icon = (string) ($row['icon'] ?? 'fas fa-link');
+
+        if ($type === 'custom_plain') {
+            return [
+                'kind' => 'plain',
+                'icon' => $icon !== '' ? $icon : 'fas fa-info-circle',
+                'body' => (string) ($row['body'] ?? ''),
+            ];
+        }
+
+        if ($type === 'custom_link') {
+            $url = trim((string) ($row['url'] ?? ''));
+
+            return [
+                'kind' => 'link',
+                'icon' => $icon,
+                'url' => $url !== '' ? $url : '#',
+                'label' => (string) ($row['label'] ?? ''),
+                'external' => self::footerHrefLooksExternal($url),
+            ];
+        }
+
+        if ($type === 'preset_address') {
+            return [
+                'kind' => 'plain',
+                'icon' => $icon !== '' ? $icon : 'fas fa-location-dot fa-sm',
+                'body' => (string) ($site->footer_address ?? ''),
+            ];
+        }
+
+        $slot = match ($type) {
+            'preset_phone' => 'footer_phone',
+            'preset_fb' => 'footer_fb',
+            'preset_ig' => 'footer_ig',
+            default => 'footer_phone',
+        };
+
+        $synthetic = [
+            'slot' => $slot,
+            'kind' => 'link',
+            'href_type' => isset($row['href_type']) && in_array($row['href_type'], ['site', 'route', 'url'], true)
+                ? $row['href_type']
+                : 'site',
+            'route' => (string) ($row['route'] ?? ''),
+            'href' => (string) ($row['href'] ?? ''),
+            'icon' => $icon,
+        ];
+
+        return self::resolveContactSlotRow($site, $synthetic);
+    }
+
+    public static function resolveFooterHref(string $hrefType, ?string $routeName, ?string $hrefRaw): ?string
+    {
+        $hrefRaw = trim((string) $hrefRaw);
+        if ($hrefType === 'url') {
+            return $hrefRaw !== '' ? $hrefRaw : null;
+        }
+
+        $routeName = trim((string) $routeName);
+        if ($routeName === '') {
+            return null;
+        }
+
+        if (! Route::has($routeName)) {
+            return '#';
+        }
+
+        try {
+            return route($routeName);
+        } catch (\Throwable) {
+            return '#';
+        }
+    }
+
+    public static function footerHrefLooksExternal(?string $url): bool
+    {
+        if ($url === null || $url === '' || $url === '#') {
+            return false;
+        }
+
+        return (bool) preg_match('#^https?://#i', $url);
+    }
+
+    /**
+     * Teks tautan kolom MENU dari slug kolom footer.
+     */
+    public static function footerMenuLabelForSlug(object $site, string $slug): string
+    {
+        $key = match ($slug) {
+            'beranda' => 'footer_menu_beranda',
+            'tentang' => 'footer_menu_tentang',
+            'anak_asuh' => 'footer_menu_anak_asuh',
+            'kegiatan' => 'footer_menu_kegiatan',
+            'galeri' => 'footer_menu_galeri',
+            'donasi' => 'footer_menu_donasi',
+            'kunjungan' => 'footer_menu_kunjungan',
+            'kontak' => 'footer_menu_kontak',
+            default => null,
+        };
+        if ($key === null) {
+            return '';
+        }
+
+        $v = $site->{$key} ?? null;
+
+        return is_string($v) && $v !== '' ? $v : '';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function resolveContactSlotRow(object $site, array $row): array
+    {
+        $slot = (string) ($row['slot'] ?? '');
+        $kind = ($row['kind'] ?? '') === 'plain' ? 'plain' : 'link';
+
+        $hrefType = isset($row['href_type']) && in_array($row['href_type'], ['site', 'route', 'url'], true)
+            ? $row['href_type']
+            : 'site';
+        $icon = isset($row['icon']) ? (string) $row['icon'] : 'fas fa-link';
+
+        if ($kind === 'plain') {
+            return [
+                'kind' => 'plain',
+                'icon' => $icon,
+                'body' => (string) ($site->footer_address ?? ''),
+            ];
+        }
+
+        $siteHref = match ($slot) {
+            'footer_phone' => (string) ($site->footer_phone_href ?? ''),
+            'footer_fb' => (string) ($site->footer_fb_url ?? ''),
+            'footer_ig' => (string) ($site->footer_ig_url ?? ''),
+            default => '',
+        };
+        $siteLabel = match ($slot) {
+            'footer_phone' => (string) ($site->footer_phone_display ?? ''),
+            'footer_fb' => (string) ($site->footer_fb_text ?? ''),
+            'footer_ig' => (string) ($site->footer_ig_text ?? ''),
+            default => '',
+        };
+
+        $url = $siteHref;
+        $external = self::footerHrefLooksExternal($url);
+
+        if ($hrefType === 'route') {
+            $url = self::resolveFooterHref('route', isset($row['route']) ? (string) $row['route'] : '', '') ?? $siteHref;
+            $external = self::footerHrefLooksExternal($url);
+        } elseif ($hrefType === 'url') {
+            $raw = isset($row['href']) ? (string) $row['href'] : '';
+            $url = $raw !== '' ? $raw : $siteHref;
+            $external = self::footerHrefLooksExternal($url);
+        }
+
+        return [
+            'kind' => 'link',
+            'icon' => $icon,
+            'url' => $url !== '' ? $url : '#',
+            'label' => $siteLabel,
+            'external' => $external,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     menu: list<array{label: string, url: string, icon: string, external: bool}>,
+     *     kegiatan: list<array{label: string, url: string, icon: string, external: bool}>,
+     *     social: list<array{url: string, icon: string, title: string, external: bool}>,
+     *     contact: list<array<string, mixed>>
+     * }
+     */
+    public static function footerNavResolvedForPublic(object $site): array
+    {
+        $includeAnakAsuhMenu = Schema::hasTable('site_contents')
+            && Schema::hasColumn('site_contents', 'footer_menu_anak_asuh');
+
+        $storedRaw = null;
+        if (
+            Schema::hasTable('site_contents')
+            && Schema::hasColumn('site_contents', 'footer_navigation')
+            && isset($site->footer_navigation)
+        ) {
+            $raw = $site->footer_navigation;
+            $storedRaw = is_array($raw) ? $raw : null;
+        }
+
+        $nav = self::resolvedFooterNavigationStructure($storedRaw, $site, $includeAnakAsuhMenu);
+
+        $menu = [];
+        foreach ($nav['menu_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $hrefType = ($row['href_type'] ?? 'route') === 'url' ? 'url' : 'route';
+            $url = self::resolveFooterHref($hrefType, $row['route'] ?? '', $row['href'] ?? '') ?? '#';
+            $menu[] = [
+                'label' => (string) ($row['label'] ?? ''),
+                'url' => $url,
+                'icon' => (string) ($row['icon'] ?? 'fas fa-chevron-right fa-xs'),
+                'external' => $hrefType === 'url' && self::footerHrefLooksExternal($url),
+            ];
+        }
+
+        $kegiatanRows = [];
+        foreach ($nav['kegiatan_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $hrefType = ($row['href_type'] ?? 'route') === 'url' ? 'url' : 'route';
+            $url = self::resolveFooterHref($hrefType, $row['route'] ?? '', $row['href'] ?? '') ?? '#';
+            $label = trim((string) ($row['label'] ?? ''));
+            $kegiatanRows[] = [
+                'label' => $label !== '' ? $label : ($hrefType === 'route' ? (string) ($row['route'] ?? '') : 'Kegiatan'),
+                'url' => $url,
+                'icon' => (string) ($row['icon'] ?? 'fas fa-chevron-right fa-xs'),
+                'external' => $hrefType === 'url' && self::footerHrefLooksExternal($url),
+            ];
+        }
+
+        $socialOut = [];
+        foreach ($nav['social_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $href = trim((string) ($row['url'] ?? ''));
+            $socialOut[] = [
+                'url' => $href !== '' ? $href : '#',
+                'icon' => (string) ($row['icon'] ?? 'fas fa-link'),
+                'title' => (string) ($row['title'] ?? ''),
+                'external' => self::footerHrefLooksExternal($href),
+            ];
+        }
+
+        $contactOut = [];
+        foreach ($nav['contact_items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $contactOut[] = self::resolveFooterContactItemRow($site, $row);
+        }
+
+        return [
+            'menu' => $menu,
+            'kegiatan' => $kegiatanRows,
+            'social' => $socialOut,
+            'contact' => $contactOut,
+        ];
+    }
+
+    /** @see self::sanitizeHeaderNavigationForStorage() */
+    public const HEADER_NAV_VERSION = 1;
+
+    /** Batas item menu atas (bilah navigasi header). */
+    public const HEADER_ITEMS_MAX = 20;
+
+    /**
+     * @param  array<string, mixed>|null  $storedRaw
+     * @return array{v: int, items: list<array<string, mixed>>}
+     */
+    public static function coerceHeaderNavigationForAdmin(?array $storedRaw, object $site, bool $includeAnakAsuhMenu): array
+    {
+        $stored = is_array($storedRaw) ? $storedRaw : [];
+        $structure = self::resolvedHeaderNavigationStructure($stored, $site, $includeAnakAsuhMenu);
+
+        return [
+            'v' => self::HEADER_NAV_VERSION,
+            'items' => $structure['items'],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $stored
+     * @return array{items: list<array<string, mixed>>}
+     */
+    public static function resolvedHeaderNavigationStructure(array $stored, object $site, bool $includeAnakAsuhMenu): array
+    {
+        $items = [];
+        foreach ($stored['items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $items[] = [
+                'label' => (string) ($row['label'] ?? ''),
+                'href_type' => ($row['href_type'] ?? 'route') === 'url' ? 'url' : 'route',
+                'route' => (string) ($row['route'] ?? ''),
+                'href' => (string) ($row['href'] ?? ''),
+                'style' => (($row['style'] ?? '') === 'cta') ? 'cta' : 'link',
+            ];
+        }
+
+        if ($items === []) {
+            $items = self::defaultHeaderNavigationItems($site, $includeAnakAsuhMenu);
+        }
+
+        return ['items' => $items];
+    }
+
+    /**
+     * Default menu header dari kolom teks navigasi legacy (kolom <code>nav_*</code>).
+     *
+     * @return list<array{label: string, href_type: string, route: string, href: string, style: string}>
+     */
+    public static function defaultHeaderNavigationItems(object $site, bool $includeAnakAsuhMenu): array
+    {
+        $rows = [
+            [
+                'label' => (string) ($site->nav_beranda ?? 'Beranda'),
+                'href_type' => 'route',
+                'route' => 'home',
+                'href' => '',
+                'style' => 'link',
+            ],
+            [
+                'label' => (string) ($site->nav_tentang ?? 'Tentang'),
+                'href_type' => 'route',
+                'route' => 'tentang',
+                'href' => '',
+                'style' => 'link',
+            ],
+        ];
+
+        if ($includeAnakAsuhMenu) {
+            $rows[] = [
+                'label' => (string) ($site->nav_anak_asuh ?? 'Anak asuh'),
+                'href_type' => 'route',
+                'route' => 'anak-asuh',
+                'href' => '',
+                'style' => 'link',
+            ];
+        }
+
+        $rows[] = [
+            'label' => (string) ($site->nav_kegiatan ?? 'Jadwal'),
+            'href_type' => 'route',
+            'route' => 'program',
+            'href' => '',
+            'style' => 'link',
+        ];
+        $rows[] = [
+            'label' => (string) ($site->nav_galeri ?? 'Galeri'),
+            'href_type' => 'route',
+            'route' => 'galeri',
+            'href' => '',
+            'style' => 'link',
+        ];
+        $rows[] = [
+            'label' => (string) ($site->nav_donasi ?? 'Donasi'),
+            'href_type' => 'route',
+            'route' => 'donasi.index',
+            'href' => '',
+            'style' => 'cta',
+        ];
+        $rows[] = [
+            'label' => (string) ($site->nav_kunjungan ?? 'Kunjungan'),
+            'href_type' => 'route',
+            'route' => 'kunjungan.create',
+            'href' => '',
+            'style' => 'link',
+        ];
+        $rows[] = [
+            'label' => (string) ($site->nav_kontak ?? 'Kontak'),
+            'href_type' => 'route',
+            'route' => 'kontak',
+            'href' => '',
+            'style' => 'link',
+        ];
+
+        return $rows;
+    }
+
+    /**
+     * @param  array<string, mixed>  $hn
+     * @return array<string, mixed>
+     */
+    public static function filterHeaderNavEmptyRows(array $hn): array
+    {
+        $out = [];
+        foreach ($hn['items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            if (trim((string) ($row['label'] ?? '')) === '') {
+                continue;
+            }
+            $out[] = $row;
+        }
+
+        return ['items' => $out];
+    }
+
+    /** @param  array<string, mixed>  $hn */
+    public static function assertHeaderNavigationValid(array $hn): void
+    {
+        $allowedRoutes = self::footerPublicRouteNames();
+        $messages = [];
+
+        $items = $hn['items'] ?? [];
+        if (! is_array($items) || count($items) < 1 || count($items) > self::HEADER_ITEMS_MAX) {
+            $messages['hn.items'] = ['Menu header perlu 1–'.self::HEADER_ITEMS_MAX.' item.'];
+        } elseif (is_array($items)) {
+            foreach ($items as $i => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $ht = ($row['href_type'] ?? '') === 'url' ? 'url' : 'route';
+                if ($ht === 'route') {
+                    $rName = trim((string) ($row['route'] ?? ''));
+                    if ($rName === '' || ! in_array($rName, $allowedRoutes, true)) {
+                        $messages['hn.items.'.$i.'.route'] = ['Pilih route yang valid.'];
+                    }
+                } elseif (trim((string) ($row['href'] ?? '')) === '') {
+                    $messages['hn.items.'.$i.'.href'] = ['Isi URL ketika jenis tautan URL.'];
+                }
+            }
+        }
+
+        if ($messages !== []) {
+            throw ValidationException::withMessages($messages);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $hn
+     * @return array{v: int, items: list<array<string, string>>}
+     */
+    public static function sanitizeHeaderNavigationForStorage(array $hn): array
+    {
+        $clean = [];
+        foreach ($hn['items'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $clean[] = [
+                'label' => trim((string) ($row['label'] ?? '')),
+                'href_type' => ($row['href_type'] ?? 'route') === 'url' ? 'url' : 'route',
+                'route' => trim((string) ($row['route'] ?? '')),
+                'href' => trim((string) ($row['href'] ?? '')),
+                'style' => (($row['style'] ?? '') === 'cta') ? 'cta' : 'link',
+            ];
+        }
+
+        return [
+            'v' => self::HEADER_NAV_VERSION,
+            'items' => $clean,
+        ];
+    }
+
+    /**
+     * Sinkronkan label menu ke kolom <code>nav_*</code> agar form Beranda lama (jika masih dipakai) tetap konsisten.
+     *
+     * @param  list<array<string, mixed>>  $items
+     * @return array<string, string>
+     */
+    public static function syncNavTextColumnsFromHeaderItems(array $items, bool $hasAnakAsuhColumn): array
+    {
+        $map = [
+            'home' => 'nav_beranda',
+            'tentang' => 'nav_tentang',
+            'anak-asuh' => 'nav_anak_asuh',
+            'program' => 'nav_kegiatan',
+            'program.unggulan' => 'nav_kegiatan',
+            'program.lainnya' => 'nav_kegiatan',
+            'galeri' => 'nav_galeri',
+            'donasi.index' => 'nav_donasi',
+            'donasi.keuangan' => 'nav_donasi',
+            'kunjungan.create' => 'nav_kunjungan',
+            'kontak' => 'nav_kontak',
+        ];
+
+        $updates = [];
+        $seen = [];
+
+        foreach ($items as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $label = trim((string) ($row['label'] ?? ''));
+            if ($label === '') {
+                continue;
+            }
+            $ht = ($row['href_type'] ?? '') === 'url' ? 'url' : 'route';
+            if ($ht !== 'route') {
+                continue;
+            }
+            $routeName = trim((string) ($row['route'] ?? ''));
+            $col = $map[$routeName] ?? null;
+            if ($col === null) {
+                continue;
+            }
+            if ($col === 'nav_anak_asuh' && ! $hasAnakAsuhColumn) {
+                continue;
+            }
+            if (isset($seen[$col])) {
+                continue;
+            }
+            $seen[$col] = true;
+            $updates[$col] = $label;
+        }
+
+        return $updates;
+    }
+
+    public static function headerNavItemIsActive(?string $routeName): bool
+    {
+        $routeName = trim((string) $routeName);
+        if ($routeName === '') {
+            return false;
+        }
+
+        if ($routeName === 'home') {
+            return request()->routeIs('home');
+        }
+
+        if (str_starts_with($routeName, 'donasi')) {
+            return request()->routeIs('donasi.*');
+        }
+
+        if (str_starts_with($routeName, 'kunjungan')) {
+            return request()->routeIs('kunjungan.*');
+        }
+
+        if (in_array($routeName, ['program', 'program.unggulan', 'program.lainnya'], true)) {
+            return request()->routeIs('program') || request()->routeIs('program.unggulan') || request()->routeIs('program.lainnya');
+        }
+
+        return request()->routeIs($routeName);
+    }
+
+    /**
+     * URL untuk item menu header (tautan eksternal dianggap eksternal).
+     *
+     * @return list<array{label: string, url: string, style: string, route: string|null, external: bool}>
+     */
+    public static function headerNavResolvedForPublic(object $site): array
+    {
+        $includeAnakAsuhMenu = Schema::hasTable('site_contents')
+            && Schema::hasColumn('site_contents', 'nav_anak_asuh');
+
+        $legacyLayout = ! Schema::hasColumn('site_contents', 'header_navigation');
+
+        $storedRaw = null;
+        if (
+            Schema::hasTable('site_contents')
+            && Schema::hasColumn('site_contents', 'header_navigation')
+            && isset($site->header_navigation)
+        ) {
+            $raw = $site->header_navigation;
+            $storedRaw = is_array($raw) ? $raw : null;
+        }
+
+        if ($legacyLayout || $storedRaw === null) {
+            $items = self::defaultHeaderNavigationItems($site, $includeAnakAsuhMenu);
+        } else {
+            $items = self::resolvedHeaderNavigationStructure($storedRaw, $site, $includeAnakAsuhMenu)['items'];
+        }
+
+        $out = [];
+        foreach ($items as $row) {
+            $hrefType = ($row['href_type'] ?? 'route') === 'url' ? 'url' : 'route';
+            $routeKey = trim((string) ($row['route'] ?? ''));
+            $url = self::resolveFooterHref($hrefType, $row['route'] ?? '', $row['href'] ?? '') ?? '#';
+            $style = (($row['style'] ?? '') === 'cta') ? 'cta' : 'link';
+            $external = $hrefType === 'url' && self::footerHrefLooksExternal($url);
+
+            $out[] = [
+                'label' => (string) ($row['label'] ?? ''),
+                'url' => $url,
+                'style' => $style,
+                'route' => $hrefType === 'route' ? ($routeKey !== '' ? $routeKey : null) : null,
+                'external' => $external,
+            ];
+        }
+
+        return $out;
     }
 }

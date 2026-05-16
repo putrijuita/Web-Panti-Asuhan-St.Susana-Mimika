@@ -2,7 +2,7 @@
 
 @section('title', 'Profil saya')
 @section('page-title', 'Profil saya')
-@section('page-subtitle', 'Ubah nama, foto profil, dan password — email tidak dapat diubah')
+@section('page-subtitle', 'Berlaku untuk semua akun admin dan super admin: ubah nama, foto profil, dan password. Email tidak dapat diubah dari sini.')
 
 @section('content')
 <div style="max-width:640px;width:100%;min-width:0">
@@ -32,13 +32,21 @@
                 <div class="form-group">
                     <label class="form-label">Foto profil</label>
                     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px">
-                        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--gray-200);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-300)">
-                            @if($admin->avatarUrl())
-                                <img src="{{ $admin->avatarUrl() }}" alt="" style="width:100%;height:100%;object-fit:cover">
-                            @else
+                        @if($admin->avatarUrl())
+                            <button type="button"
+                                class="js-admin-avatar-lightbox"
+                                style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--gray-200);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-300);padding:0;cursor:pointer"
+                                data-src="{{ $admin->avatarUrl() }}"
+                                data-caption="{{ $admin->name }}"
+                                title="Tampilkan foto lebih besar"
+                                aria-label="Tampilkan foto profil lebih besar">
+                                <img src="{{ $admin->avatarUrl() }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none">
+                            </button>
+                        @else
+                            <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--gray-200);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-300)">
                                 <i class="fas fa-user" style="font-size:28px;color:var(--gray-500)"></i>
-                            @endif
-                        </div>
+                            </div>
+                        @endif
                         <div style="flex:1;min-width:0;max-width:100%">
                             <input type="file" name="avatar" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
                             <small style="color:var(--gray-500);font-size:12px;margin-top:4px;display:block">

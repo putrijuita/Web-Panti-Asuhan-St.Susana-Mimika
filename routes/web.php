@@ -3,25 +3,27 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AnakAsuhController;
+use App\Http\Controllers\Admin\AnakAsuhPageController;
+use App\Http\Controllers\Admin\BerandaSiteController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DonasiController as AdminDonasiController;
-use App\Http\Controllers\Admin\JasaController as AdminJasaController;
-use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
-use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
-use App\Http\Controllers\Admin\StrukturOrganisasiController;
-use App\Http\Controllers\Admin\BerandaSiteController;
-use App\Http\Controllers\Admin\ProgramPageController;
 use App\Http\Controllers\Admin\DonasiPageController;
+use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\GaleriPageController;
+use App\Http\Controllers\Admin\HeaderSiteController;
+use App\Http\Controllers\Admin\JadwalKegiatanAnakController;
+use App\Http\Controllers\Admin\JasaController as AdminJasaController;
+use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\KontakPageController;
 use App\Http\Controllers\Admin\KontakPesanController;
-use App\Http\Controllers\Admin\GaleriPageController;
+use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
 use App\Http\Controllers\Admin\KunjunganPageController;
+use App\Http\Controllers\Admin\PengelolaanDonasiController;
+use App\Http\Controllers\Admin\ProgramPageController;
+use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\TentangController as AdminTentangController;
 use App\Http\Controllers\Admin\VideoDokumentasiController;
-use App\Http\Controllers\Admin\GaleriController;
-use App\Http\Controllers\Admin\PengelolaanDonasiController;
-use App\Http\Controllers\Admin\AnakAsuhController;
-use App\Http\Controllers\Admin\JadwalKegiatanAnakController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KunjunganController;
@@ -124,6 +126,9 @@ if ($adminDomain) {
             Route::get('beranda', [BerandaSiteController::class, 'edit'])->name('beranda.edit');
             Route::put('beranda', [BerandaSiteController::class, 'update'])->name('beranda.update');
 
+            Route::get('header-situs', [HeaderSiteController::class, 'edit'])->name('header-site.edit');
+            Route::put('header-situs', [HeaderSiteController::class, 'update'])->name('header-site.update');
+
             Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
             Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');
 
@@ -138,6 +143,9 @@ if ($adminDomain) {
 
             Route::get('halaman-kontak', [KontakPageController::class, 'edit'])->name('kontak-page.edit');
             Route::put('halaman-kontak', [KontakPageController::class, 'update'])->name('kontak-page.update');
+
+            Route::get('halaman-anak-asuh', [AnakAsuhPageController::class, 'edit'])->name('anak-asuh-page.edit');
+            Route::put('halaman-anak-asuh', [AnakAsuhPageController::class, 'update'])->name('anak-asuh-page.update');
 
             // Galeri Foto
             Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
@@ -297,6 +305,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('beranda', [BerandaSiteController::class, 'edit'])->name('beranda.edit');
         Route::put('beranda', [BerandaSiteController::class, 'update'])->name('beranda.update');
 
+        Route::get('header-situs', [HeaderSiteController::class, 'edit'])->name('header-site.edit');
+        Route::put('header-situs', [HeaderSiteController::class, 'update'])->name('header-site.update');
+
         Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
         Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');
 
@@ -311,6 +322,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('halaman-kontak', [KontakPageController::class, 'edit'])->name('kontak-page.edit');
         Route::put('halaman-kontak', [KontakPageController::class, 'update'])->name('kontak-page.update');
+
+        Route::get('halaman-anak-asuh', [AnakAsuhPageController::class, 'edit'])->name('anak-asuh-page.edit');
+        Route::put('halaman-anak-asuh', [AnakAsuhPageController::class, 'update'])->name('anak-asuh-page.update');
 
         // Galeri Foto
         Route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');

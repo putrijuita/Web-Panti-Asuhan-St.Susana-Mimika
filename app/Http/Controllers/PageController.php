@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\AnakAsuh;
+use App\Models\AnakAsuhPageContent;
+use App\Models\Galeri;
+use App\Models\GaleriCategory;
+use App\Models\JadwalKegiatanAnak;
 use App\Models\KontakPageContent;
 use App\Models\KontakPesan;
 use App\Models\StrukturOrganisasi;
-use App\Models\Kegiatan;
-use App\Models\KegiatanCategory;
-use App\Models\JadwalKegiatanAnak;
 use App\Models\VideoDokumentasi;
-use App\Models\Galeri;
-use App\Models\GaleriCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
 class PageController extends Controller
@@ -23,46 +23,44 @@ class PageController extends Controller
             ->orderBy('created_at')
             ->get();
 
-        return view('pages.tentang', compact('pengurus'));
+        $anakAsuh = $this->publicAnakAsuhCollection();
+        $anakAsuhPage = AnakAsuhPageContent::resolvedForPublic();
+
+        return view('pages.tentang', compact('pengurus', 'anakAsuh', 'anakAsuhPage'));
     }
 
     public function program()
     {
-        $all = Kegiatan::with('kategori')->latest()->get();
+        $hariOptions = JadwalKegiatanAnak::daftarHari();
+        $jadwalByHari = collect();
+        $jadwalTampil = false;
 
-        $unggulanCategory = KegiatanCategory::where('nama', 'Program Unggulan')->first();
+        if (Schema::hasTable('jadwal_kegiatan_anak')) {
+            $jadwalByHari = JadwalKegiatanAnak::query()
+                ->where('aktif', true)
+                ->orderedByHariUrutanJam()
+                ->get()
+                ->groupBy('hari');
 
-        // Satu kartu per program (nama unik) agar tidak tampil duplikat
-        $unggulKegiatan = $unggulanCategory
-            ? $all->where('kegiatan_category_id', $unggulanCategory->id)->unique('nama')->values()
-            : collect();
+            foreach (array_keys($hariOptions) as $kunciHari) {
+                if (($jadwalByHari[$kunciHari] ?? collect())->isNotEmpty()) {
+                    $jadwalTampil = true;
+                    break;
+                }
+            }
+        }
 
-        $rutinKegiatan = $unggulanCategory
-            ? $all->where('kegiatan_category_id', '!=', $unggulanCategory->id)
-                ->merge($all->whereNull('kegiatan_category_id'))
-                ->values()
-            : $all;
-
-        return view('pages.program', [
-            'rutinKegiatan' => $rutinKegiatan,
-            'unggulKegiatan' => $unggulKegiatan,
-        ]);
+        return view('pages.program', compact('hariOptions', 'jadwalByHari', 'jadwalTampil'));
     }
 
     public function programUnggulan()
     {
-        $category = KegiatanCategory::where('nama', 'Program Unggulan')->first();
-        $programs = $category ? $category->kegiatans()->latest()->get() : collect();
-
-        return view('pages.program-unggulan', compact('programs'));
+        return redirect()->route('program', [], 301);
     }
 
     public function programLainnya()
     {
-        $category = KegiatanCategory::where('nama', 'Program Lainnya')->first();
-        $programs = $category ? $category->kegiatans()->latest()->get() : collect();
-
-        return view('pages.program-lainnya', compact('programs'));
+        return redirect()->route('program', [], 301);
     }
 
     public function galeri()
@@ -156,28 +154,31 @@ class PageController extends Controller
 
     public function anakAsuh()
     {
-        $anak = AnakAsuh::query()
-            ->orderByRaw("COALESCE(NULLIF(nama_panggilan,''), nama_lengkap)")
-            ->latest()
-            ->get();
+        $anak = $this->publicAnakAsuhCollection();
 
-        return view('pages.anak-asuh', compact('anak'));
+        $page = AnakAsuhPageContent::resolvedForPublic();
+
+        return view('pages.anak-asuh', compact('anak', 'page'));
+    }
+
+    /**
+     * Anak asuh untuk tampilan publik: hanya yang punya nama panggilan terisi, urut abjad panggilan.
+     */
+    protected function publicAnakAsuhCollection(): Collection
+    {
+        if (! Schema::hasTable('anak_asuh')) {
+            return collect();
+        }
+
+        return AnakAsuh::query()
+            ->get()
+            ->filter(fn (AnakAsuh $row) => filled(trim((string) ($row->nama_panggilan ?? ''))))
+            ->sortBy(fn (AnakAsuh $row) => mb_strtolower(trim($row->nama_panggilan)))
+            ->values();
     }
 
     public function jadwalKegiatanAnak()
     {
-        $hariOptions = JadwalKegiatanAnak::daftarHari();
-
-        $jadwalByHari = JadwalKegiatanAnak::query()
-            ->where('aktif', true)
-            ->orderByRaw("FIELD(hari,'setiap_hari','senin','selasa','rabu','kamis','jumat','sabtu','minggu'), urutan, jam_mulai")
-            ->get()
-            ->groupBy('hari');
-
-        return view('pages.jadwal-kegiatan-anak', [
-            'hariOptions' => $hariOptions,
-            'jadwalByHari' => $jadwalByHari,
-        ]);
+        return redirect()->route('program', [], 301);
     }
-
 }

@@ -72,7 +72,7 @@ class AnakAsuhController extends Controller
             'asal_daerah' => 'nullable|string|max:255',
             'alamat_detail' => 'nullable|string',
 
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|image|max:1048576',
             'hapus_foto' => 'nullable|boolean',
 
             'catatan' => 'nullable|string',
@@ -118,7 +118,7 @@ class AnakAsuhController extends Controller
             'asal_daerah' => 'nullable|string|max:255',
             'alamat_detail' => 'nullable|string',
 
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|image|max:1048576',
             'hapus_foto' => 'nullable|boolean',
 
             'catatan' => 'nullable|string',
@@ -160,4 +160,3 @@ class AnakAsuhController extends Controller
             ->with('success', 'Data anak asuh berhasil dihapus.');
     }
 }
-

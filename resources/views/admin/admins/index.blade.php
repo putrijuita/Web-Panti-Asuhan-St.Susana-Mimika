@@ -48,13 +48,21 @@
                     <td style="color:var(--gray-500)">{{ $admins->firstItem() + $loop->index }}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;background:{{ $admin->isSuperAdmin() ? '#dbeafe' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ $admin->isSuperAdmin() ? 'var(--primary)' : 'var(--gray-500)' }};border:1px solid rgba(15,23,42,.06)">
-                                @if($admin->avatarUrl())
-                                    <img src="{{ $admin->avatarUrl() }}" alt="{{ $admin->name }}" style="width:100%;height:100%;object-fit:cover;display:block">
-                                @else
+                            @if($admin->avatarUrl())
+                                <button type="button"
+                                    class="js-admin-avatar-lightbox"
+                                    style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;background:{{ $admin->isSuperAdmin() ? '#dbeafe' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ $admin->isSuperAdmin() ? 'var(--primary)' : 'var(--gray-500)' }};border:1px solid rgba(15,23,42,.06);padding:0;cursor:pointer"
+                                    data-src="{{ $admin->avatarUrl() }}"
+                                    data-caption="{{ $admin->name }}"
+                                    title="Tampilkan foto lebih besar"
+                                    aria-label="Perbesar foto profil {{ $admin->name }}">
+                                    <img src="{{ $admin->avatarUrl() }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none">
+                                </button>
+                            @else
+                                <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;background:{{ $admin->isSuperAdmin() ? '#dbeafe' : '#f1f5f9' }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ $admin->isSuperAdmin() ? 'var(--primary)' : 'var(--gray-500)' }};border:1px solid rgba(15,23,42,.06)">
                                     <i class="fas fa-user" aria-hidden="true"></i>
-                                @endif
-                            </div>
+                                </div>
+                            @endif
                             <strong>{{ $admin->name }}</strong>
                         </div>
                     </td>

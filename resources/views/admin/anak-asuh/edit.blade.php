@@ -72,6 +72,9 @@
                 <div class="form-group">
                     <label class="form-label" for="foto">Ganti foto anak (publik)</label>
                     <input id="foto" type="file" name="foto" class="form-control" accept="image/*">
+                    <small style="display:block;margin-top:6px;color:var(--gray-500);font-size:12px;">
+                        Maks. 1 GB. JPG/PNG/WebP/GIF.
+                    </small>
                     @error('foto')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
 
                     @if($item->fotoUrl())

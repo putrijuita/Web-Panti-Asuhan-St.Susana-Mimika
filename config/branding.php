@@ -8,8 +8,8 @@ return [
     'logo_path' => env('BRANDING_LOGO_PATH', ''),
 
     /*
-    | URL atau path asset untuk latar body (opsional).
-    | Default: file galeri yang dipakai sebelumnya (fallback).
+    | URL atau path asset untuk latar body (fallback).
+    | Jika diisi lewat CMS (Beranda & situs → Latar belakang), nilai CMS dipakai.
     */
     'body_background' => env(
         'BRANDING_BODY_BG',

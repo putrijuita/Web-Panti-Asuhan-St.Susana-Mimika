@@ -153,6 +153,11 @@
     gap: 0.75rem;
     margin-top: 1rem;
 }
+.kegiatan-hint {
+    font-size: 0.8rem;
+    color: var(--teks-muted);
+    margin-top: 0.35rem;
+}
 .kegiatan-item {
     background: rgba(14, 165, 233, 0.08);
     border: 1px solid rgba(14, 165, 233, 0.18);
@@ -166,6 +171,24 @@
     font-weight: 500;
     min-width: 0;
     word-wrap: break-word;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.kegiatan-item:hover {
+    background: rgba(14, 165, 233, 0.14);
+    border-color: rgba(14, 165, 233, 0.35);
+}
+.kegiatan-item:focus-visible {
+    outline: 2px solid var(--aksen);
+    outline-offset: 2px;
+}
+.kegiatan-item.is-selected {
+    background: rgba(14, 165, 233, 0.18);
+    border-color: var(--aksen);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
 }
 .kegiatan-item i { flex-shrink: 0; }
 
@@ -366,10 +389,14 @@
         <div class="info-card">
             <h3><i class="{{ $kunjunganPage->activities_icon }}" style="color:var(--aksen);" aria-hidden="true"></i> {{ $kunjunganPage->activities_title }}</h3>
             <p style="color: var(--teks-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">{{ $kunjunganPage->activities_intro }}</p>
+            <p class="kegiatan-hint">Klik salah satu kegiatan untuk mengisi kolom keperluan kunjungan.</p>
             <div class="kegiatan-grid">
                 @for ($i = 1; $i <= 6; $i++)
                     @php $icon = $kunjunganPage->{'act'.$i.'_icon'}; $text = $kunjunganPage->{'act'.$i.'_text'}; @endphp
-                    <div class="kegiatan-item"><i class="{{ $icon }}" style="margin-right:6px;color:var(--aksen);" aria-hidden="true"></i>{{ $text }}</div>
+                    <button type="button" class="kegiatan-item" data-activity="{{ $text }}" aria-label="Pilih kegiatan: {{ $text }}">
+                        <i class="{{ $icon }}" style="color:var(--aksen);" aria-hidden="true"></i>
+                        <span>{{ $text }}</span>
+                    </button>
                 @endfor
             </div>
         </div>
@@ -422,7 +449,7 @@
             </div>
             <div class="form-group">
                 <label>{{ $kunjunganPage->lbl_keperluan }} <span class="required-star">*</span></label>
-                <textarea name="keperluan" required placeholder="{{ $kunjunganPage->ph_keperluan }}">{{ old('keperluan') }}</textarea>
+                <textarea id="field-keperluan" name="keperluan" required maxlength="500" placeholder="{{ $kunjunganPage->ph_keperluan }}">{{ old('keperluan') }}</textarea>
                 <small class="field-note">{{ $kunjunganPage->note_keperluan }}</small>
                 @error('keperluan')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
@@ -440,3 +467,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var keperluan = document.getElementById('field-keperluan');
+    var items = document.querySelectorAll('.kegiatan-item');
+    if (!keperluan || !items.length) return;
+
+    var prefix = 'Saya ingin melakukan kegiatan: ';
+
+    items.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var activity = btn.getAttribute('data-activity') || '';
+            var value = prefix + activity;
+            keperluan.value = value.length > 500 ? value.slice(0, 500) : value;
+            keperluan.focus();
+
+            items.forEach(function (el) { el.classList.remove('is-selected'); });
+            btn.classList.add('is-selected');
+        });
+    });
+});
+</script>
+@endpush

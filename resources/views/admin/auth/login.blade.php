@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @php
-        $heroBgPath = config('branding.body_background');
-        $heroBgUrl = $heroBgPath ? asset(ltrim($heroBgPath, '/')) : null;
+        $heroBgUrl = \App\Models\SiteContent::bodyBackgroundUrl();
+        $heroBgUrl = $heroBgUrl !== '' ? $heroBgUrl : null;
     @endphp
     <style>
         :root {

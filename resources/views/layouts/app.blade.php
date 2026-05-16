@@ -6,6 +6,7 @@
     <title>@yield('title', 'Panti Asuhan Santa Susana Timika')</title>
     @php
         $faviconHref = \App\Models\SiteContent::siteLogoUrl(data_get($siteContent ?? null, 'site_logo'));
+        $bodyBgUrl = \App\Models\SiteContent::bodyBackgroundUrl();
     @endphp
     @if(filled($faviconHref))
         <link rel="icon" href="{{ $faviconHref }}">
@@ -50,11 +51,13 @@
             min-height: 100vh;
             color: var(--teks);
             background-color: var(--latar);
-            background-image: url('{{ asset(config('branding.body_background')) }}');
+            @if(filled($bodyBgUrl))
+            background-image: url('{{ $bodyBgUrl }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            @endif
             position: relative;
         }
         body::before {
@@ -434,13 +437,12 @@
                 <span>{{ $siteContent->nav_brand_suffix }}</span>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">{{ $siteContent->nav_beranda }}</a>
-                <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">{{ $siteContent->nav_tentang }}</a>
-                <a href="{{ route('program') }}" class="{{ request()->routeIs('program') ? 'active' : '' }}">{{ $siteContent->nav_kegiatan }}</a>
-                <a href="{{ route('galeri') }}" class="{{ request()->routeIs('galeri') ? 'active' : '' }}">{{ $siteContent->nav_galeri }}</a>
-                <a href="{{ route('donasi.index') }}" class="{{ request()->routeIs('donasi.*') ? 'active' : '' }} nav-cta">{{ $siteContent->nav_donasi }}</a>
-                <a href="{{ route('kunjungan.create') }}" class="{{ request()->routeIs('kunjungan.*') ? 'active' : '' }}">{{ $siteContent->nav_kunjungan }}</a>
-                <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'active' : '' }}">{{ $siteContent->nav_kontak }}</a>
+                @php($headerNavItems = \App\Models\SiteContent::headerNavResolvedForPublic($siteContent))
+                @foreach($headerNavItems as $navItem)
+                    <a href="{{ $navItem['url'] }}" class="{{ \App\Models\SiteContent::headerNavItemIsActive($navItem['route'] ?? null) ? 'active' : '' }} {{ ($navItem['style'] ?? 'link') === 'cta' ? 'nav-cta' : '' }}"
+                        @if(!empty($navItem['external'])) target="_blank" rel="noopener noreferrer" @endif
+                    >{{ $navItem['label'] }}</a>
+                @endforeach
             </div>
             <div class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
                 <span></span><span></span><span></span>
@@ -459,6 +461,7 @@
     </main>
 
     <footer class="site-footer">
+        @php($footerResolved = \App\Models\SiteContent::footerNavResolvedForPublic($siteContent))
         <div class="footer-container">
             <div class="footer-top">
                 <div>
@@ -472,55 +475,47 @@
                         {{ $siteContent->footer_brand_desc }}
                     </p>
                     <div class="footer-sosmed">
-                        <a href="{{ $siteContent->footer_sosmed_fb_url }}" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="{{ $siteContent->footer_sosmed_phone_href }}" title="Telepon"><i class="fas fa-phone"></i></a>
-                        <a href="{{ $siteContent->footer_sosmed_ig_url }}" target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        @foreach($footerResolved['social'] ?? [] as $soc)
+                            <a href="{{ $soc['url'] }}"
+                                @if(!empty($soc['external'])) target="_blank" rel="noopener noreferrer" @endif
+                                title="{{ $soc['title'] }}"><i class="{{ $soc['icon'] }}"></i></a>
+                        @endforeach
                     </div>
                 </div>
                 <div class="footer-col">
                     <h4>{{ $siteContent->footer_heading_menu }}</h4>
                     <ul>
-                        <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_beranda }}</a></li>
-                        <li><a href="{{ route('tentang') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_tentang }}</a></li>
-                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kegiatan }}</a></li>
-                        <li><a href="{{ route('galeri') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_galeri }}</a></li>
-                        <li><a href="{{ route('donasi.index') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_donasi }}</a></li>
-                        <li><a href="{{ route('kunjungan.create') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kunjungan }}</a></li>
-                        <li><a href="{{ route('kontak') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_menu_kontak }}</a></li>
+                        @foreach(($footerResolved['menu'] ?? []) as $link)
+                        <li><a href="{{ $link['url'] }}"
+                                @if(!empty($link['external'])) target="_blank" rel="noopener noreferrer" @endif
+                                ><i class="{{ $link['icon'] }}"></i> {{ $link['label'] }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>{{ $siteContent->footer_heading_kegiatan }}</h4>
                     <ul>
-                        <li><a href="{{ route('program') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_rutin }}</a></li>
-                        <li><a href="{{ route('program.unggulan') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_unggulan }}</a></li>
-                        <li><a href="{{ route('program.lainnya') }}"><i class="fas fa-chevron-right fa-xs"></i> {{ $siteContent->footer_kegiatan_lainnya }}</a></li>
+                        @foreach(($footerResolved['kegiatan'] ?? []) as $link)
+                        <li><a href="{{ $link['url'] }}"
+                                @if(!empty($link['external'])) target="_blank" rel="noopener noreferrer" @endif
+                                ><i class="{{ $link['icon'] }}"></i> {{ $link['label'] }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>{{ $siteContent->footer_heading_kontak }}</h4>
+                    @foreach(($footerResolved['contact'] ?? []) as $block)
                     <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fas fa-phone fa-sm"></i></div>
+                        <div class="footer-contact-icon"><i class="{{ $block['icon'] }}"></i></div>
                         <div class="footer-contact-text">
-                            <a href="{{ $siteContent->footer_phone_href }}">{{ $siteContent->footer_phone_display }}</a>
+                            @if(($block['kind'] ?? '') === 'plain')
+                                {{ $block['body'] ?? '' }}
+                            @else
+                                <a href="{{ $block['url'] }}" @if(!empty($block['external'])) target="_blank" rel="noopener noreferrer" @endif>{{ $block['label'] ?? '' }}</a>
+                            @endif
                         </div>
                     </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fab fa-facebook-f fa-sm"></i></div>
-                        <div class="footer-contact-text">
-                            <a href="{{ $siteContent->footer_fb_url }}" target="_blank" rel="noopener noreferrer">{{ $siteContent->footer_fb_text }}</a>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fab fa-instagram fa-sm"></i></div>
-                        <div class="footer-contact-text">
-                            <a href="{{ $siteContent->footer_ig_url }}" target="_blank" rel="noopener noreferrer">{{ $siteContent->footer_ig_text }}</a>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fas fa-location-dot fa-sm"></i></div>
-                        <div class="footer-contact-text">{{ $siteContent->footer_address }}</div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
             <hr class="footer-divider">

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class BerandaSiteController extends Controller
 {
@@ -33,8 +34,19 @@ class BerandaSiteController extends Controller
         $donasiJasa = SiteContent::resolvedDonasiJasaPage();
         $donasiJasaCmsReady = Schema::hasColumn('site_contents', 'donasi_jasa_page');
         $siteLogoCmsReady = Schema::hasColumn('site_contents', 'site_logo');
+        $bodyBackgroundCmsReady = Schema::hasColumn('site_contents', 'site_body_background');
 
-        return view('admin.beranda.edit', compact('site', 'tentang', 'donasiKeuangan', 'donasiKeuanganCmsReady', 'donasiJasa', 'donasiJasaCmsReady', 'siteLogoCmsReady'));
+        $includeAnakAsuhMenu = Schema::hasColumn('site_contents', 'footer_menu_anak_asuh');
+        $footerNavigationCmsReady = Schema::hasColumn('site_contents', 'footer_navigation');
+        $footerNavigationDraft = old('fn');
+        if (! is_array($footerNavigationDraft)) {
+            $footerNavigationDraft = is_array($site->footer_navigation) ? $site->footer_navigation : null;
+        }
+        $footerNavigationForm = SiteContent::coerceFooterNavigationForAdmin($footerNavigationDraft, $site, $includeAnakAsuhMenu);
+        $footerRouteOptions = SiteContent::footerPublicRouteOptions();
+        $headerSiteCmsReady = Schema::hasColumn('site_contents', 'header_navigation');
+
+        return view('admin.beranda.edit', compact('site', 'tentang', 'donasiKeuangan', 'donasiKeuanganCmsReady', 'donasiJasa', 'donasiJasaCmsReady', 'siteLogoCmsReady', 'bodyBackgroundCmsReady', 'footerNavigationCmsReady', 'footerNavigationForm', 'footerRouteOptions', 'headerSiteCmsReady'));
     }
 
     public function update(Request $request)
@@ -51,6 +63,8 @@ class BerandaSiteController extends Controller
                 ->with('error', 'Tabel konten Tentang belum tersedia. Jalankan migrasi terlebih dahulu.');
         }
 
+        $headerSiteCmsReady = Schema::hasColumn('site_contents', 'header_navigation');
+
         $baseRules = [
             'hero_kicker' => ['nullable', 'string', 'max:120'],
             'hero_title' => ['required', 'string', 'max:190'],
@@ -59,14 +73,6 @@ class BerandaSiteController extends Controller
             'summary_paragraph_1' => ['required', 'string', 'max:3500'],
             'summary_paragraph_2' => ['required', 'string', 'max:3500'],
             'summary_cta_note' => ['required', 'string', 'max:1200'],
-            'nav_brand_suffix' => ['required', 'string', 'max:120'],
-            'nav_beranda' => ['required', 'string', 'max:80'],
-            'nav_tentang' => ['required', 'string', 'max:80'],
-            'nav_kegiatan' => ['required', 'string', 'max:80'],
-            'nav_galeri' => ['required', 'string', 'max:80'],
-            'nav_donasi' => ['required', 'string', 'max:80'],
-            'nav_kunjungan' => ['required', 'string', 'max:80'],
-            'nav_kontak' => ['required', 'string', 'max:80'],
             'home_btn_donasi' => ['required', 'string', 'max:80'],
             'home_btn_kunjungan' => ['required', 'string', 'max:80'],
             'home_tentang_section_title' => ['required', 'string', 'max:120'],
@@ -120,9 +126,27 @@ class BerandaSiteController extends Controller
             'remove_home_about_image' => ['nullable', 'boolean'],
         ];
 
-        if (Schema::hasColumn('site_contents', 'site_logo')) {
+        if (! $headerSiteCmsReady) {
+            $baseRules = array_merge($baseRules, [
+                'nav_brand_suffix' => ['required', 'string', 'max:120'],
+                'nav_beranda' => ['required', 'string', 'max:80'],
+                'nav_tentang' => ['required', 'string', 'max:80'],
+                'nav_kegiatan' => ['required', 'string', 'max:80'],
+                'nav_galeri' => ['required', 'string', 'max:80'],
+                'nav_donasi' => ['required', 'string', 'max:80'],
+                'nav_kunjungan' => ['required', 'string', 'max:80'],
+                'nav_kontak' => ['required', 'string', 'max:80'],
+            ]);
+        }
+
+        if (Schema::hasColumn('site_contents', 'site_logo') && ! $headerSiteCmsReady) {
             $baseRules['site_logo'] = ['nullable', 'image', 'max:3072'];
             $baseRules['remove_site_logo'] = ['nullable', 'boolean'];
+        }
+
+        if (Schema::hasColumn('site_contents', 'site_body_background')) {
+            $baseRules['site_body_background'] = ['nullable', 'image', 'max:5120'];
+            $baseRules['remove_site_body_background'] = ['nullable', 'boolean'];
         }
 
         if (Schema::hasColumn('site_contents', 'donasi_keuangan_page')) {
@@ -134,6 +158,46 @@ class BerandaSiteController extends Controller
 
         if (Schema::hasColumn('site_contents', 'donasi_jasa_page')) {
             $baseRules = array_merge($baseRules, SiteContent::donasiJasaValidationRules());
+        }
+
+        if (Schema::hasColumn('site_contents', 'nav_anak_asuh')) {
+            if (! $headerSiteCmsReady) {
+                $baseRules['nav_anak_asuh'] = ['required', 'string', 'max:80'];
+            }
+            $baseRules['footer_menu_anak_asuh'] = ['required', 'string', 'max:80'];
+        }
+
+        if (Schema::hasColumn('site_contents', 'footer_navigation')) {
+            $routes = SiteContent::footerPublicRouteNames();
+            $routeRule = Rule::in($routes);
+            $baseRules = array_merge($baseRules, [
+                'fn' => ['required', 'array'],
+                'fn.menu_items' => ['required', 'array', 'min:1', 'max:'.SiteContent::FOOTER_MENU_ITEMS_MAX],
+                'fn.menu_items.*.label' => ['required', 'string', 'max:120'],
+                'fn.menu_items.*.href_type' => ['required', 'in:route,url'],
+                'fn.menu_items.*.route' => ['nullable', 'string', 'max:120', $routeRule],
+                'fn.menu_items.*.href' => ['nullable', 'string', 'max:2000'],
+                'fn.menu_items.*.icon' => ['required', 'string', 'max:120'],
+                'fn.kegiatan_items' => ['nullable', 'array', 'max:'.SiteContent::FOOTER_KEGIATAN_ITEMS_MAX],
+                'fn.kegiatan_items.*.label' => ['required', 'string', 'max:160'],
+                'fn.kegiatan_items.*.href_type' => ['required', 'in:route,url'],
+                'fn.kegiatan_items.*.route' => ['nullable', 'string', 'max:120', $routeRule],
+                'fn.kegiatan_items.*.href' => ['nullable', 'string', 'max:2000'],
+                'fn.kegiatan_items.*.icon' => ['required', 'string', 'max:120'],
+                'fn.social_items' => ['nullable', 'array', 'max:'.SiteContent::FOOTER_SOCIAL_ITEMS_MAX],
+                'fn.social_items.*.url' => ['required', 'string', 'max:500'],
+                'fn.social_items.*.icon' => ['required', 'string', 'max:120'],
+                'fn.social_items.*.title' => ['required', 'string', 'max:80'],
+                'fn.contact_items' => ['nullable', 'array', 'max:'.SiteContent::FOOTER_CONTACT_ITEMS_MAX],
+                'fn.contact_items.*.type' => ['required', 'string', Rule::in(SiteContent::footerContactItemTypes())],
+                'fn.contact_items.*.icon' => ['required', 'string', 'max:120'],
+                'fn.contact_items.*.href_type' => ['nullable', 'in:site,route,url'],
+                'fn.contact_items.*.route' => ['nullable', 'string', 'max:120', $routeRule],
+                'fn.contact_items.*.href' => ['nullable', 'string', 'max:2000'],
+                'fn.contact_items.*.label' => ['nullable', 'string', 'max:200'],
+                'fn.contact_items.*.url' => ['nullable', 'string', 'max:500'],
+                'fn.contact_items.*.body' => ['nullable', 'string', 'max:500'],
+            ]);
         }
 
         $validated = $request->validate($baseRules);
@@ -236,7 +300,7 @@ class BerandaSiteController extends Controller
         unset($validated['home_about_image'], $validated['remove_home_about_image']);
         $validated['home_about_image'] = $imagePath;
 
-        if (Schema::hasColumn('site_contents', 'site_logo')) {
+        if (Schema::hasColumn('site_contents', 'site_logo') && ! $headerSiteCmsReady) {
             $siteLogoPath = $site->site_logo;
             if ($request->hasFile('site_logo')) {
                 if ($site->site_logo && ! str_starts_with((string) $site->site_logo, 'http') && Storage::disk('public')->exists($site->site_logo)) {
@@ -253,10 +317,46 @@ class BerandaSiteController extends Controller
             $validated['site_logo'] = $siteLogoPath;
         }
 
+        if (Schema::hasColumn('site_contents', 'site_body_background')) {
+            $bodyBgPath = $site->site_body_background;
+            if ($request->hasFile('site_body_background')) {
+                if ($site->site_body_background && ! str_starts_with((string) $site->site_body_background, 'http') && Storage::disk('public')->exists($site->site_body_background)) {
+                    Storage::disk('public')->delete($site->site_body_background);
+                }
+                $bodyBgPath = $request->file('site_body_background')->store('site/background', 'public');
+            } elseif ($request->boolean('remove_site_body_background')) {
+                if ($site->site_body_background && ! str_starts_with((string) $site->site_body_background, 'http') && Storage::disk('public')->exists($site->site_body_background)) {
+                    Storage::disk('public')->delete($site->site_body_background);
+                }
+                $bodyBgPath = null;
+            }
+            unset($validated['site_body_background'], $validated['remove_site_body_background']);
+            $validated['site_body_background'] = $bodyBgPath;
+        }
+
+        if (Schema::hasColumn('site_contents', 'footer_navigation') && isset($validated['fn'])) {
+            $filtered = SiteContent::filterFooterNavEmptyRepeaterRows($validated['fn']);
+            SiteContent::assertFooterNavigationValid($filtered);
+            unset($validated['fn']);
+            $validated['footer_navigation'] = SiteContent::sanitizeFooterNavigationForStorage($filtered);
+        }
+
+        if ($headerSiteCmsReady) {
+            $skipHeaderManaged = [
+                'nav_brand_suffix', 'nav_beranda', 'nav_tentang', 'nav_kegiatan',
+                'nav_galeri', 'nav_donasi', 'nav_kunjungan', 'nav_kontak',
+                'site_logo', 'remove_site_logo',
+            ];
+            if (Schema::hasColumn('site_contents', 'nav_anak_asuh')) {
+                $skipHeaderManaged[] = 'nav_anak_asuh';
+            }
+            $validated = Arr::except($validated, $skipHeaderManaged);
+        }
+
         $site->update($validated);
 
         return redirect()
             ->route('admin.beranda.edit')
-            ->with('success', 'Konten beranda, logo situs/favicon, navigasi, footer, serta halaman donasi keuangan & donasi jasa berhasil disimpan.');
+            ->with('success', 'Konten beranda, logo situs/favicon, latar belakang situs & login admin, navigasi, footer, serta halaman donasi keuangan & donasi jasa berhasil disimpan.');
     }
 }

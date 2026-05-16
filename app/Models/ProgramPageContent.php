@@ -48,9 +48,9 @@ class ProgramPageContent extends Model
     public static function defaults(): array
     {
         return [
-            'page_meta_title' => 'Kegiatan Rutin Kami - Panti Asuhan Santa Susana Timika',
-            'hero_title' => 'Kegiatan Rutin Kami',
-            'hero_subtitle' => 'Berbagai kegiatan rutin yang kami jalankan untuk memastikan setiap anak tumbuh sehat, cerdas, berkarakter, dan mandiri.',
+            'page_meta_title' => 'Jadwal Kegiatan Anak - Panti Asuhan Santa Susana Timika',
+            'hero_title' => 'Jadwal Kegiatan Anak',
+            'hero_subtitle' => 'Jadwal rutin kegiatan anak asuh di panti: waktu, judul, dan informasi singkat yang kami tampilkan untuk keluarga dan donatur.',
             'unggul_section_label' => 'Program Unggulan',
             'unggul_section_title' => 'Program Unggulan di Panti',
             'unggul_section_sub' => 'Program-program inti yang menjadi fokus pengembangan karakter, pendidikan, dan kemandirian anak-anak.',
@@ -60,21 +60,21 @@ class ProgramPageContent extends Model
             'unggul_fallback_icon' => 'fas fa-star',
             'unggul_donate_btn' => 'Lakukan donasi pada program ini',
             'unggul_donate_hint' => 'Dukung program ini dengan donasi Anda.',
-            'rutin_section_label' => 'Kegiatan Rutin',
-            'rutin_section_title' => 'Kegiatan Rutin di Panti',
-            'rutin_section_sub' => 'Berikut adalah kegiatan rutin yang saat ini berjalan di Panti Asuhan Santa Susana Timika.',
+            'rutin_section_label' => 'Jadwal',
+            'rutin_section_title' => 'Kegiatan per hari',
+            'rutin_section_sub' => 'Berikut jadwal yang aktif. Detail diatur di panel admin (Data & aset → Jadwal kegiatan anak).',
             'rutin_pill' => 'Kegiatan Rutin',
             'rutin_eyebrow' => 'Di Panti Santa Susana',
             'rutin_default_desc' => 'Belum ada keterangan untuk kegiatan ini, namun kegiatan ini berjalan secara rutin di Panti.',
             'rutin_fallback_icon' => 'fas fa-thumbtack',
-            'empty_section_label' => 'Kegiatan',
-            'empty_section_title' => 'Belum Ada Kegiatan Terdaftar',
-            'empty_section_sub' => 'Saat ini belum ada data kegiatan rutin yang ditampilkan. Silakan kembali lagi nanti.',
+            'empty_section_label' => 'Jadwal',
+            'empty_section_title' => 'Belum Ada Jadwal Dipublikasikan',
+            'empty_section_sub' => 'Saat ini belum ada jadwal aktif yang ditampilkan. Silakan kembali lagi nanti.',
             'involve_section_label' => 'Terlibat',
             'involve_section_title' => 'Cara Anda Bisa Terlibat',
             'involve_steps' => static::defaultInvolveSteps(),
-            'cta_title' => 'Mulai Berkontribusi Hari Ini',
-            'cta_subtitle' => 'Setiap kontribusi, sekecil apapun, sangat berarti bagi anak-anak kami.',
+            'cta_title' => 'Dukung kegiatan harian anak',
+            'cta_subtitle' => 'Donasi dan kunjungan Anda membantu kami menjalankan jadwal dan kebutuhan anak asuh.',
             'cta_btn_donasi' => 'Donasi sekarang',
             'cta_btn_kunjungan' => 'Ajukan kunjungan',
         ];
@@ -138,6 +138,7 @@ class ProgramPageContent extends Model
                     $this->involve_steps = $def;
                     $changed = true;
                 }
+
                 continue;
             }
             if (blank($this->{$key})) {

@@ -33,7 +33,7 @@ class JadwalKegiatanAnakController extends Controller
             ->when($aktif !== null && $aktif !== '', function ($q) use ($aktif) {
                 $q->where('aktif', (bool) $aktif);
             })
-            ->orderByRaw("FIELD(hari,'setiap_hari','senin','selasa','rabu','kamis','jumat','sabtu','minggu'), urutan, jam_mulai")
+            ->orderedByHariUrutanJam()
             ->paginate(30)
             ->withQueryString();
 
@@ -57,6 +57,7 @@ class JadwalKegiatanAnakController extends Controller
         }
 
         $hariOptions = JadwalKegiatanAnak::daftarHari();
+
         return view('admin.jadwal-anak.create', compact('hariOptions'));
     }
 
@@ -94,12 +95,14 @@ class JadwalKegiatanAnakController extends Controller
     public function show(JadwalKegiatanAnak $jadwal)
     {
         $hariOptions = JadwalKegiatanAnak::daftarHari();
+
         return view('admin.jadwal-anak.show', compact('jadwal', 'hariOptions'));
     }
 
     public function edit(JadwalKegiatanAnak $jadwal)
     {
         $hariOptions = JadwalKegiatanAnak::daftarHari();
+
         return view('admin.jadwal-anak.edit', compact('jadwal', 'hariOptions'));
     }
 
@@ -137,4 +140,3 @@ class JadwalKegiatanAnakController extends Controller
             ->with('success', 'Jadwal kegiatan anak berhasil dihapus.');
     }
 }
-

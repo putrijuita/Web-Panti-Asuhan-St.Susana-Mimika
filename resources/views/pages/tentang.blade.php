@@ -166,6 +166,64 @@
     .visi-misi-grid { grid-template-columns: 1fr; }
     .about-hero { padding: 2.5rem 1.5rem; }
 }
+
+/* Cuplikan menuju halaman publik /anak-asuh */
+.tentang-anak-teaser {
+    background: #fff;
+    border: 1px solid rgba(14,165,233,0.15);
+    border-radius: 20px;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 4px 24px rgba(14,165,233,0.07);
+}
+.tentang-anak-peek {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px;
+}
+.tentang-anak-peek-av {
+    width: 68px;
+    height: 68px;
+    border-radius: 11px;
+    overflow: hidden;
+    border: 2px solid rgba(14,165,233,0.25);
+    flex-shrink: 0;
+    background: var(--latar-panel);
+}
+.tentang-anak-peek-av img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+@media (max-width: 640px) {
+    .tentang-anak-teaser {
+        padding: 1.35rem 1.15rem;
+        border-radius: 16px;
+    }
+    .tentang-anak-peek {
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .tentang-anak-peek-av {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+    }
+}
+.tentang-anak-teaser-cta {
+    margin-top: 1.1rem;
+    font-size: 0.95rem;
+}
+.tentang-anak-teaser-cta a {
+    color: var(--biru-tua);
+    font-weight: 600;
+    text-decoration: none;
+}
+.tentang-anak-teaser-cta a:hover {
+    text-decoration: underline;
+}
 /* Foto pengurus bisa diklik untuk memperbesar */
 .team-avatar-btn {
     width: 100%;
@@ -182,41 +240,66 @@
 .image-modal {
     display: none;
     position: fixed;
-    z-index: 9999;
+    z-index: 10050;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,.85);
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    min-height: 100dvh;
+    background: rgba(0,0,0,.88);
+    box-sizing: border-box;
+    padding: 0;
 }
-.image-modal.show { display: flex; flex-direction: column; }
+.image-modal.show {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
 .image-modal-close {
     position: absolute;
-    top: 16px;
-    right: 24px;
+    top: max(18px, env(safe-area-inset-top, 0px));
+    right: max(20px, env(safe-area-inset-right, 0px));
     color: #fff;
     font-size: 36px;
     font-weight: 300;
     cursor: pointer;
     line-height: 1;
-    z-index: 1;
+    z-index: 2;
+    text-shadow: 0 1px 4px rgba(0,0,0,.5);
 }
 .image-modal-close:hover { opacity: .9; }
+.image-modal-body {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: calc(72px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 28px) calc(40px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    pointer-events: none;
+}
 .image-modal-content {
-    max-width: 90%;
-    max-height: 85vh;
+    max-width: min(92vw, 1100px);
+    max-height: calc(100dvh - 200px);
+    width: auto;
+    height: auto;
     object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    border-radius: 10px;
+    box-shadow: 0 12px 48px rgba(0,0,0,.45);
+    pointer-events: auto;
 }
 .image-modal-caption {
     color: #fff;
     text-align: center;
-    padding: 12px 0 0;
-    font-size: 14px;
+    padding: 14px 16px 0;
+    font-size: 15px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    max-width: min(92vw, 560px);
+    line-height: 1.4;
+    pointer-events: auto;
 }
 </style>
 @endpush
@@ -248,6 +331,25 @@
         </div>
     </div>
 </div>
+
+@if($anakAsuh->isNotEmpty())
+<!-- Cuplikan data anak asuh — daftar lengkap di /anak-asuh -->
+<div style="margin-bottom: 3rem;" class="tentang-anak-teaser">
+    <div class="section-label"><i class="fas fa-children" aria-hidden="true"></i> {{ $anakAsuhPage->layout_page_title }}</div>
+    <h2 class="section-head">{{ $anakAsuhPage->hero_title }}</h2>
+    <p class="section-sub" style="margin-bottom: 0.5rem;">{{ $anakAsuhPage->layout_page_subtitle }}</p>
+    <div class="tentang-anak-peek" aria-hidden="true">
+        @foreach($anakAsuh->take(8) as $row)
+            @if($row->fotoUrl())
+                <div class="tentang-anak-peek-av"><img src="{{ $row->fotoUrl() }}" alt="" loading="lazy"></div>
+            @endif
+        @endforeach
+    </div>
+    <p class="tentang-anak-teaser-cta">
+        <a href="{{ route('anak-asuh') }}">Lihat halaman anak asuh <i class="fas fa-arrow-right" style="font-size:0.85em;" aria-hidden="true"></i></a>
+    </p>
+</div>
+@endif
 
 <!-- Nilai -->
 <div style="margin-bottom: 3rem;">
@@ -329,8 +431,10 @@
 {{-- Modal foto pengurus timbul saat diklik --}}
 <div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
     <span class="image-modal-close" onclick="closeImageModal(event)" title="Tutup">&times;</span>
-    <img id="imageModalImg" class="image-modal-content" src="" alt="" onclick="event.stopPropagation()">
-    <div id="imageModalCaption" class="image-modal-caption"></div>
+    <div class="image-modal-body">
+        <img id="imageModalImg" class="image-modal-content" src="" alt="" onclick="event.stopPropagation()">
+        <div id="imageModalCaption" class="image-modal-caption"></div>
+    </div>
 </div>
 @endsection
 
@@ -350,8 +454,12 @@ function openImageModal(src, caption) {
 }
 function closeImageModal(e) {
     var modal = document.getElementById('imageModal');
-    if (!modal) return;
-    if (e && e.target !== modal && !e.target.classList.contains('image-modal-close')) return;
+    if (!modal || !modal.classList.contains('show')) return;
+    if (e && e.type === 'keydown') {
+        if (e.key !== 'Escape') return;
+    } else if (e && e.target !== modal && !(e.target.classList && e.target.classList.contains('image-modal-close'))) {
+        return;
+    }
     modal.classList.remove('show');
     document.body.style.overflow = '';
 }

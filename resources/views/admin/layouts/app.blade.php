@@ -7,6 +7,7 @@
     <title>@yield('title', 'Admin') — Panti Asuhan Santa Susana</title>
     @php
         $adminFavicon = \App\Models\SiteContent::siteLogoUrl(data_get(\App\Models\SiteContent::resolved(), 'site_logo'));
+        $adminBodyBgUrl = \App\Models\SiteContent::bodyBackgroundUrl();
     @endphp
     @if(filled($adminFavicon))
         <link rel="icon" href="{{ $adminFavicon }}">
@@ -48,11 +49,13 @@
             min-height: 100dvh;
             overflow-x: clip;
             background-color: #f0f9ff;
-            background-image: url('{{ asset(config('branding.body_background')) }}');
+            @if(filled($adminBodyBgUrl))
+            background-image: url('{{ $adminBodyBgUrl }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            @endif
             position: relative;
         }
         body::before {
@@ -101,12 +104,42 @@
         .nav-link.active { background: rgba(255,255,255,.15); color: #fff; font-weight: 600; }
         .nav-link .icon { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
         .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--sidebar-border); }
-        .user-info { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.08); margin-bottom: 8px; }
-        .user-profile-link { display: block; text-decoration: none; color: inherit; }
-        .user-profile-link:hover .user-info { background: rgba(255,255,255,.14); }
+        .user-info { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.08); margin-bottom: 8px; transition: background .2s; }
+        .user-info:hover { background: rgba(255,255,255,.14); }
+        .user-details-link { flex: 1; min-width: 0; text-decoration: none; color: inherit; border-radius: 6px; outline-offset: 2px; }
+        .user-details-link:focus-visible { outline: 2px solid rgba(255,255,255,.5); }
         .user-avatar { width: 34px; height: 34px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; flex-shrink: 0; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        button.user-avatar { border: none; padding: 0; font: inherit; cursor: pointer; }
+        button.user-avatar:focus-visible { outline: 2px solid rgba(255,255,255,.65); outline-offset: 2px; }
         .user-details { overflow: hidden; }
+        .js-admin-avatar-lightbox { transition: transform .15s ease, box-shadow .15s ease; }
+        .js-admin-avatar-lightbox:hover { transform: scale(1.04); box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.55); }
+        #adminAvatarLightbox {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            align-items: center; justify-content: center; padding: 24px;
+            background: rgba(15, 23, 42, .88); backdrop-filter: blur(4px);
+        }
+        #adminAvatarLightbox.show { display: flex; }
+        #adminAvatarLightbox .admin-avatar-lightbox-inner {
+            position: relative; max-width: min(92vw, 720px); max-height: 88vh;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        #adminAvatarLightbox img {
+            max-width: 100%; max-height: calc(88vh - 56px); width: auto; height: auto;
+            object-fit: contain; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.45);
+        }
+        #adminAvatarLightbox .admin-avatar-lightbox-caption {
+            color: #e2e8f0; font-size: 15px; font-weight: 600; text-align: center; max-width: 56ch;
+        }
+        #adminAvatarLightbox .admin-avatar-lightbox-close {
+            position: absolute; top: -8px; right: -8px;
+            width: 40px; height: 40px; border: none; border-radius: 50%;
+            background: rgba(255,255,255,.12); color: #f1f5f9; font-size: 22px; line-height: 1;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background .2s;
+        }
+        #adminAvatarLightbox .admin-avatar-lightbox-close:hover { background: rgba(255,255,255,.22); }
         .user-details strong { display: block; font-size: 12.5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-details span { font-size: 11px; color: rgba(255,255,255,.55); }
         .btn-logout {
@@ -296,14 +329,24 @@
                 <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
                 Dashboard
             </a>
+            <a href="{{ route('admin.profile.edit') }}" class="nav-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-user-circle"></i></span>
+                Profil saya
+            </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Navigasi &amp; situs</div>
-            <p class="nav-section-desc">Menu, footer, hero beranda, blok kontak di beranda</p>
+            <p class="nav-section-desc">Menu atas, footer, hero beranda, blok kontak di beranda</p>
+            @if(\Illuminate\Support\Facades\Schema::hasColumn('site_contents', 'header_navigation'))
+                <a href="{{ route('admin.header-site.edit') }}" class="nav-link {{ request()->routeIs('admin.header-site.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="fas fa-bars"></i></span>
+                    Header situs publik
+                </a>
+            @endif
             <a href="{{ route('admin.beranda.edit') }}" class="nav-link {{ request()->routeIs('admin.beranda.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-compass"></i></span>
-                Beranda &amp; navigasi publik
+                Beranda &amp; footer publik
             </a>
         </div>
 
@@ -340,7 +383,7 @@
             </a>
             <a href="{{ route('admin.jadwal-anak.index') }}" class="nav-link {{ request()->routeIs('admin.jadwal-anak.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-clock"></i></span>
-                Jadwal kegiatan anak
+                Data jadwal kegiatan anak
             </a>
             <a href="{{ route('admin.struktur.index') }}" class="nav-link {{ request()->routeIs('admin.struktur.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-sitemap"></i></span>
@@ -365,7 +408,7 @@
             </a>
             <a href="{{ route('admin.program-page.edit') }}" class="nav-link {{ request()->routeIs('admin.program-page.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-book-open"></i></span>
-                Halaman /program
+                Halaman /program (jadwal anak)
             </a>
             <a href="{{ route('admin.galeri-page.edit') }}" class="nav-link {{ request()->routeIs('admin.galeri-page.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-photo-film"></i></span>
@@ -382,6 +425,10 @@
             <a href="{{ route('admin.kontak-page.edit') }}" class="nav-link {{ request()->routeIs('admin.kontak-page.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fas fa-address-card"></i></span>
                 Halaman /kontak
+            </a>
+            <a href="{{ route('admin.anak-asuh-page.edit') }}" class="nav-link {{ request()->routeIs('admin.anak-asuh-page.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-file-lines"></i></span>
+                Halaman /anak-asuh
             </a>
         </div>
         @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
@@ -402,27 +449,35 @@
         </div>
     </nav>
     <div class="sidebar-footer">
-        <a href="{{ route('admin.profile.edit') }}" class="user-profile-link" title="Profil &amp; pengaturan akun">
         <div class="user-info">
-            <div class="user-avatar">
-                @if(Auth::guard('admin')->user()?->avatar)
+            @if(Auth::guard('admin')->user()?->avatarUrl())
+                <button type="button"
+                    class="user-avatar js-admin-avatar-lightbox"
+                    data-src="{{ Auth::guard('admin')->user()->avatarUrl() }}"
+                    data-caption="{{ Auth::guard('admin')->user()->name }}"
+                    title="Tampilkan foto lebih besar"
+                    aria-label="Tampilkan foto profil lebih besar">
                     <img src="{{ Auth::guard('admin')->user()->avatarUrl() }}" alt="">
-                @else
+                </button>
+            @else
+                <div class="user-avatar" aria-hidden="true">
                     <i class="fas fa-user"></i>
-                @endif
-            </div>
-            <div class="user-details">
-                <strong>{{ Auth::guard('admin')->user()?->name ?? 'Administrator' }}</strong>
-                <span>
-                    @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
-                        <i class="fas fa-shield-halved" style="font-size:10px;margin-right:2px;opacity:0.85"></i>Super Admin
-                    @else
-                        Admin
-                    @endif
-                </span>
-            </div>
+                </div>
+            @endif
+            <a href="{{ route('admin.profile.edit') }}" class="user-details-link" title="Profil &amp; pengaturan akun — klik untuk mengubah nama, foto, dan password">
+                <div class="user-details">
+                    <strong>{{ Auth::guard('admin')->user()?->name ?? 'Administrator' }}</strong>
+                    <span>
+                        @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
+                            <i class="fas fa-shield-halved" style="font-size:10px;margin-right:2px;opacity:0.85"></i>Super Admin
+                        @else
+                            Admin
+                        @endif
+                        <span style="display:block;margin-top:2px;font-size:10px;opacity:0.75">Edit profil</span>
+                    </span>
+                </div>
+            </a>
         </div>
-        </a>
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit" class="btn-logout">
@@ -467,6 +522,14 @@
     </div>
 </div>
 
+<div id="adminAvatarLightbox" role="dialog" aria-modal="true" aria-labelledby="adminAvatarLightboxTitle" hidden>
+    <div class="admin-avatar-lightbox-inner">
+        <button type="button" class="admin-avatar-lightbox-close" data-admin-avatar-lightbox-close aria-label="Tutup">&times;</button>
+        <img src="" alt="" id="adminAvatarLightboxImg">
+        <p id="adminAvatarLightboxTitle" class="admin-avatar-lightbox-caption"></p>
+    </div>
+</div>
+
 <script>
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
@@ -476,6 +539,45 @@ function closeSidebar() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
 }
+(function () {
+    var lb = document.getElementById('adminAvatarLightbox');
+    var img = document.getElementById('adminAvatarLightboxImg');
+    var title = document.getElementById('adminAvatarLightboxTitle');
+    if (!lb || !img || !title) return;
+    function openLightbox(src, caption) {
+        img.src = src;
+        img.alt = caption ? 'Foto profil ' + caption : 'Foto profil';
+        title.textContent = caption || '';
+        title.style.display = caption ? 'block' : 'none';
+        lb.classList.add('show');
+        lb.removeAttribute('hidden');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        lb.classList.remove('show');
+        lb.setAttribute('hidden', '');
+        lb.setAttribute('aria-hidden', 'true');
+        img.removeAttribute('src');
+        img.alt = '';
+        title.textContent = '';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('click', function (e) {
+        var trigger = e.target.closest('.js-admin-avatar-lightbox');
+        if (!trigger || !trigger.dataset.src) return;
+        e.preventDefault();
+        openLightbox(trigger.dataset.src, trigger.dataset.caption || '');
+    });
+    lb.addEventListener('click', function (e) {
+        if (e.target === lb || e.target.closest('[data-admin-avatar-lightbox-close]')) {
+            closeLightbox();
+        }
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lb.classList.contains('show')) closeLightbox();
+    });
+})();
 </script>
 @stack('scripts')
 </body>
