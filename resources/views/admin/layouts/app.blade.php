@@ -430,6 +430,10 @@
                 <span class="icon"><i class="fas fa-file-lines"></i></span>
                 Halaman /anak-asuh
             </a>
+            <a href="{{ route('admin.login-page.edit') }}" class="nav-link {{ request()->routeIs('admin.login-page.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-right-to-bracket"></i></span>
+                Halaman login admin
+            </a>
         </div>
         @if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->isSuperAdmin())
         <div class="nav-section">

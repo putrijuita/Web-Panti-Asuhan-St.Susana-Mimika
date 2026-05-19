@@ -31,35 +31,31 @@
 
                 <div class="form-group">
                     <label class="form-label">Foto profil</label>
-                    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px">
-                        @if($admin->avatarUrl())
-                            <button type="button"
-                                class="js-admin-avatar-lightbox"
-                                style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--gray-200);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-300);padding:0;cursor:pointer"
+                    @include('admin.partials.cms-current-file', [
+                        'url' => $admin->avatarUrl(),
+                        'path' => $admin->avatar,
+                        'maxHeight' => '120px',
+                        'emptyText' => 'Belum ada foto profil — tampil ikon bawaan.',
+                    ])
+                    @if($admin->avatarUrl())
+                        <p style="margin:-4px 0 10px;font-size:12px;">
+                            <button type="button" class="js-admin-avatar-lightbox btn btn-secondary btn-sm"
                                 data-src="{{ $admin->avatarUrl() }}"
-                                data-caption="{{ $admin->name }}"
-                                title="Tampilkan foto lebih besar"
-                                aria-label="Tampilkan foto profil lebih besar">
-                                <img src="{{ $admin->avatarUrl() }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none">
+                                data-caption="{{ $admin->name }}">
+                                <i class="fas fa-search-plus"></i> Lihat foto lebih besar
                             </button>
-                        @else
-                            <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--gray-200);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-300)">
-                                <i class="fas fa-user" style="font-size:28px;color:var(--gray-500)"></i>
-                            </div>
-                        @endif
-                        <div style="flex:1;min-width:0;max-width:100%">
-                            <input type="file" name="avatar" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
-                            <small style="color:var(--gray-500);font-size:12px;margin-top:4px;display:block">
-                                JPG, PNG, WebP, atau GIF. Maks. 1 GB.
-                            </small>
-                            @if($admin->avatar)
-                            <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--gray-600);cursor:pointer">
-                                <input type="checkbox" name="remove_avatar" value="1">
-                                Hapus foto profil
-                            </label>
-                            @endif
-                        </div>
-                    </div>
+                        </p>
+                    @endif
+                    <input type="file" name="avatar" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
+                    <small style="color:var(--gray-500);font-size:12px;margin-top:4px;display:block">
+                        JPG, PNG, WebP, atau GIF. Maks. 1 GB.
+                    </small>
+                    @if($admin->avatar)
+                    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--gray-600);cursor:pointer">
+                        <input type="checkbox" name="remove_avatar" value="1">
+                        Hapus foto profil
+                    </label>
+                    @endif
                 </div>
 
                 <div class="form-group">

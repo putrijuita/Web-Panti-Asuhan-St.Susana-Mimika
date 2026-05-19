@@ -37,12 +37,13 @@
 
             <div class="form-group">
                 <label class="form-label">Gambar (biarkan kosong jika tidak diganti)</label>
+                @include('admin.partials.cms-current-file', [
+                    'url' => $item->gambar ? asset('storage/'.$item->gambar) : null,
+                    'path' => $item->gambar,
+                    'maxHeight' => '120px',
+                    'emptyText' => 'Belum ada gambar.',
+                ])
                 <input type="file" name="gambar" class="form-control">
-                @if($item->gambar)
-                    <div style="margin-top:8px;">
-                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="{{ $item->nama }}" style="height:80px;width:auto;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;">
-                    </div>
-                @endif
             </div>
 
             <div class="form-group">

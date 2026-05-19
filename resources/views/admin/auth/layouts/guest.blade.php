@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>{{ $loginPage->page_title ?? 'Login Admin — Panti Asuhan Santa Susana' }}</title>
+    <title>@yield('pageTitle', $loginPage->page_title ?? 'Panel Admin — Panti Asuhan Santa Susana')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -253,7 +253,8 @@
             pointer-events: none;
         }
         .form-group input[type="email"],
-        .form-group input[type="password"] {
+        .form-group input[type="password"],
+        .form-group input[type="text"] {
             width: 100%;
             padding: 0.85rem 1rem 0.85rem 2.65rem;
             border: 1px solid #e2e8f0;
@@ -270,6 +271,46 @@
             border-color: var(--sky);
             background: #fff;
             box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+        }
+        .form-group input.input-readonly,
+        .form-group input.input-readonly:disabled {
+            background: #f1f5f9;
+            color: var(--muted);
+            cursor: not-allowed;
+            opacity: 1;
+            -webkit-text-fill-color: var(--muted);
+        }
+        .form-group input.input-readonly:focus {
+            border-color: #e2e8f0;
+            box-shadow: none;
+            background: #f1f5f9;
+        }
+        .email-locked {
+            margin-bottom: 1.1rem;
+        }
+        .email-locked label {
+            display: block;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 0.4rem;
+            font-size: 0.88rem;
+        }
+        .email-locked-value {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.85rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            background: #f1f5f9;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .email-locked-value i {
+            color: #94a3b8;
+            flex-shrink: 0;
         }
         .remember-row {
             display: flex;
@@ -342,28 +383,12 @@
             transition: color 0.2s;
         }
         .auth-text-link:hover { color: #0284c7; text-decoration: underline; }
-        .email-locked { margin-bottom: 1.1rem; }
-        .email-locked label {
-            display: block;
-            font-weight: 600;
-            color: var(--ink);
-            margin-bottom: 0.4rem;
+        .form-hint {
             font-size: 0.88rem;
-        }
-        .email-locked-value {
-            display: flex;
-            align-items: center;
-            gap: 0.65rem;
-            padding: 0.85rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: var(--radius-md);
-            background: #f1f5f9;
             color: var(--muted);
-            font-size: 1rem;
-            line-height: 1.4;
-            word-break: break-word;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
         }
-        .email-locked-value i { color: #94a3b8; flex-shrink: 0; }
         @media (prefers-reduced-motion: reduce) {
             .btn-login { transition: none; }
         }
@@ -387,10 +412,10 @@
             <div class="login-card">
                 <div class="login-card-top">
                     <div class="login-card-icon" aria-hidden="true">
-                        <i class="fas fa-right-to-bracket"></i>
+                        <i class="fas @yield('cardIcon', 'fa-right-to-bracket')"></i>
                     </div>
-                    <h2>{{ $loginPage->form_title }}</h2>
-                    <p class="sub">{{ $loginPage->form_subtitle }}</p>
+                    <h2>@yield('cardTitle', $loginPage->form_title)</h2>
+                    <p class="sub">@yield('cardSubtitle', $loginPage->form_subtitle)</p>
                 </div>
                 <div class="login-body">
                     @if (session('status'))
@@ -405,55 +430,17 @@
                             <span>{{ implode(' ', $errors->all()) }}</span>
                         </div>
                     @endif
-                    <form method="POST" action="{{ request()->getHost() === config('admin.domain') ? url('/login') : url('admin/login') }}">
-                        @csrf
-                        @php
-                            $loginEmail = old('email', request('email', ''));
-                            $emailLocked = filled($loginEmail) && request()->has('email');
-                        @endphp
-                        @if ($emailLocked)
-                            <input type="hidden" name="email" value="{{ $loginEmail }}">
-                            <div class="email-locked">
-                                <label>{{ $loginPage->email_label }}</label>
-                                <p class="email-locked-value">
-                                    <i class="fas fa-envelope" aria-hidden="true"></i>
-                                    <span>{{ $loginEmail }}</span>
-                                </p>
-                            </div>
-                        @else
-                            <div class="form-group">
-                                <label for="email">{{ $loginPage->email_label }}</label>
-                                <div class="input-wrap">
-                                    <i class="fas fa-envelope"></i>
-                                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="{{ $loginPage->email_placeholder }}" required autocomplete="username" autofocus>
-                                </div>
-                            </div>
-                        @endif
-                        <div class="form-group">
-                            <label for="password">{{ $loginPage->password_label }}</label>
-                            <div class="input-wrap">
-                                <i class="fas fa-lock"></i>
-                                <input type="password" id="password" name="password" placeholder="{{ $loginPage->password_placeholder }}" required autocomplete="current-password" @if($emailLocked ?? false) autofocus @endif>
-                            </div>
-                        </div>
-                        <div class="remember-row">
-                            <label class="remember">
-                                <input type="checkbox" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
-                                <span>{{ $loginPage->remember_label }}</span>
-                            </label>
-                            <a href="{{ \App\Models\AdminLoginPageContent::forgotPasswordUrl($loginPage) }}" class="auth-text-link">{{ $loginPage->forgot_password_label ?? 'Lupa kata sandi?' }}</a>
-                        </div>
-                        <button type="submit" class="btn-login">
-                            <i class="fas fa-arrow-right-to-bracket"></i>
-                            {{ $loginPage->submit_text }}
-                        </button>
-                    </form>
+                    @yield('content')
                 </div>
                 <div class="login-footer">
-                    <a href="{{ config('admin.main_site_url', url('/')) }}">
-                        <i class="fas fa-arrow-left"></i>
-                        {{ $loginPage->footer_link_text }}
-                    </a>
+                    @hasSection('footer')
+                        @yield('footer')
+                    @else
+                        <a href="{{ config('admin.main_site_url', url('/')) }}">
+                            <i class="fas fa-arrow-left"></i>
+                            {{ $loginPage->footer_link_text }}
+                        </a>
+                    @endif
                 </div>
             </div>
         </main>

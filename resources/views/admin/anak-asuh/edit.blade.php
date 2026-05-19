@@ -71,16 +71,18 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="foto">Ganti foto anak (publik)</label>
+                    @include('admin.partials.cms-current-file', [
+                        'url' => $item->fotoUrl(),
+                        'path' => $item->foto,
+                        'maxHeight' => '120px',
+                        'emptyText' => 'Belum ada foto — unggah untuk tampil di halaman publik.',
+                    ])
                     <input id="foto" type="file" name="foto" class="form-control" accept="image/*">
                     <small style="display:block;margin-top:6px;color:var(--gray-500);font-size:12px;">
                         Maks. 1 GB. JPG/PNG/WebP/GIF.
                     </small>
                     @error('foto')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
-
                     @if($item->fotoUrl())
-                        <div style="margin-top:10px;">
-                            <img src="{{ $item->fotoUrl() }}" alt="{{ $item->nama_lengkap }}" style="width:88px;height:88px;border-radius:18px;object-fit:cover;border:1px solid #e2e8f0;display:block;">
-                        </div>
                         <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--gray-600);cursor:pointer;">
                             <input type="hidden" name="hapus_foto" value="0">
                             <input type="checkbox" name="hapus_foto" value="1">

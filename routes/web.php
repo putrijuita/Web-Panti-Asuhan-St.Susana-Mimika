@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminPasswordResetController;
+use App\Http\Controllers\Admin\AdminLoginPageController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AnakAsuhController;
@@ -36,6 +38,10 @@ if ($adminDomain) {
     Route::domain($adminDomain)->name('admin.')->group(function () {
         Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [AdminAuthController::class, 'login']);
+        Route::get('forgot-password', [AdminPasswordResetController::class, 'showForgotForm'])->name('password.request');
+        Route::post('forgot-password', [AdminPasswordResetController::class, 'sendResetLink'])->name('password.email');
+        Route::get('reset-password/{token}', [AdminPasswordResetController::class, 'showResetForm'])->name('password.reset');
+        Route::post('reset-password', [AdminPasswordResetController::class, 'reset'])->name('password.update');
 
         Route::middleware('admin')->group(function () {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -129,6 +135,9 @@ if ($adminDomain) {
             Route::get('header-situs', [HeaderSiteController::class, 'edit'])->name('header-site.edit');
             Route::put('header-situs', [HeaderSiteController::class, 'update'])->name('header-site.update');
 
+            Route::get('halaman-login', [AdminLoginPageController::class, 'edit'])->name('login-page.edit');
+            Route::put('halaman-login', [AdminLoginPageController::class, 'update'])->name('login-page.update');
+
             Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
             Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');
 
@@ -215,6 +224,10 @@ Route::get('/jadwal-kegiatan-anak', [PageController::class, 'jadwalKegiatanAnak'
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AdminAuthController::class, 'login']);
+    Route::get('forgot-password', [AdminPasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('forgot-password', [AdminPasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('reset-password/{token}', [AdminPasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('reset-password', [AdminPasswordResetController::class, 'reset'])->name('password.update');
 
     Route::middleware('admin')->group(function () {
         Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
@@ -307,6 +320,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('header-situs', [HeaderSiteController::class, 'edit'])->name('header-site.edit');
         Route::put('header-situs', [HeaderSiteController::class, 'update'])->name('header-site.update');
+
+        Route::get('halaman-login', [AdminLoginPageController::class, 'edit'])->name('login-page.edit');
+        Route::put('halaman-login', [AdminLoginPageController::class, 'update'])->name('login-page.update');
 
         Route::get('halaman-kegiatan', [ProgramPageController::class, 'edit'])->name('program-page.edit');
         Route::put('halaman-kegiatan', [ProgramPageController::class, 'update'])->name('program-page.update');

@@ -45,10 +45,12 @@
             </div>
             <div class="form-group">
                 <label class="form-label" for="hero_image">Gambar hero (opsional)</label>
+                @include('admin.partials.cms-current-file', [
+                    'url' => $kunjungan->hero_image ? asset('storage/'.$kunjungan->hero_image) : null,
+                    'path' => $kunjungan->hero_image,
+                    'emptyText' => 'Belum ada gambar hero — bagian hero tanpa foto latar.',
+                ])
                 @if($kunjungan->hero_image)
-                    <div style="margin-bottom:8px;">
-                        <img src="{{ asset('storage/'.$kunjungan->hero_image) }}" alt="" style="max-width:280px;border-radius:8px;border:1px solid var(--gray-200);">
-                    </div>
                     <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:8px;">
                         <input type="checkbox" name="remove_hero_image" value="1" {{ old('remove_hero_image') ? 'checked' : '' }}> Hapus gambar
                     </label>

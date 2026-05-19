@@ -20,24 +20,16 @@
             @csrf
             @method('PUT')
 
-            <div class="form-group">
-                <label class="form-label">File Saat Ini</label>
-                <div>
-                    @php
-                        $isVideo = \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4','.mov','.avi','.mkv','.webm']);
-                    @endphp
-                    @if($isVideo)
-                        <video src="{{ Storage::disk('public')->url($video->file_path) }}"
-                               style="max-width: 260px;border-radius:8px;border:1px solid #e2e8f0;"
-                               controls>
-                        </video>
-                    @else
-                        <img src="{{ Storage::disk('public')->url($video->file_path) }}"
-                             alt="{{ $video->nama }}"
-                             style="max-width: 260px;border-radius:8px;border:1px solid #e2e8f0;object-fit:cover;">
-                    @endif
-                </div>
-            </div>
+            @php
+                $videoCurrentUrl = $video->file_path ? Storage::disk('public')->url($video->file_path) : null;
+                $videoIsVideo = $video->file_path && \Illuminate\Support\Str::endsWith(strtolower($video->file_path), ['.mp4', '.mov', '.avi', '.mkv', '.webm']);
+            @endphp
+            @include('admin.partials.cms-current-file', [
+                'url' => $videoCurrentUrl,
+                'path' => $video->file_path,
+                'type' => $videoIsVideo ? 'video' : 'image',
+                'maxWidth' => '260px',
+            ])
 
             <div class="form-group">
                 <label for="video" class="form-label">Ganti File (opsional)</label>

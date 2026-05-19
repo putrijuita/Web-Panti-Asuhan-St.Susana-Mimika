@@ -20,11 +20,12 @@
                 Logo juga dipakai sebagai favikon tab browser, di footer, dan di panel admin. Teks merek ditampilkan di samping logo di bilah atas (mis. <strong>YPKSSM</strong>).
             </p>
             @if(!empty($siteLogoCmsReady))
-                @if($site->site_logo)
-                    <div style="margin-bottom:12px;">
-                        <img src="{{ \App\Models\SiteContent::siteLogoUrl($site->site_logo) }}" alt="Logo" style="max-height:88px;border-radius:12px;border:1px solid var(--gray-200);background:var(--gray-50);padding:8px;">
-                    </div>
-                @endif
+                @include('admin.partials.cms-current-file', [
+                    'url' => $site->site_logo ? \App\Models\SiteContent::siteLogoUrl($site->site_logo) : null,
+                    'path' => $site->site_logo,
+                    'maxHeight' => '96px',
+                    'emptyText' => 'Belum ada logo kustom — situs memakai ikon SS bawaan.',
+                ])
                 <div class="form-group">
                     <label class="form-label" for="site_logo">Ubah logo</label>
                     <input id="site_logo" type="file" name="site_logo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">

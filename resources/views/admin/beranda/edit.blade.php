@@ -50,11 +50,12 @@
                     Unggah logo (mis. huruf SS atau ikon panti). Gambar ini dipakai di menu atas, footer, panel admin, dan sebagai favicon di tab browser.
                     Disarankan persegi (mis. 512×512 px), format PNG atau WebP, latar transparan atau berwarna sesuai kebutuhan.
                 </p>
-                @if($site->site_logo)
-                    <div style="margin-bottom:12px;">
-                        <img src="{{ \App\Models\SiteContent::siteLogoUrl($site->site_logo) }}" alt="Pratinjau logo" style="max-height:96px;border-radius:12px;border:1px solid var(--gray-200);background:var(--gray-50);padding:8px;">
-                    </div>
-                @endif
+                @include('admin.partials.cms-current-file', [
+                    'url' => $site->site_logo ? \App\Models\SiteContent::siteLogoUrl($site->site_logo) : null,
+                    'path' => $site->site_logo,
+                    'maxHeight' => '96px',
+                    'emptyText' => 'Belum ada logo kustom — situs memakai ikon SS bawaan.',
+                ])
                 <div class="form-group">
                     <label class="form-label" for="site_logo">Ubah logo (PNG/JPG/WebP/GIF, maks. 3&nbsp;MB)</label>
                     <input id="site_logo" type="file" name="site_logo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
@@ -93,11 +94,12 @@
                     Jika dikosongkan, dipakai gambar dari pengaturan server (<code>.env</code> → <code>BRANDING_BODY_BG</code> / bawaan aplikasi).
                     Disarankan foto lebar (mis. 1600px ke atas), JPG atau WebP, ukuran berkas maksimal 5&nbsp;MB.
                 </p>
-                @if($site->site_body_background)
-                    <div style="margin-bottom:12px;">
-                        <img src="{{ \App\Models\SiteContent::bodyBackgroundUrl() }}" alt="Pratinjau latar belakang" style="max-width:100%;max-height:160px;width:auto;object-fit:cover;border-radius:12px;border:1px solid var(--gray-200);">
-                    </div>
-                @endif
+                @include('admin.partials.cms-current-file', [
+                    'url' => \App\Models\SiteContent::bodyBackgroundUrl() ?: null,
+                    'path' => $site->site_body_background,
+                    'caption' => $site->site_body_background ? 'Unggahan CMS' : 'Sumber aktif (pengaturan server / bawaan aplikasi)',
+                    'maxWidth' => '100%',
+                ])
                 <div class="form-group">
                     <label class="form-label" for="site_body_background">Unggah gambar baru (JPG/PNG/WebP/GIF, maks. 5&nbsp;MB)</label>
                     <input id="site_body_background" type="file" name="site_body_background" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
@@ -208,11 +210,12 @@
             </div>
             <div class="form-group">
                 <label class="form-label" for="home_about_image">Gambar samping (opsional, JPG/PNG/WebP)</label>
-                @if($site->home_about_image)
-                    <div style="margin-bottom:8px;">
-                        <img src="{{ \App\Models\SiteContent::aboutImageUrl($site->home_about_image) }}" alt="" style="max-height:120px;border-radius:8px;border:1px solid var(--gray-200);">
-                    </div>
-                @endif
+                @include('admin.partials.cms-current-file', [
+                    'url' => \App\Models\SiteContent::aboutImageUrl($site->home_about_image),
+                    'path' => $site->home_about_image,
+                    'caption' => $site->home_about_image ? null : 'Tampilan publik memakai gambar bawaan (belum ada unggahan kustom).',
+                    'maxHeight' => '120px',
+                ])
                 <input id="home_about_image" type="file" name="home_about_image" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
                 <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--gray-600);">
                     <input type="hidden" name="remove_home_about_image" value="0">

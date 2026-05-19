@@ -109,9 +109,12 @@
         </div>
         <div class="form-group">
             <label class="form-label" for="donasi_keuangan_qris_logo">Unggah logo QRIS (PNG/JPG, opsional)</label>
-            @if(data_get($donasiKeuangan, 'form.qris_logo_storage'))
-                <div style="margin-bottom:8px;font-size:13px;color:var(--gray-600);">File tersimpan di penyimpanan. Unggah baru untuk mengganti.</div>
-            @endif
+            @include('admin.partials.cms-current-file', [
+                'url' => \App\Models\SiteContent::donasiKeuanganQrisLogoUrl((array) data_get($donasiKeuangan, 'form', [])),
+                'path' => data_get($donasiKeuangan, 'form.qris_logo_storage') ?: data_get($donasiKeuangan, 'form.qris_logo_url'),
+                'caption' => data_get($donasiKeuangan, 'form.qris_logo_storage') ? 'Unggahan CMS' : 'URL fallback / bawaan',
+                'maxHeight' => '80px',
+            ])
             <input id="donasi_keuangan_qris_logo" type="file" name="donasi_keuangan_qris_logo" class="form-control" accept="image/jpeg,image/png,image/webp,image/svg+xml">
             <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--gray-600);">
                 <input type="hidden" name="remove_donasi_keuangan_qris_logo" value="0">

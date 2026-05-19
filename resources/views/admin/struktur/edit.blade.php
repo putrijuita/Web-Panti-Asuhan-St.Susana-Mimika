@@ -20,13 +20,14 @@
 
             <div class="form-group">
                 <label class="form-label">Gambar (opsional, isi jika ingin ganti)</label>
+                @include('admin.partials.cms-current-file', [
+                    'url' => $struktur->gambar_path ? asset('storage/'.$struktur->gambar_path) : null,
+                    'path' => $struktur->gambar_path,
+                    'maxHeight' => '96px',
+                    'maxWidth' => '96px',
+                    'emptyText' => 'Belum ada gambar.',
+                ])
                 <input type="file" name="gambar" class="form-control" accept="image/*">
-                @if($struktur->gambar_path)
-                    <div style="margin-top:8px;">
-                        <span style="font-size:12px;color:#64748b;">Gambar saat ini:</span><br>
-                        <img src="{{ asset('storage/'.$struktur->gambar_path) }}" alt="{{ $struktur->nama }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-top:4px;">
-                    </div>
-                @endif
                 @error('gambar')
                     <div style="color:#b91c1c;font-size:12px;margin-top:4px;">{{ $message }}</div>
                 @enderror
